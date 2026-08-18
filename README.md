@@ -3,7 +3,7 @@
 ## تشغيل محلي
 ```bash
 npm install
-npm run dev
+npm run dev 
 ```
 
 ## متغيرات البيئة (Vercel)
