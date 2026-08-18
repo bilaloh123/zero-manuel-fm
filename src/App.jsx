@@ -714,11 +714,11 @@ export default function App() {
 `.trim();
 
     try {
-      const resp = await fetch("/api/analyst", {
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          model: "claude-sonnet-4-6",
+          model: "claude-sonnet-5",
           max_tokens: 700,
           messages: [{
             role: "user",
