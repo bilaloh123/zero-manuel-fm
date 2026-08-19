@@ -10,7 +10,7 @@ const supabase = createClient(
 import {
   Sprout, Cherry, Droplets, ThermometerSun, AlertTriangle, Users, Truck,
   Wallet, LayoutGrid, FileText, Bell, LogOut, ChevronLeft, Trash2, ChevronDown,
-  Plus, X, Clock, ShieldCheck, Building2, Receipt, Download, CheckCircle2, TrendingUp, Package, ArrowDownCircle, ArrowUpCircle, ClipboardList, Mail, FileCheck, FileSpreadsheet, Percent, Lock, Mic, Square, Play, CalendarClock, Store, Phone, ArrowRight, Brain, Send, Scissors, SprayCan, Type, Grid3x3,
+  Plus, X, Clock, ShieldCheck, Building2, Receipt, Download, CheckCircle2, TrendingUp, Package, ArrowDownCircle, ArrowUpCircle, ClipboardList, Mail, FileCheck, FileSpreadsheet, Percent, Lock, Mic, Square, Play, CalendarClock, Store, Phone, ArrowRight, Brain, Send, Scissors, SprayCan, Type, Grid3x3, WifiOff, RefreshCw,
 } from "lucide-react";
 
 const c = {
@@ -299,6 +299,10 @@ export default function App() {
   const [farms, setFarms] = useState({});
   const [loadingData, setLoadingData] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [pendingSync, setPendingSync] = useState(() => {
+    try { return JSON.parse(localStorage.getItem("zm_offline_queue") || "[]"); } catch { return []; }
+  });
   const [commandesGlobal, setCommandesGlobal] = useState([]);
   const [achatsGlobal, setAchatsGlobal] = useState(initAchatsGlobal);
   const [marketplaceGlobal, setMarketplaceGlobal] = useState(initMarketplace);
@@ -432,11 +436,41 @@ export default function App() {
     setCheckingSession(false);
   }
 
+  function queueOffline(table, payload) {
+    setPendingSync((prev) => {
+      const next = [...prev, { id: Date.now() + Math.random(), table, payload }];
+      localStorage.setItem("zm_offline_queue", JSON.stringify(next));
+      return next;
+    });
+  }
+
+  async function syncPendingQueue() {
+    const queue = JSON.parse(localStorage.getItem("zm_offline_queue") || "[]");
+    if (queue.length === 0) return;
+    const remaining = [];
+    for (const item of queue) {
+      const { error } = await supabase.from(item.table).insert(item.payload);
+      if (error) remaining.push(item);
+    }
+    localStorage.setItem("zm_offline_queue", JSON.stringify(remaining));
+    setPendingSync(remaining);
+    if (remaining.length < queue.length && currentFarmId) loadFarmDetails(currentFarmId);
+  }
+
+  useEffect(() => {
+    function goOnline() { setIsOnline(true); syncPendingQueue(); }
+    function goOffline() { setIsOnline(false); }
+    window.addEventListener("online", goOnline);
+    window.addEventListener("offline", goOffline);
+    return () => { window.removeEventListener("online", goOnline); window.removeEventListener("offline", goOffline); };
+  }, [currentFarmId]);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) loginWithSession(session);
       else setCheckingSession(false);
     });
+    if (navigator.onLine) syncPendingQueue();
   }, []);
 
   const kpis = useMemo(() => {
@@ -581,7 +615,7 @@ export default function App() {
     const qte = wForm.type === "ساعات" ? hoursBetween(wForm.dukhul, wForm.khuruj) : Number(wForm.nahar) || 1;
     const parcelleCode = wForm.parcelle || (data.parcelles[0] && data.parcelles[0].code) || "";
     const parcelleObj = data.parcelles.find((p) => p.code === parcelleCode);
-    const { error } = await supabase.from("workers_log").insert({
+    const payload = {
       farm_id: currentFarmId,
       nom_ouvrier: nom,
       parcelle_id: parcelleObj ? parcelleObj.id : null,
@@ -594,8 +628,22 @@ export default function App() {
       dawra: wForm.dawra,
       statut_paiement: "غير مؤدى",
       audio_note_url: wForm.audioNote || null,
-    });
-    if (error) { alert("وقع مشكل فالتسجيل: " + error.message); return; }
+    };
+
+    if (!navigator.onLine) {
+      queueOffline("workers_log", payload);
+      alert("ماكاينش انترنت — تسجل البونطاج محليا وغادي يتصيفط وحدو ملي يرجع النت");
+      ensureEmployee(nom);
+      setWForm({ nom: "", parcelle: "", tache: "", type: "ساعات", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
+      setShowAddWorker(false);
+      return;
+    }
+
+    const { error } = await supabase.from("workers_log").insert(payload);
+    if (error) {
+      queueOffline("workers_log", payload);
+      alert("ماقدرناش نوصلو للسيرفر دابا — تسجل محليا وغادي يتصيفط ملي يتحسن النت");
+    }
     ensureEmployee(nom);
     setWForm({ nom: "", parcelle: "", tache: "", type: "ساعات", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
     setShowAddWorker(false);
@@ -987,6 +1035,19 @@ export default function App() {
           <button onClick={async () => { await supabase.auth.signOut(); setCurrentUser(null); setFarms({}); setCurrentFarmId(null); }}><LogOut size={18} color="rgba(255,255,255,0.85)" /></button>
         </div>
       </header>
+
+      {!isOnline && (
+        <div style={{ background: c.orange }} className="px-5 py-2 flex items-center gap-2 sticky top-0 z-10">
+          <WifiOff size={14} color="#fff" />
+          <span style={{ color: "#fff", fontSize: "0.76rem", fontWeight: 700 }}>بلا انترنت — البيانات كتتسجل محليا وغادي تتصيفط ملي يرجع النت</span>
+        </div>
+      )}
+      {isOnline && pendingSync.length > 0 && (
+        <div style={{ background: c.blue }} className="px-5 py-2 flex items-center justify-between sticky top-0 z-10">
+          <div className="flex items-center gap-2"><RefreshCw size={14} color="#fff" /><span style={{ color: "#fff", fontSize: "0.76rem", fontWeight: 700 }}>{pendingSync.length} عملية محفوظة محليا كتتصيفط...</span></div>
+          <button onClick={syncPendingQueue} style={{ background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: "3px 10px" }}><span style={{ color: "#fff", fontSize: "0.7rem", fontWeight: 700 }}>عاود حاول</span></button>
+        </div>
+      )}
 
       <main className="p-4">
         {tab === "لوحة" && (
