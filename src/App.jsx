@@ -222,6 +222,18 @@ function Field({ label, children }) {
 }
 const inputStyle = { background: c.bg, border: `1px solid ${c.line}`, borderRadius: 8, padding: "8px 10px", fontSize: "0.82rem", color: c.ink, width: "100%" };
 
+function LockedFeature({ nom }) {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+      <div style={{ background: "rgba(244,162,97,0.15)", borderRadius: 999, width: 64, height: 64 }} className="flex items-center justify-center mb-4">
+        <Lock size={26} color="#F4A261" />
+      </div>
+      <h3 style={{ fontWeight: 800, fontSize: "1rem" }} className="mb-1.5">{nom} — ميزة غير مفعّلة</h3>
+      <p style={{ color: "#9C9186", fontSize: "0.82rem", maxWidth: 320 }}>هاد الوحدة جزء من زيرو مانويل لكن ماتفعّلاتش بعد فالحساب ديالك. تواصل مع مزود الخدمة باش تفعّلها.</p>
+    </div>
+  );
+}
+
 function AddButton({ label, open, onClick }) {
   return (
     <button onClick={onClick} style={{ background: open ? c.line : c.cardGreen, color: open ? c.ink : "#fff", borderRadius: 11, padding: "9px 15px", boxShadow: open ? "none" : "0 4px 12px -3px rgba(42,157,143,0.4)" }} className="flex items-center gap-1.5 hover:opacity-90">
@@ -340,7 +352,7 @@ const emptyFarmData = {
   nom: "", gps: { lat: 34.92, lng: -6.10 },
   parcelles: [], workers: [], wazin: [], costs: [], plan: [], depenses: [], stock: [], invoices: [],
   cnss: { echeanceJour: 10, moisLabel: "يوليوز 2026", declare: false, dateDeclare: "" },
-  employees: [],
+  employees: [], stockEnabled: false, pointageEnabled: false,
 };
 
 export default function App() {
@@ -410,8 +422,10 @@ export default function App() {
       supabase.from("workers_log").select("*").eq("farm_id", farmId).order("created_at", { ascending: false }).limit(200),
       supabase.from("stock_items").select("*").eq("farm_id", farmId),
     ]);
-    const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng").eq("id", farmId).single();
+    const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng, stock_enabled, pointage_enabled").eq("id", farmId).single();
     const farmGps = farmRow ? { lat: Number(farmRow.gps_lat) || 34.92, lng: Number(farmRow.gps_lng) || -6.10 } : { lat: 34.92, lng: -6.10 };
+    const stockEnabled = farmRow ? !!farmRow.stock_enabled : false;
+    const pointageEnabled = farmRow ? !!farmRow.pointage_enabled : false;
     const parcelles = (parcellesData || []).map((p) => ({
       id: p.id, code: p.code, nom: p.nom, crop: p.crop, ha: Number(p.superficie_ha) || 0,
       statut: p.statut || "ok", irrigation: "—", recolte: 0, dernierTraitement: "—", secu: 0,
@@ -436,7 +450,7 @@ export default function App() {
       wehda: s.wehda, seuil: Number(s.seuil) || 10,
     }));
 
-    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock } }));
+    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, stockEnabled, pointageEnabled } }));
     setSelected(parcelles[0] || null);
   }
 
@@ -461,7 +475,7 @@ export default function App() {
     const userId = session.user.id;
     const { data: memberships, error } = await supabase
       .from("farm_members")
-      .select("role, nom_affiche, farms(id, nom, gps_lat, gps_lng, cnss_echeance_jour, cnss_declare)")
+      .select("role, nom_affiche, farms(id, nom, gps_lat, gps_lng, cnss_echeance_jour, cnss_declare, stock_enabled, pointage_enabled)")
       .eq("user_id", userId);
     if (error || !memberships || memberships.length === 0) {
       alert("ماكاينش فيرمة مرتبطة بهاد الحساب — تواصل مع المسؤول ديالك باش يزيدك فـ farm_members.");
@@ -479,6 +493,7 @@ export default function App() {
         nom: m.farms.nom,
         gps: { lat: Number(m.farms.gps_lat) || 34.92, lng: Number(m.farms.gps_lng) || -6.10 },
         cnss: { ...emptyFarmData.cnss, echeanceJour: m.farms.cnss_echeance_jour || 10, declare: m.farms.cnss_declare || false },
+        stockEnabled: !!m.farms.stock_enabled, pointageEnabled: !!m.farms.pointage_enabled,
       };
     });
     setFarms(newFarms);
@@ -1435,6 +1450,7 @@ export default function App() {
         })()}
 
         {tab === "العمال" && (
+          !data.pointageEnabled ? <LockedFeature nom="العمال والبونطاج" /> :
           <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>{isWorker ? "البونطاج ديالي" : "بونتاج العمال اليوم"}</h2>
@@ -1681,6 +1697,7 @@ export default function App() {
         )}
 
         {tab === "المخزون" && (
+          !data.stockEnabled ? <LockedFeature nom="المخزون" /> :
           <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>مخزون المدخلات</h2>
