@@ -14,9 +14,9 @@ import {
 } from "lucide-react";
 
 const c = {
-  bg: "#F3F4F6", headerGreen: "#0D6B49", headerGreenLight: "#12855C", cardGreen: "#11996B", cardGreenLight: "#1CB37D", cardGreenDeep: "#0A6B49",
-  orange: "#EC9F32", orangeLight: "#F5B85C", white: "#FFFFFF", ink: "#1A2420", inkSoft: "#4B5D55",
-  inkMuted: "#9CAE8C", inkMuted2: "#8B9490", line: "#E5E8E5", danger: "#D64550", blue: "#3B82C4",
+  bg: "#FAF6EF", headerGreen: "#33553F", headerGreenLight: "#436B4F", cardGreen: "#5C8A64", cardGreenLight: "#71A177", cardGreenDeep: "#3D5E43",
+  orange: "#D9A15C", orangeLight: "#E6BC85", white: "#FFFFFF", ink: "#332E28", inkSoft: "#6B5F52",
+  inkMuted: "#A79C87", inkMuted2: "#9C9186", line: "#E9E1D3", danger: "#C1594F", blue: "#5C86A8",
 };
 
 // ---------- mock users (simulated auth) ----------
@@ -182,7 +182,22 @@ const farmsInit = {
   },
 };
 
-const statutColor = { ok: c.cardGreen, attention: c.orange, recolte: "#3B82C4", alerte: c.danger };
+const statutColor = { ok: c.cardGreen, attention: c.orange, recolte: c.blue, alerte: c.danger };
+function ZMLogo({ size = 40 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="zmLogoGrad" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#71A177" />
+          <stop offset="100%" stopColor="#33553F" />
+        </linearGradient>
+      </defs>
+      <circle cx="24" cy="24" r="24" fill="url(#zmLogoGrad)" />
+      <path d="M24 35c-7-2-11.5-8.5-10.5-17 8 0 14.5 4.5 17 11.5 1 3 0.5 5.5-1 7-2.5-6-7-9.5-12.5-11 3.5 2.5 6 6 7 9.5z" fill="#FAF6EF" />
+      <circle cx="33.5" cy="14.5" r="3.2" fill="#D9A15C" />
+    </svg>
+  );
+}
 const taskOptions = [
   { key: "سقي", icon: Droplets },
   { key: "جني", icon: Scissors },
@@ -209,7 +224,7 @@ const inputStyle = { background: c.bg, border: `1px solid ${c.line}`, borderRadi
 
 function AddButton({ label, open, onClick }) {
   return (
-    <button onClick={onClick} style={{ background: open ? c.line : c.cardGreen, color: open ? c.ink : "#fff", borderRadius: 11, padding: "9px 15px", boxShadow: open ? "none" : "0 4px 12px -3px rgba(17,153,107,0.4)" }} className="flex items-center gap-1.5 hover:opacity-90">
+    <button onClick={onClick} style={{ background: open ? c.line : c.cardGreen, color: open ? c.ink : "#fff", borderRadius: 11, padding: "9px 15px", boxShadow: open ? "none" : "0 4px 12px -3px rgba(92,138,100,0.4)" }} className="flex items-center gap-1.5 hover:opacity-90">
       {open ? <X size={15} /> : <Plus size={15} />}<span style={{ fontSize: "0.8rem", fontWeight: 700 }}>{open ? "إلغاء" : label}</span>
     </button>
   );
@@ -221,7 +236,7 @@ function StatCard({ title, value, unit, sub, footer, variant = "green" }) {
     : `linear-gradient(145deg, ${c.cardGreenLight} 0%, ${c.cardGreen} 100%)`;
   const textColor = variant === "white" ? c.ink : c.white;
   const subMuted = variant === "white" ? c.inkMuted2 : "rgba(255,255,255,0.75)";
-  const shadowColor = variant === "orange" ? "rgba(236,159,50,0.28)" : "rgba(17,153,107,0.24)";
+  const shadowColor = variant === "orange" ? "rgba(217,161,92,0.28)" : "rgba(92,138,100,0.24)";
   return (
     <div style={{ background: bg, borderRadius: 22, padding: "19px 21px", color: textColor, boxShadow: variant !== "white" ? `0 10px 24px -6px ${shadowColor}` : "0 1px 3px rgba(0,0,0,0.04)", border: variant === "white" ? `1px solid ${c.line}` : "none" }} className="flex flex-col gap-1">
       <div className="flex items-center justify-between mb-2">
@@ -258,12 +273,12 @@ function LoginScreen({ onLogin }) {
   }
 
   return (
-    <div dir="rtl" style={{ background: `linear-gradient(160deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 55%, #094433 100%)`, minHeight: "100vh", position: "relative", overflow: "hidden" }} className="flex flex-col items-center justify-center p-6">
+    <div dir="rtl" style={{ background: `linear-gradient(160deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 55%, #213A2A 100%)`, minHeight: "100vh", position: "relative", overflow: "hidden" }} className="flex flex-col items-center justify-center p-6">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@700;800;900&family=Inter:wght@400;600;700;800;900&display=swap');`}</style>
       <div style={{ position: "absolute", top: -80, right: -80, width: 260, height: 260, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
       <div style={{ position: "absolute", bottom: -100, left: -60, width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-      <div style={{ background: "rgba(255,255,255,0.14)", borderRadius: 18, width: 68, height: 68, boxShadow: "0 8px 24px rgba(0,0,0,0.15)" }} className="flex items-center justify-center mb-4 relative">
-        <Sprout size={30} color="#fff" strokeWidth={2.2} />
+      <div style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.2)", borderRadius: "50%" }} className="mb-4 relative">
+        <ZMLogo size={68} />
       </div>
       <h1 className="font-display" style={{ color: "#fff", fontWeight: 800, fontSize: "1.55rem", position: "relative" }}>زيرو مانويل</h1>
       <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8rem", position: "relative" }} className="mb-8">دخل بالبريد وكلمة السر ديالك</p>
@@ -277,7 +292,7 @@ function LoginScreen({ onLogin }) {
           style={{ background: "#fff", borderRadius: 12, padding: "13px 16px", fontSize: "0.85rem", border: "none", outline: "none" }}
         />
         {error && <p style={{ color: "#FCA5A5", fontSize: "0.76rem", textAlign: "center" }}>{error}</p>}
-        <button type="submit" disabled={loading} style={{ background: c.cardGreen, color: "#fff", borderRadius: 12, padding: "13px 0", fontWeight: 700, fontSize: "0.86rem", boxShadow: "0 8px 20px rgba(18,167,104,0.35)" }}>
+        <button type="submit" disabled={loading} style={{ background: c.cardGreen, color: "#fff", borderRadius: 12, padding: "13px 0", fontWeight: 700, fontSize: "0.86rem", boxShadow: "0 8px 20px rgba(92,138,100,0.35)" }}>
           {loading ? "كيدخل..." : "تسجيل الدخول"}
         </button>
       </form>
@@ -1038,14 +1053,14 @@ export default function App() {
         .font-display { font-family: 'Manrope', sans-serif; letter-spacing: -0.01em; }
         button { transition: all 0.15s ease; cursor: pointer; }
         button:active { transform: scale(0.98); }
-        ::selection { background: #11996B; color: #fff; }
-        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(214,69,80,0.5); } 50% { box-shadow: 0 0 0 8px rgba(214,69,80,0); } }
+        ::selection { background: #5C8A64; color: #fff; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(193,89,79,0.5); } 50% { box-shadow: 0 0 0 8px rgba(193,89,79,0); } }
         #bottomNav { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         #bottomNav::-webkit-scrollbar { display: none; }`}</style>
 
-      <header style={{ background: `linear-gradient(135deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 100%)`, boxShadow: "0 4px 20px rgba(13,107,73,0.18)" }} className="px-5 py-4 flex items-center justify-between sticky top-0 z-10">
+      <header style={{ background: `linear-gradient(135deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 100%)`, boxShadow: "0 4px 20px rgba(51,85,63,0.18)" }} className="px-5 py-4 flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-2.5">
-          <div style={{ background: "rgba(255,255,255,0.16)", borderRadius: 12, width: 40, height: 40 }} className="flex items-center justify-center"><Sprout size={18} color="#fff" /></div>
+          <div style={{ borderRadius: 12, width: 40, height: 40, overflow: "hidden" }} className="flex items-center justify-center"><ZMLogo size={40} /></div>
           <div>
             <div className="font-display" style={{ color: "#fff", fontWeight: 800, fontSize: "1.05rem" }}>{data.nom}</div>
             <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.68rem" }}>{currentUser.nom} · {roleLabel[currentUser.role]}</div>
@@ -1115,7 +1130,7 @@ export default function App() {
                 <Field label="اسم الفيرمة"><input value={fForm.nom} onChange={(e) => setFForm({ ...fForm, nom: e.target.value })} placeholder="مثلا فيرمة سوس" style={inputStyle} /></Field>
                 <Field label="GPS Lat (اختياري)"><input value={fForm.lat} onChange={(e) => setFForm({ ...fForm, lat: e.target.value })} placeholder="34.92" style={inputStyle} /></Field>
                 <Field label="GPS Lng (اختياري)"><input value={fForm.lng} onChange={(e) => setFForm({ ...fForm, lng: e.target.value })} placeholder="-6.10" style={inputStyle} /></Field>
-                <div className="col-span-3"><button onClick={addFarm} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)", fontWeight: 700, width: "100%" }}>إنشاء الفيرمة</button></div>
+                <div className="col-span-3"><button onClick={addFarm} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)", fontWeight: 700, width: "100%" }}>إنشاء الفيرمة</button></div>
               </div>
             )}
             <div className="flex flex-col gap-2">
@@ -1163,12 +1178,12 @@ export default function App() {
                       </select>
                     </Field>
                   )}
-                  <div className="col-span-2"><button onClick={addCommande} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)" }}>إرسال الطلب</button></div>
+                  <div className="col-span-2"><button onClick={addCommande} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)" }}>إرسال الطلب</button></div>
                 </div>
               )}
 
               {canManageFarms && nouvelles.length > 0 && (
-                <div style={{ background: "rgba(240,169,60,0.1)", border: `1px solid ${c.orange}`, borderRadius: 14 }} className="p-3 mb-4 flex items-center gap-2">
+                <div style={{ background: "rgba(217,161,92,0.1)", border: `1px solid ${c.orange}`, borderRadius: 14 }} className="p-3 mb-4 flex items-center gap-2">
                   <Bell size={16} color={c.orange} /><span style={{ fontSize: "0.82rem", fontWeight: 700, color: c.inkSoft }}>عندك {nouvelles.length} طلب جديد كيتسنى المعالجة</span>
                 </div>
               )}
@@ -1181,7 +1196,7 @@ export default function App() {
                         {canManageFarms && <span style={{ background: c.bg, borderRadius: 999, padding: "2px 9px", fontSize: "0.68rem", fontWeight: 700, color: c.inkSoft }}>{cmd.farmNom}</span>}
                         <span style={{ fontWeight: 700, fontSize: "0.88rem" }}>{cmd.produit}</span>
                       </div>
-                      <span style={{ fontSize: "0.68rem", fontWeight: 700, color: cmd.statut === "جديد" ? c.orange : c.cardGreenDeep, background: cmd.statut === "جديد" ? "rgba(240,169,60,0.14)" : "rgba(17,153,107,0.12)", borderRadius: 999, padding: "3px 9px" }}>{cmd.statut}</span>
+                      <span style={{ fontSize: "0.68rem", fontWeight: 700, color: cmd.statut === "جديد" ? c.orange : c.cardGreenDeep, background: cmd.statut === "جديد" ? "rgba(217,161,92,0.14)" : "rgba(92,138,100,0.12)", borderRadius: 999, padding: "3px 9px" }}>{cmd.statut}</span>
                     </div>
                     {cmd.destFarmId && cmd.destFarmId !== cmd.farmId && (
                       <div className="flex items-center gap-1.5 mb-2" style={{ fontSize: "0.74rem", color: c.blue, fontWeight: 700 }}>
@@ -1254,7 +1269,7 @@ export default function App() {
                   <Field label="السعر/وحدة (DH) — اختياري"><input type="number" value={mForm.prix} onChange={(e) => setMForm({ ...mForm, prix: e.target.value })} style={inputStyle} /></Field>
                   <Field label="رقم الهاتف للتواصل"><input value={mForm.contactTel} onChange={(e) => setMForm({ ...mForm, contactTel: e.target.value })} placeholder="0661-..." style={inputStyle} /></Field>
                   <div className="col-span-3"><Field label="وصف قصير"><input value={mForm.description} onChange={(e) => setMForm({ ...mForm, description: e.target.value })} style={inputStyle} /></Field></div>
-                  <div className="col-span-3"><button onClick={addListing} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)", fontWeight: 700, width: "100%" }}>نشر الإعلان</button></div>
+                  <div className="col-span-3"><button onClick={addListing} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)", fontWeight: 700, width: "100%" }}>نشر الإعلان</button></div>
                 </div>
               )}
 
@@ -1263,7 +1278,7 @@ export default function App() {
                   <div key={l.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span style={{ background: l.type === "أعرض" ? "rgba(17,153,107,0.12)" : "rgba(240,169,60,0.14)", color: l.type === "أعرض" ? c.cardGreenDeep : c.orange, borderRadius: 999, padding: "3px 10px", fontSize: "0.68rem", fontWeight: 700 }}>{l.type}</span>
+                        <span style={{ background: l.type === "أعرض" ? "rgba(92,138,100,0.12)" : "rgba(217,161,92,0.14)", color: l.type === "أعرض" ? c.cardGreenDeep : c.orange, borderRadius: 999, padding: "3px 10px", fontSize: "0.68rem", fontWeight: 700 }}>{l.type}</span>
                         <span style={{ background: c.bg, borderRadius: 999, padding: "2px 9px", fontSize: "0.66rem", fontWeight: 700, color: c.inkSoft }}>{l.farmNom}</span>
                       </div>
                       <span style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{l.date}</span>
@@ -1314,7 +1329,7 @@ export default function App() {
             {nearby.length > 0 ? (
               <div className="flex flex-col gap-2 mb-6">
                 {nearby.map((inc) => (
-                  <div key={inc.id} style={{ background: "rgba(214,69,80,0.08)", border: `1px solid ${c.danger}`, borderRadius: 12 }} className="p-3 flex items-center gap-3">
+                  <div key={inc.id} style={{ background: "rgba(193,89,79,0.08)", border: `1px solid ${c.danger}`, borderRadius: 12 }} className="p-3 flex items-center gap-3">
                     <AlertTriangle size={17} color={c.danger} />
                     <span style={{ fontSize: "0.82rem", color: c.inkSoft }}>
                       <b>{inc.probleme}</b> فـ{inc.produit === "avocat" ? "الأفوكا" : "الفريز"} — بلغ عنه <b>{inc.farmNom}</b> على بعد <b>{inc.dist} كلم</b> منك (شدة: {inc.severite}) · {inc.date}
@@ -1352,7 +1367,7 @@ export default function App() {
                 <Field label="الاسم"><input value={pcForm.nom} onChange={(e) => setPcForm({ ...pcForm, nom: e.target.value })} style={inputStyle} /></Field>
                 <Field label="المحصول"><select value={pcForm.crop} onChange={(e) => setPcForm({ ...pcForm, crop: e.target.value })} style={inputStyle}><option value="avocat">أفوكا</option><option value="fraise">فريز</option></select></Field>
                 <Field label="المساحة (هكتار)"><input type="number" step="0.1" value={pcForm.ha} onChange={(e) => setPcForm({ ...pcForm, ha: e.target.value })} style={inputStyle} /></Field>
-                <div className="col-span-2 flex items-end"><button onClick={addParcelle} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)" }}>إضافة القطعة</button></div>
+                <div className="col-span-2 flex items-end"><button onClick={addParcelle} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)" }}>إضافة القطعة</button></div>
               </div>
             )}
 
@@ -1570,7 +1585,7 @@ export default function App() {
                     )}
                   </div>
                 </div>
-                <button onClick={isWorker ? addMyPointage : addWorker} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "11px 0", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)", fontWeight: 700, fontSize: "0.85rem" }}>تسجيل البونطاج</button>
+                <button onClick={isWorker ? addMyPointage : addWorker} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "11px 0", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)", fontWeight: 700, fontSize: "0.85rem" }}>تسجيل البونطاج</button>
               </div>
             )}
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", overflow: "hidden" }}>
@@ -1585,7 +1600,7 @@ export default function App() {
                   <div className="px-2 py-2 flex items-center gap-1.5">
                     <span>{w.tache}</span>
                     {w.audioNote && (
-                      <button onClick={() => setPlayingAudioId(playingAudioId === w.id ? null : w.id)} style={{ background: "rgba(214,69,80,0.12)", borderRadius: 999, width: 20, height: 20 }} className="flex items-center justify-center flex-shrink-0">
+                      <button onClick={() => setPlayingAudioId(playingAudioId === w.id ? null : w.id)} style={{ background: "rgba(193,89,79,0.12)", borderRadius: 999, width: 20, height: 20 }} className="flex items-center justify-center flex-shrink-0">
                         <Mic size={11} color={c.danger} />
                       </button>
                     )}
@@ -1606,11 +1621,11 @@ export default function App() {
                   {!isWorker && <div className="px-2 py-2 font-mono" style={{ color: c.cardGreenDeep, fontWeight: 700 }}>{w.qte * w.taux} DH</div>}
                   {!isWorker && (
                     <div className="px-2 py-2 flex flex-col gap-1">
-                      <button onClick={() => toggleStatut(w.id)} style={{ background: w.statut === "مؤدى" ? "rgba(18,167,104,0.12)" : "rgba(240,169,60,0.15)", borderRadius: 999, padding: "2px 6px" }} className="flex items-center gap-1">
+                      <button onClick={() => toggleStatut(w.id)} style={{ background: w.statut === "مؤدى" ? "rgba(92,138,100,0.12)" : "rgba(217,161,92,0.15)", borderRadius: 999, padding: "2px 6px" }} className="flex items-center gap-1">
                         <CheckCircle2 size={10} color={w.statut === "مؤدى" ? c.cardGreenDeep : c.orange} />
                         <span style={{ fontSize: "0.6rem", fontWeight: 700, color: w.statut === "مؤدى" ? c.cardGreenDeep : c.orange }}>{w.statut}</span>
                       </button>
-                      <button onClick={() => toggleConfirme(w.id)} style={{ background: w.confirme ? "rgba(59,130,196,0.12)" : "rgba(148,163,184,0.15)", borderRadius: 999, padding: "2px 6px" }} className="flex items-center gap-1">
+                      <button onClick={() => toggleConfirme(w.id)} style={{ background: w.confirme ? "rgba(92,134,168,0.12)" : "rgba(148,163,184,0.15)", borderRadius: 999, padding: "2px 6px" }} className="flex items-center gap-1">
                         <ShieldCheck size={10} color={w.confirme ? c.blue : c.inkMuted2} />
                         <span style={{ fontSize: "0.6rem", fontWeight: 700, color: w.confirme ? c.blue : c.inkMuted2 }}>{w.confirme ? "مؤكد" : "قيد المراجعة"}</span>
                       </button>
@@ -1672,12 +1687,12 @@ export default function App() {
                       <input type="file" accept="image/*,application/pdf" capture="environment" onChange={handleFactureFile} style={{ ...inputStyle, padding: "6px 8px" }} />
                       {sForm.factureNom && <span style={{ fontSize: "0.68rem", color: c.cardGreenDeep, fontWeight: 700 }}>✓ {sForm.factureNom}</span>}
                     </Field>
-                    <div className="col-span-3" style={{ background: "rgba(240,169,60,0.1)", borderRadius: 10, padding: "8px 10px" }}>
+                    <div className="col-span-3" style={{ background: "rgba(217,161,92,0.1)", borderRadius: 10, padding: "8px 10px" }}>
                       <span style={{ fontSize: "0.7rem", color: c.inkSoft }}>⚠️ خاص التلاتة: بون الريسيبسيون (كيتولد وحدو) + بون الكوموند + صورة بون التسليم/الفاتورة. إيلا ناقص واحد، غادي يوصل تنبيه للمالك.</span>
                     </div>
                   </>
                 )}
-                <div className="col-span-3"><button onClick={addStockMovement} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)" }}>تسجيل الحركة</button></div>
+                <div className="col-span-3"><button onClick={addStockMovement} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)" }}>تسجيل الحركة</button></div>
               </div>
             )}
 
@@ -1694,7 +1709,7 @@ export default function App() {
                     <div className="px-3 py-2 font-mono" style={{ fontWeight: 700, color: low ? c.danger : c.ink }}>{s.kammiya} {s.wehda}</div>
                     <div className="px-3 py-2 font-mono" style={{ color: c.inkMuted2 }}>{s.seuil} {s.wehda}</div>
                     <div className="px-3 py-2">
-                      <span style={{ background: low ? "rgba(214,69,80,0.12)" : "rgba(17,153,107,0.12)", color: low ? c.danger : c.cardGreenDeep, borderRadius: 999, padding: "3px 9px", fontSize: "0.68rem", fontWeight: 700 }}>{low ? "منخفض" : "كافي"}</span>
+                      <span style={{ background: low ? "rgba(193,89,79,0.12)" : "rgba(92,138,100,0.12)", color: low ? c.danger : c.cardGreenDeep, borderRadius: 999, padding: "3px 9px", fontSize: "0.68rem", fontWeight: 700 }}>{low ? "منخفض" : "كافي"}</span>
                     </div>
                   </div>
                 );
@@ -1744,7 +1759,7 @@ export default function App() {
                 <Field label="الكمية (كلغ)"><input type="number" value={zForm.kg} onChange={(e) => setZForm({ ...zForm, kg: e.target.value })} style={inputStyle} /></Field>
                 <Field label="السعر/كلغ (DH)"><input type="number" step="0.1" value={zForm.prixKg} onChange={(e) => setZForm({ ...zForm, prixKg: e.target.value })} style={inputStyle} /></Field>
                 <Field label="الحالة"><select value={zForm.statut} onChange={(e) => setZForm({ ...zForm, statut: e.target.value })} style={inputStyle}><option>فالانتظار</option><option>مؤدى</option></select></Field>
-                <div className="flex items-end"><button onClick={addWazin} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>تسجيل الشحنة</button></div>
+                <div className="flex items-end"><button onClick={addWazin} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>تسجيل الشحنة</button></div>
               </div>
             )}
             <div className="flex flex-col gap-2">
@@ -1773,7 +1788,7 @@ export default function App() {
                   <h2 className="font-display mb-2" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>⚠️ عمليات ناقصة — تنبيه للمالك</h2>
                   <div className="flex flex-col gap-2">
                     {alertesIncompletes.map((al) => (
-                      <div key={al.id} style={{ background: "rgba(214,69,80,0.08)", border: `1px solid ${c.danger}`, borderRadius: 12 }} className="p-3">
+                      <div key={al.id} style={{ background: "rgba(193,89,79,0.08)", border: `1px solid ${c.danger}`, borderRadius: 12 }} className="p-3">
                         <span style={{ fontSize: "0.82rem", color: c.inkSoft }}><b>{al.personne}</b> دخل سلعة (<b>{al.produit}</b>) فـ<b>{al.farmNom}</b> ولكن ماكملش خدمتو — ناقصو: <span style={{ color: c.danger, fontWeight: 700 }}>{al.manque.join(" و ")}</span> · {al.date}</span>
                       </div>
                     ))}
@@ -1784,7 +1799,7 @@ export default function App() {
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-1">
                     <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>مشتريات المدخلات — كل الفيرمات</h2>
-                    {nouveauxAchats.length > 0 && <span style={{ background: "rgba(214,69,80,0.12)", color: c.danger, borderRadius: 999, padding: "3px 10px", fontSize: "0.7rem", fontWeight: 700 }}>{nouveauxAchats.length} جديد</span>}
+                    {nouveauxAchats.length > 0 && <span style={{ background: "rgba(193,89,79,0.12)", color: c.danger, borderRadius: 999, padding: "3px 10px", fontSize: "0.7rem", fontWeight: 700 }}>{nouveauxAchats.length} جديد</span>}
                   </div>
                   <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">توصل هنا مباشرة ملي أي فيرمة تشري دواء/مدخلات — بغض النظر على المدينة</p>
                   <div className="flex flex-col gap-2">
@@ -1804,8 +1819,8 @@ export default function App() {
                             <div className="flex items-center gap-2">
                               <span style={{ background: c.bg, borderRadius: 999, padding: "2px 8px", fontSize: "0.66rem", fontWeight: 700, color: c.inkSoft }}>{a.farmNom}</span>
                               <span style={{ fontWeight: 700, fontSize: "0.85rem" }}>{a.produit}</span>
-                              {a.complet === false && <span style={{ background: "rgba(214,69,80,0.12)", color: c.danger, borderRadius: 999, padding: "2px 8px", fontSize: "0.62rem", fontWeight: 700 }}>ناقص</span>}
-                              {a.complet === true && <span style={{ background: "rgba(17,153,107,0.12)", color: c.cardGreenDeep, borderRadius: 999, padding: "2px 8px", fontSize: "0.62rem", fontWeight: 700 }}>مكتمل</span>}
+                              {a.complet === false && <span style={{ background: "rgba(193,89,79,0.12)", color: c.danger, borderRadius: 999, padding: "2px 8px", fontSize: "0.62rem", fontWeight: 700 }}>ناقص</span>}
+                              {a.complet === true && <span style={{ background: "rgba(92,138,100,0.12)", color: c.cardGreenDeep, borderRadius: 999, padding: "2px 8px", fontSize: "0.62rem", fontWeight: 700 }}>مكتمل</span>}
                             </div>
                             <span className="font-mono" style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{a.kammiya} {a.wehda} · {a.fournisseur} · {a.date} · {a.bonReceptionNumero}{a.poNumero ? ` · ${a.poNumero}` : ""}</span>
                           </div>
@@ -1833,7 +1848,7 @@ export default function App() {
                   <Field label="الكمية (كلغ)"><input type="number" value={invForm.qte} onChange={(e) => setInvForm({ ...invForm, qte: e.target.value })} style={inputStyle} /></Field>
                   <Field label="سعر الوحدة (DH)"><input type="number" step="0.1" value={invForm.prixUnitaire} onChange={(e) => setInvForm({ ...invForm, prixUnitaire: e.target.value })} style={inputStyle} /></Field>
                   <Field label="TVA % (تأكد من المحاسب)"><input type="number" value={invForm.tva} onChange={(e) => setInvForm({ ...invForm, tva: e.target.value })} placeholder="0 إذا معفى" style={inputStyle} /></Field>
-                  <div className="flex items-end"><button onClick={addInvoice} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)" }}>إصدار الفاتورة</button></div>
+                  <div className="flex items-end"><button onClick={addInvoice} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)" }}>إصدار الفاتورة</button></div>
                 </div>
               )}
 
@@ -1877,13 +1892,13 @@ export default function App() {
             <div>
               <h2 className="font-display mb-4" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>التصاريح الاجتماعية (CNSS)</h2>
 
-              <div style={{ background: data.cnss.declare ? "rgba(17,153,107,0.08)" : urgent ? "rgba(214,69,80,0.08)" : "rgba(240,169,60,0.08)", border: `1px solid ${data.cnss.declare ? c.cardGreen : urgent ? c.danger : c.orange}`, borderRadius: 16 }} className="p-4 mb-5">
+              <div style={{ background: data.cnss.declare ? "rgba(92,138,100,0.08)" : urgent ? "rgba(193,89,79,0.08)" : "rgba(217,161,92,0.08)", border: `1px solid ${data.cnss.declare ? c.cardGreen : urgent ? c.danger : c.orange}`, borderRadius: 16 }} className="p-4 mb-5">
                 <div className="flex items-center justify-between mb-2">
                   <span style={{ fontWeight: 800, fontSize: "0.95rem" }}>تصريح {data.cnss.moisLabel}</span>
                   {data.cnss.declare ? (
-                    <span style={{ background: "rgba(17,153,107,0.15)", color: c.cardGreenDeep, borderRadius: 999, padding: "3px 10px", fontSize: "0.72rem", fontWeight: 700 }}>✓ تم — {data.cnss.dateDeclare}</span>
+                    <span style={{ background: "rgba(92,138,100,0.15)", color: c.cardGreenDeep, borderRadius: 999, padding: "3px 10px", fontSize: "0.72rem", fontWeight: 700 }}>✓ تم — {data.cnss.dateDeclare}</span>
                   ) : (
-                    <span style={{ background: urgent ? "rgba(214,69,80,0.15)" : "rgba(240,169,60,0.15)", color: urgent ? c.danger : c.orange, borderRadius: 999, padding: "3px 10px", fontSize: "0.72rem", fontWeight: 700 }}>
+                    <span style={{ background: urgent ? "rgba(193,89,79,0.15)" : "rgba(217,161,92,0.15)", color: urgent ? c.danger : c.orange, borderRadius: 999, padding: "3px 10px", fontSize: "0.72rem", fontWeight: 700 }}>
                       {joursRestants === null ? "الأجل ماحددش" : joursRestants < 0 ? `متأخر ${Math.abs(joursRestants)} يوم` : joursRestants === 0 ? "الأجل اليوم" : `باقي ${joursRestants} يوم`}
                     </span>
                   )}
@@ -1893,14 +1908,14 @@ export default function App() {
                     <input type="number" min="1" max="31" value={data.cnss.echeanceJour} onChange={(e) => updateEcheance(e.target.value)} style={{ ...inputStyle, width: 90 }} disabled={!canEdit("CNSS")} />
                   </Field>
                   {!data.cnss.declare && canEdit("CNSS") && (
-                    <button onClick={marquerDeclare} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: "0.8rem", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)" }}>تسجيل التصريح كمنجز</button>
+                    <button onClick={marquerDeclare} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: "0.8rem", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)" }}>تسجيل التصريح كمنجز</button>
                   )}
                 </div>
                 <p style={{ fontSize: "0.68rem", color: c.inkMuted2 }} className="mt-2">⚠️ هذا تذكير داخلي فقط — تأكد دائما من التاريخ الرسمي الصحيح مع محاسبك أو موقع CNSS.</p>
               </div>
 
               {nonAffilies.length > 0 && (
-                <div style={{ background: "rgba(214,69,80,0.08)", border: `1px solid ${c.danger}`, borderRadius: 14 }} className="p-3 mb-4 flex items-center gap-2">
+                <div style={{ background: "rgba(193,89,79,0.08)", border: `1px solid ${c.danger}`, borderRadius: 14 }} className="p-3 mb-4 flex items-center gap-2">
                   <AlertTriangle size={16} color={c.danger} />
                   <span style={{ fontSize: "0.8rem", color: c.inkSoft }}>{nonAffilies.length} عامل غير مسجلين فـ CNSS — خطر قانوني محتمل</span>
                 </div>
@@ -1909,8 +1924,8 @@ export default function App() {
               <div className="flex items-center justify-between mb-2">
                 <h3 style={{ fontWeight: 700, fontSize: "0.88rem" }}>جدول التصريح الكامل — كيتبنى وحدو من كل بونطاج</h3>
                 <div className="flex items-center gap-2">
-                  <button onClick={exportOmageModele} style={{ background: c.blue, color: "#fff", borderRadius: 10, padding: "7px 13px", boxShadow: "0 4px 14px -3px rgba(59,130,196,0.4)" }} className="flex items-center gap-1.5"><Download size={14} /><span style={{ fontSize: "0.78rem", fontWeight: 700 }}>تصدير OMAGE</span></button>
-                  <button onClick={exportBDS} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "7px 13px", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)" }} className="flex items-center gap-1.5"><Download size={14} /><span style={{ fontSize: "0.78rem", fontWeight: 700 }}>جدول عادي</span></button>
+                  <button onClick={exportOmageModele} style={{ background: c.blue, color: "#fff", borderRadius: 10, padding: "7px 13px", boxShadow: "0 4px 14px -3px rgba(92,134,168,0.4)" }} className="flex items-center gap-1.5"><Download size={14} /><span style={{ fontSize: "0.78rem", fontWeight: 700 }}>تصدير OMAGE</span></button>
+                  <button onClick={exportBDS} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "7px 13px", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)" }} className="flex items-center gap-1.5"><Download size={14} /><span style={{ fontSize: "0.78rem", fontWeight: 700 }}>جدول عادي</span></button>
                 </div>
               </div>
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="mb-5">
@@ -1952,7 +1967,7 @@ export default function App() {
                         <td className="px-2 py-1.5"><input type="number" min="0" value={e.nombreEnfants} onChange={(ev) => updateEmployee(e.id, { nombreEnfants: ev.target.value })} disabled={!canEdit("CNSS")} style={{ ...inputStyle, padding: "4px 6px", width: 60 }} /></td>
                         <td className="px-2 py-1.5"><input value={e.cnssNumero} onChange={(ev) => updateEmployee(e.id, { cnssNumero: ev.target.value })} disabled={!canEdit("CNSS")} style={{ ...inputStyle, padding: "4px 6px", width: 100 }} /></td>
                         <td className="px-2 py-1.5">
-                          <button onClick={() => canEdit("CNSS") && toggleAffiliation(e.id)} style={{ background: e.affilieCNSS ? "rgba(17,153,107,0.12)" : "rgba(214,69,80,0.12)", borderRadius: 999, padding: "3px 9px" }} className="flex items-center gap-1">
+                          <button onClick={() => canEdit("CNSS") && toggleAffiliation(e.id)} style={{ background: e.affilieCNSS ? "rgba(92,138,100,0.12)" : "rgba(193,89,79,0.12)", borderRadius: 999, padding: "3px 9px" }} className="flex items-center gap-1">
                             <CheckCircle2 size={12} color={e.affilieCNSS ? c.cardGreenDeep : c.danger} />
                             <span style={{ fontSize: "0.66rem", fontWeight: 700, color: e.affilieCNSS ? c.cardGreenDeep : c.danger }}>{e.affilieCNSS ? "مسجل" : "غير مسجل"}</span>
                           </button>
@@ -1982,7 +1997,7 @@ export default function App() {
             {anomalies.length > 0 && (
               <div className="mb-4 flex flex-col gap-2">
                 {anomalies.map((a) => (
-                  <div key={a.code} style={{ background: "rgba(214,69,80,0.08)", border: `1px solid ${c.danger}`, borderRadius: 12 }} className="p-3 flex items-center gap-2">
+                  <div key={a.code} style={{ background: "rgba(193,89,79,0.08)", border: `1px solid ${c.danger}`, borderRadius: 12 }} className="p-3 flex items-center gap-2">
                     <AlertTriangle size={16} color={c.danger} />
                     <span style={{ fontSize: "0.8rem", color: c.inkSoft }}>⚠️ القطعة <b>{a.code} — {parcelleNom(a.code)}</b> تكلفتها للهكتار ({Math.round(a.parHa)} DH) أعلى من المعدل ({Math.round(avgParHa)} DH) بـ{Math.round((a.parHa / avgParHa - 1) * 100)}% — تأكد منها، ممكن غلط ولا سرقة</span>
                   </div>
@@ -1995,7 +2010,7 @@ export default function App() {
                 <Field label="القطعة"><select value={cForm.parcelle} onChange={(e) => setCForm({ ...cForm, parcelle: e.target.value })} style={inputStyle}><option value="">اختار</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code}</option>)}</select></Field>
                 <Field label="النوع"><select value={cForm.naw3} onChange={(e) => setCForm({ ...cForm, naw3: e.target.value })} style={inputStyle}><option>دواء</option><option>ماء</option><option>عمال</option></select></Field>
                 <Field label="المبلغ (DH)"><input type="number" value={cForm.mablagh} onChange={(e) => setCForm({ ...cForm, mablagh: e.target.value })} style={inputStyle} /></Field>
-                <div className="col-span-3"><button onClick={addCost} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>إضافة للتكلفة</button></div>
+                <div className="col-span-3"><button onClick={addCost} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>إضافة للتكلفة</button></div>
               </div>
             )}
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", overflow: "hidden" }}>
@@ -2035,7 +2050,7 @@ export default function App() {
                 <Field label="النوع"><select value={dForm.type} onChange={(e) => setDForm({ ...dForm, type: e.target.value })} style={inputStyle}><option>عمال</option><option>دواء</option><option>ماء</option></select></Field>
                 <Field label="التفاصيل"><input value={dForm.detail} onChange={(e) => setDForm({ ...dForm, detail: e.target.value })} placeholder="مثلا: أحمد — سقي (A1)" style={inputStyle} /></Field>
                 <Field label="المبلغ (DH)"><input type="number" value={dForm.montant} onChange={(e) => setDForm({ ...dForm, montant: e.target.value })} style={inputStyle} /></Field>
-                <div className="col-span-3"><button onClick={addDepense} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)", fontWeight: 700, width: "100%" }}>تسجيل المصروف</button></div>
+                <div className="col-span-3"><button onClick={addDepense} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)", fontWeight: 700, width: "100%" }}>تسجيل المصروف</button></div>
               </div>
             )}
 
@@ -2119,10 +2134,10 @@ export default function App() {
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
-                <div style={{ background: "rgba(18,167,104,0.12)", borderRadius: 10, padding: 7 }}><Brain size={17} color={c.cardGreenDeep} /></div>
+                <div style={{ background: "rgba(92,138,100,0.12)", borderRadius: 10, padding: 7 }}><Brain size={17} color={c.cardGreenDeep} /></div>
                 <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>المحلل الذكي</h2>
               </div>
-              <button onClick={() => setAutoSpeak(!autoSpeak)} style={{ background: autoSpeak ? "rgba(18,167,104,0.12)" : c.white, border: `1px solid ${autoSpeak ? c.cardGreen : c.line}`, borderRadius: 999, padding: "5px 11px" }} className="flex items-center gap-1.5">
+              <button onClick={() => setAutoSpeak(!autoSpeak)} style={{ background: autoSpeak ? "rgba(92,138,100,0.12)" : c.white, border: `1px solid ${autoSpeak ? c.cardGreen : c.line}`, borderRadius: 999, padding: "5px 11px" }} className="flex items-center gap-1.5">
                 <Play size={12} color={autoSpeak ? c.cardGreenDeep : c.inkMuted2} />
                 <span style={{ fontSize: "0.68rem", fontWeight: 700, color: autoSpeak ? c.cardGreenDeep : c.inkMuted2 }}>قراءة الجواب صوتيا {autoSpeak ? "✓" : ""}</span>
               </button>
@@ -2175,7 +2190,7 @@ export default function App() {
                 placeholder={listening ? "كنسمع... هضر دابا" : "اكتب سؤالك هنا ولا كليكي الميكرو..."}
                 style={{ ...inputStyle, flex: 1 }}
               />
-              <button onClick={() => askAnalyst(analystQuestion)} disabled={analystLoading} style={{ background: c.cardGreen, borderRadius: 11, padding: "11px 16px", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)" }}>
+              <button onClick={() => askAnalyst(analystQuestion)} disabled={analystLoading} style={{ background: c.cardGreen, borderRadius: 11, padding: "11px 16px", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)" }}>
                 <Send size={16} color="#fff" />
               </button>
             </div>
@@ -2193,7 +2208,7 @@ export default function App() {
                 <Field label="الجرعة/هكتار"><input type="number" step="0.1" value={pForm.dozParHa} onChange={(e) => setPForm({ ...pForm, dozParHa: e.target.value })} style={inputStyle} /></Field>
                 <Field label="الوحدة"><select value={pForm.wehda} onChange={(e) => setPForm({ ...pForm, wehda: e.target.value })} style={inputStyle}><option>لتر</option><option>كيلو</option></select></Field>
                 <Field label="التاريخ"><input value={pForm.tarikh} onChange={(e) => setPForm({ ...pForm, tarikh: e.target.value })} placeholder="مثلا 25 يوليوز" style={inputStyle} /></Field>
-                <div className="flex items-end"><button onClick={addPlan} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(17,153,107,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>إضافة للخطة</button></div>
+                <div className="flex items-end"><button onClick={addPlan} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(92,138,100,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>إضافة للخطة</button></div>
               </div>
             )}
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", overflow: "hidden" }}>
