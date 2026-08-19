@@ -21,21 +21,21 @@ const c = {
 
 // ---------- mock users (simulated auth) ----------
 const users = [
-  { id: 1, nom: "الهاشمي", role: "Owner", farms: ["zm", "atlas"] },
-  { id: 2, nom: "سعيد", role: "Manager", farms: ["zm"] },
-  { id: 3, nom: "يوسف", role: "Supervisor", farms: ["zm"] },
-  { id: 4, nom: "خديجة", role: "Accountant", farms: ["zm", "atlas"] },
-  { id: 5, nom: "أحمد", role: "Worker", farms: ["zm"] },
+  { id: 1, nom: "El Hachimi", role: "Owner", farms: ["zm", "atlas"] },
+  { id: 2, nom: "Said", role: "Manager", farms: ["zm"] },
+  { id: 3, nom: "Youssef", role: "Supervisor", farms: ["zm"] },
+  { id: 4, nom: "Khadija", role: "Accountant", farms: ["zm", "atlas"] },
+  { id: 5, nom: "Ahmed", role: "Worker", farms: ["zm"] },
 ];
-const roleLabel = { Owner: "المالك", Manager: "مدير", Supervisor: "مشرف ميداني", Accountant: "محاسب", Worker: "عامل" };
+const roleLabel = { Owner: "Propriétaire", Manager: "Gérant", Supervisor: "Superviseur terrain", Accountant: "Comptable", Worker: "Ouvrier" };
 const initMarketplace = [
-  { id: 1, farmId: "zm", farmNom: "زيرو مانويل", type: "أعرض", produit: "مبيد فطريات (نحاس)", kammiya: 15, wehda: "كيلو", prix: 45, description: "زايد عندنا من الشرا الأخير، جودة زوينة", contactNom: "الهاشمي", contactTel: "0661-00-00-00", date: "19 يوليوز" },
-  { id: 2, farmId: "atlas", farmNom: "فيرمة الأطلس", type: "محتاج", produit: "كياس تعبئة", kammiya: 300, wehda: "كيس", prix: "", description: "خاصنا بسرعة قبل الجني الجاي", contactNom: "رشيد", contactTel: "0662-00-00-00", date: "18 يوليوز" },
+  { id: 1, farmId: "zm", farmNom: "Zero Manuel", type: "J'offre", produit: "Fongicide (cuivre)", kammiya: 15, wehda: "kilo", prix: 45, description: "Excédent du dernier achat, bonne qualité", contactNom: "El Hachimi", contactTel: "0661-00-00-00", date: "19 juillet" },
+  { id: 2, farmId: "atlas", farmNom: "Ferme Atlas", type: "Besoin", produit: "كياس Emballage", kammiya: 300, wehda: "sac", prix: "", description: "Besoin urgent avant la prochaine récolte", contactNom: "Pulvérisationيد", contactTel: "0662-00-00-00", date: "18 juillet" },
 ];
 
 const initIncidents = [
-  { id: 1, farmNom: "فيرمة بنعبد الله (مستخدم آخر)", gps: { lat: 34.95, lng: -6.05 }, produit: "أفوكا", probleme: "عنكبوت أحمر", severite: "متوسط", date: "18 يوليوز" },
-  { id: 2, farmNom: "فيرمة تادلة (مستخدم آخر)", gps: { lat: 32.35, lng: -6.85 }, produit: "فريز", probleme: "عفن رمادي", severite: "خطير", date: "17 يوليوز" },
+  { id: 1, farmNom: "Ferme Ben Abdellah (autre utilisateur)", gps: { lat: 34.95, lng: -6.05 }, produit: "Avocat", probleme: "Acarien rouge", severite: "Moyen", date: "18 juillet" },
+  { id: 2, farmNom: "Ferme Tadla (autre utilisateur)", gps: { lat: 32.35, lng: -6.85 }, produit: "Fraise", probleme: "Pourriture grise", severite: "Grave", date: "17 juillet" },
 ];
 
 function distanceKm(a, b) {
@@ -47,24 +47,24 @@ function distanceKm(a, b) {
 }
 
 const rolePermissions = {
-  Owner: ["لوحة", "الفيرمات", "الطلبات", "السوق", "القطع", "العمال", "المخزون", "الوزينات", "الفواتير", "CNSS", "التكلفة", "المصاريف", "الربحية", "المحلل الذكي", "السجل", "الصلاحيات"],
-  Manager: ["لوحة", "الفيرمات", "الطلبات", "السوق", "القطع", "العمال", "المخزون", "الوزينات", "الفواتير", "CNSS", "التكلفة", "المصاريف", "الربحية", "المحلل الذكي", "السجل"],
-  Supervisor: ["لوحة", "الطلبات", "السوق", "القطع", "العمال", "المخزون", "الوزينات"],
-  Accountant: ["لوحة", "الوزينات", "الفواتير", "CNSS", "التكلفة", "المصاريف", "الربحية", "المحلل الذكي"],
-  Worker: ["العمال"],
+  Owner: ["Tableau de bord", "Fermes", "Commandes", "Marché", "Parcelles", "Employés", "Stock", "Réceptions", "Factures", "CNSS", "Coûts", "Dépenses", "Rentabilité", "Assistant IA", "Plan de traitement", "Permissions"],
+  Manager: ["Tableau de bord", "Fermes", "Commandes", "Marché", "Parcelles", "Employés", "Stock", "Réceptions", "Factures", "CNSS", "Coûts", "Dépenses", "Rentabilité", "Assistant IA", "Plan de traitement"],
+  Supervisor: ["Tableau de bord", "Commandes", "Marché", "Parcelles", "Employés", "Stock", "Réceptions"],
+  Accountant: ["Tableau de bord", "Réceptions", "Factures", "CNSS", "Coûts", "Dépenses", "Rentabilité", "Assistant IA"],
+  Worker: ["Employés"],
 };
 
-const MODULES = ["لوحة", "الفيرمات", "الطلبات", "السوق", "القطع", "العمال", "المخزون", "الوزينات", "الفواتير", "CNSS", "التكلفة", "المصاريف", "الربحية", "المحلل الذكي", "السجل"];
+const MODULES = ["Tableau de bord", "Fermes", "Commandes", "Marché", "Parcelles", "Employés", "Stock", "Réceptions", "Factures", "CNSS", "Coûts", "Dépenses", "Rentabilité", "Assistant IA", "Plan de traitement"];
 const ROLES_LIST = ["Owner", "Manager", "Supervisor", "Accountant", "Worker"];
 
 // Fine-grained permissions: which roles can EDIT (add/modify) vs just VIEW each module by default.
-// The Owner can adjust this live from the "الصلاحيات" tab.
+// The Owner can adjust this live from the "Permissions" tab.
 const defaultEditRights = {
-  Owner: ["لوحة", "الفيرمات", "الطلبات", "السوق", "القطع", "العمال", "المخزون", "الوزينات", "الفواتير", "CNSS", "التكلفة", "المصاريف", "المحلل الذكي", "السجل"],
-  Manager: ["الفيرمات", "الطلبات", "السوق", "القطع", "العمال", "المخزون", "الوزينات", "الفواتير", "CNSS", "التكلفة", "المصاريف", "المحلل الذكي", "السجل"],
-  Supervisor: ["الطلبات", "السوق", "العمال", "المخزون", "الوزينات"],
-  Accountant: ["الفواتير", "CNSS", "المحلل الذكي"],
-  Worker: ["العمال"],
+  Owner: ["Tableau de bord", "Fermes", "Commandes", "Marché", "Parcelles", "Employés", "Stock", "Réceptions", "Factures", "CNSS", "Coûts", "Dépenses", "Assistant IA", "Plan de traitement"],
+  Manager: ["Fermes", "Commandes", "Marché", "Parcelles", "Employés", "Stock", "Réceptions", "Factures", "CNSS", "Coûts", "Dépenses", "Assistant IA", "Plan de traitement"],
+  Supervisor: ["Commandes", "Marché", "Employés", "Stock", "Réceptions"],
+  Accountant: ["Factures", "CNSS", "Assistant IA"],
+  Worker: ["Employés"],
 };
 
 function buildPermMatrixInit() {
@@ -72,68 +72,68 @@ function buildPermMatrixInit() {
   ROLES_LIST.forEach((role) => {
     matrix[role] = {};
     MODULES.forEach((m) => {
-      if (!rolePermissions[role].includes(m)) matrix[role][m] = "بلا وصول";
-      else if (defaultEditRights[role].includes(m)) matrix[role][m] = "تعديل";
-      else matrix[role][m] = "عرض فقط";
+      if (!rolePermissions[role].includes(m)) matrix[role][m] = "بNon وصول";
+      else if (defaultEditRights[role].includes(m)) matrix[role][m] = "Modification";
+      else matrix[role][m] = "Lecture seule";
     });
   });
   return matrix;
 }
 
 const initDepenses = [
-  { id: 1, dayOffset: 0, dateLabel: "20 يوليوز", type: "عمال", detail: "أحمد — سقي (القطعة A1)", montant: 120 },
-  { id: 2, dayOffset: 0, dateLabel: "20 يوليوز", type: "عمال", detail: "محمد — قطع الربيع (القطعة A2)", montant: 150 },
-  { id: 3, dayOffset: 0, dateLabel: "20 يوليوز", type: "عمال", detail: "الحسن — سلفة نقدية", montant: 300 },
-  { id: 4, dayOffset: 0, dateLabel: "20 يوليوز", type: "دواء", detail: "مبيد فطريات (نحاس) — القطعة A2", montant: 450 },
-  { id: 5, dayOffset: 1, dateLabel: "19 يوليوز", type: "عمال", detail: "فاطمة — جني (القطعة S1)", montant: 90 },
-  { id: 6, dayOffset: 1, dateLabel: "19 يوليوز", type: "دواء", detail: "مبيد ضد الحشرة القشرية — القطعة S2", montant: 600 },
-  { id: 7, dayOffset: 1, dateLabel: "19 يوليوز", type: "ماء", detail: "سقي بالضخ — القطعة A3", montant: 80 },
-  { id: 8, dayOffset: 2, dateLabel: "18 يوليوز", type: "عمال", detail: "يوسف — رش ومعالجة (القطعة A2)", montant: 120 },
-  { id: 9, dayOffset: 2, dateLabel: "18 يوليوز", type: "دواء", detail: "تسميد ورقي — القطعة A3", montant: 350 },
+  { id: 1, dayOffset: 0, dateLabel: "20 juillet", type: "Main-d'œuvre", detail: "Ahmed — Irrigation (Parcellesة A1)", montant: 120 },
+  { id: 2, dayOffset: 0, dateLabel: "20 juillet", type: "Main-d'œuvre", detail: "محمد — parcelles الربيع (Parcellesة A2)", montant: 150 },
+  { id: 3, dayOffset: 0, dateLabel: "20 juillet", type: "Main-d'œuvre", detail: "Hassan — avance en espèces", montant: 300 },
+  { id: 4, dayOffset: 0, dateLabel: "20 juillet", type: "Produit phyto", detail: "Fongicide (cuivre) — Parcellesة A2", montant: 450 },
+  { id: 5, dayOffset: 1, dateLabel: "19 juillet", type: "Main-d'œuvre", detail: "Fatima — Récolte (Parcellesة S1)", montant: 90 },
+  { id: 6, dayOffset: 1, dateLabel: "19 juillet", type: "Produit phyto", detail: "Insecticide cochenille — Parcellesة S2", montant: 600 },
+  { id: 7, dayOffset: 1, dateLabel: "19 juillet", type: "Eau", detail: "Irrigation par pompage — Parcellesة A3", montant: 80 },
+  { id: 8, dayOffset: 2, dateLabel: "18 juillet", type: "Main-d'œuvre", detail: "Youssef — Pulvérisation ومعالجة (Parcellesة A2)", montant: 120 },
+  { id: 9, dayOffset: 2, dateLabel: "18 juillet", type: "Produit phyto", detail: "Fertilisation ورقي — Parcellesة A3", montant: 350 },
 ];
 
 const initStock = [
-  { id: 1, nom: "مبيد فطريات (نحاس)", categorie: "دواء", kammiya: 45, wehda: "كيلو", seuil: 20 },
-  { id: 2, nom: "مبيد ضد الحشرة القشرية", categorie: "دواء", kammiya: 12, wehda: "لتر", seuil: 15 },
-  { id: 3, nom: "تسميد ورقي NPK", categorie: "سماد", kammiya: 80, wehda: "كيلو", seuil: 30 },
-  { id: 4, nom: "كياس تعبئة", categorie: "تعبئة", kammiya: 300, wehda: "كيس", seuil: 100 },
-  { id: 5, nom: "مبيد ضد العنكبوت", categorie: "دواء", kammiya: 6, wehda: "لتر", seuil: 10 },
+  { id: 1, nom: "Fongicide (cuivre)", categorie: "Produit phyto", kammiya: 45, wehda: "kilo", seuil: 20 },
+  { id: 2, nom: "Insecticide cochenille", categorie: "Produit phyto", kammiya: 12, wehda: "litre", seuil: 15 },
+  { id: 3, nom: "Fertilisation ورقي NPK", categorie: "Engrais", kammiya: 80, wehda: "kilo", seuil: 30 },
+  { id: 4, nom: "كياس Emballage", categorie: "Emballage", kammiya: 300, wehda: "sac", seuil: 100 },
+  { id: 5, nom: "Acaricide", categorie: "Produit phyto", kammiya: 6, wehda: "litre", seuil: 10 },
 ];
 
 const initCommandesGlobal = [
-  { id: 1, farmId: "zm", farmNom: "زيرو مانويل", demandePar: "يوسف", produit: "مبيد ضد الحشرة القشرية", qte: 20, wehda: "لتر", motif: "المخزون وصل تحت الحد", date: "20 يوليوز", statut: "جديد", fournisseur: "", fournisseurEmail: "", prix: "", poNumero: "" },
-  { id: 2, farmId: "atlas", farmNom: "فيرمة الأطلس", demandePar: "رشيد", produit: "كياس تعبئة", qte: 500, wehda: "كيس", motif: "تحضير موسم الجني", date: "19 يوليوز", statut: "تم الطلب", fournisseur: "مؤسسة التعبئة الحديثة", fournisseurEmail: "contact@packaging-example.ma", prix: "1500", poNumero: "PO-0619" },
+  { id: 1, farmId: "zm", farmNom: "Zero Manuel", demandePar: "Youssef", produit: "Insecticide cochenille", qte: 20, wehda: "litre", motif: "Stock وصل تحت الحد", date: "20 juillet", statut: "Nouveau", fournisseur: "", fournisseurEmail: "", prix: "", poNumero: "" },
+  { id: 2, farmId: "atlas", farmNom: "Ferme Atlas", demandePar: "Pulvérisationيد", produit: "كياس Emballage", qte: 500, wehda: "sac", motif: "تحضير موسم الRécolte", date: "19 juillet", statut: "Commandé", fournisseur: "مؤسسة الEmballage الحديثة", fournisseurEmail: "contact@packaging-example.ma", prix: "1500", poNumero: "PO-0619" },
 ];
 
 const initInvoices = [
-  { id: 1, numero: "FAC-0619", date: "19 يوليوز", client: "وزان سيدي بنور", produit: "أفوكا", qte: 640, prixUnitaire: 6.2, tva: 0, montantHT: 3968, montantTVA: 0, montantTTC: 3968 },
+  { id: 1, numero: "FAC-0619", date: "19 juillet", client: "Pesée Sidi Bennour", produit: "Avocat", qte: 640, prixUnitaire: 6.2, tva: 0, montantHT: 3968, montantTVA: 0, montantTTC: 3968 },
 ];
 
 const initAchatsGlobal = [
-  { id: 1, farmId: "atlas", farmNom: "فيرمة الأطلس", produit: "مبيد فطريات", kammiya: 10, wehda: "لتر", prix: 1200, fournisseur: "أكرو فارم", date: "19 يوليوز", vu: true },
+  { id: 1, farmId: "atlas", farmNom: "Ferme Atlas", produit: "Fongicide", kammiya: 10, wehda: "litre", prix: 1200, fournisseur: "Agro Ferme", date: "19 juillet", vu: true },
 ];
 
 // ---------- farm datasets ----------
 const farmsInit = {
   zm: {
-    nom: "زيرو مانويل",
+    nom: "Zero Manuel",
     gps: { lat: 34.9200, lng: -6.1000 },
     parcelles: [
-      { code: "A1", crop: "avocat", nom: "أفوكا - حاس", ha: 3.2, statut: "ok", irrigation: "اليوم 06:00", recolte: 20, dernierTraitement: "12 يوليوز", secu: 0 },
-      { code: "A2", crop: "avocat", nom: "أفوكا - وسط", ha: 2.8, statut: "attention", irrigation: "غدا 06:00", recolte: 55, dernierTraitement: "17 يوليوز", secu: 2 },
-      { code: "A3", crop: "avocat", nom: "أفوكا - جنوب", ha: 4.0, statut: "ok", irrigation: "اليوم 18:00", recolte: 10, dernierTraitement: "10 يوليوز", secu: 0 },
-      { code: "A4", crop: "avocat", nom: "أفوكا - جديدة", ha: 1.6, statut: "recolte", irrigation: "اليوم 06:00", recolte: 92, dernierTraitement: "05 يوليوز", secu: 0 },
-      { code: "S1", crop: "fraise", nom: "الفريز - نفق 1", ha: 0.8, statut: "recolte", irrigation: "اليوم 05:30", recolte: 88, dernierTraitement: "18 يوليوز", secu: 1 },
-      { code: "S2", crop: "fraise", nom: "الفريز - نفق 2", ha: 0.8, statut: "alerte", irrigation: "متأخر", recolte: 40, dernierTraitement: "19 يوليوز", secu: 4 },
+      { code: "A1", crop: "avocat", nom: "Avocat - حاس", ha: 3.2, statut: "ok", irrigation: "Aujourd'hui 06:00", recolte: 20, dernierTraitement: "12 juillet", secu: 0 },
+      { code: "A2", crop: "avocat", nom: "Avocat - وسط", ha: 2.8, statut: "attention", irrigation: "Demain 06:00", recolte: 55, dernierTraitement: "17 juillet", secu: 2 },
+      { code: "A3", crop: "avocat", nom: "Avocat - جنوب", ha: 4.0, statut: "ok", irrigation: "Aujourd'hui 18:00", recolte: 10, dernierTraitement: "10 juillet", secu: 0 },
+      { code: "A4", crop: "avocat", nom: "Avocat - Nouveauة", ha: 1.6, statut: "recolte", irrigation: "Aujourd'hui 06:00", recolte: 92, dernierTraitement: "05 juillet", secu: 0 },
+      { code: "S1", crop: "fraise", nom: "الFraise - نفق 1", ha: 0.8, statut: "recolte", irrigation: "Aujourd'hui 05:30", recolte: 88, dernierTraitement: "18 juillet", secu: 1 },
+      { code: "S2", crop: "fraise", nom: "الFraise - نفق 2", ha: 0.8, statut: "alerte", irrigation: "En retard", recolte: 40, dernierTraitement: "19 juillet", secu: 4 },
     ],
     workers: [
-      { id: 1, nom: "أحمد", parcelle: "A4", tache: "جني", type: "ساعات", dukhul: "06:00", khuruj: "14:00", qte: 8, taux: 15, moisQte: 96, dawra: "15", statut: "مؤدى", affilieCNSS: true, cnssNumero: "AF-10234" },
-      { id: 2, nom: "فاطمة", parcelle: "S1", tache: "جني", type: "ساعات", dukhul: "06:00", khuruj: "12:00", qte: 6, taux: 15, moisQte: 84, dawra: "15", statut: "غير مؤدى", affilieCNSS: true, cnssNumero: "AF-10235" },
-      { id: 3, nom: "يوسف", parcelle: "A2", tache: "رش ومعالجة", type: "نهار", dukhul: "-", khuruj: "-", qte: 1, taux: 120, moisQte: 18, dawra: "شهر", statut: "غير مؤدى", affilieCNSS: false, cnssNumero: "" },
+      { id: 1, nom: "Ahmed", parcelle: "A4", tache: "Récolte", type: "Heures", dukhul: "06:00", khuruj: "14:00", qte: 8, taux: 15, moisQte: 96, dawra: "15", statut: "Payé", affilieCNSS: true, cnssNumero: "AF-10234" },
+      { id: 2, nom: "Fatima", parcelle: "S1", tache: "Récolte", type: "Heures", dukhul: "06:00", khuruj: "12:00", qte: 6, taux: 15, moisQte: 84, dawra: "15", statut: "Non payé", affilieCNSS: true, cnssNumero: "AF-10235" },
+      { id: 3, nom: "Youssef", parcelle: "A2", tache: "Pulvérisation ومعالجة", type: "Jour", dukhul: "-", khuruj: "-", qte: 1, taux: 120, moisQte: 18, dawra: "Mois", statut: "Non payé", affilieCNSS: false, cnssNumero: "" },
     ],
     wazin: [
-      { id: 1, date: "19 يوليوز", parcelle: "A4", wazan: "وزان سيدي بنور", patron: "الحاج مصطفى", kg: 640, prixKg: 6.2, statut: "مؤدى" },
-      { id: 2, date: "19 يوليوز", parcelle: "S1", wazan: "وزان الجديدة", patron: "الحاج مصطفى", kg: 310, prixKg: 9.5, statut: "فالانتظار" },
+      { id: 1, date: "19 juillet", parcelle: "A4", wazan: "Pesée Sidi Bennour", patron: "Haj Mustapha", kg: 640, prixKg: 6.2, statut: "Payé" },
+      { id: 2, date: "19 juillet", parcelle: "S1", wazan: "وزان الNouveauة", patron: "Haj Mustapha", kg: 310, prixKg: 9.5, statut: "En attente" },
     ],
     costs: [
       { code: "A1", dawa: 800, ma: 450, omal: 600 },
@@ -144,40 +144,40 @@ const farmsInit = {
       { code: "S2", dawa: 2000, ma: 650, omal: 1100 },
     ],
     plan: [
-      { code: "A2", produit: "مبيد فطريات (نحاس)", dozParHa: 3, wehda: "كيلو", tarikh: "22 يوليوز" },
-      { code: "S2", produit: "مبيد فطريات", dozParHa: 2.5, wehda: "لتر", tarikh: "26 يوليوز" },
+      { code: "A2", produit: "Fongicide (cuivre)", dozParHa: 3, wehda: "kilo", tarikh: "22 juillet" },
+      { code: "S2", produit: "Fongicide", dozParHa: 2.5, wehda: "litre", tarikh: "26 juillet" },
     ],
     depenses: initDepenses,
     stock: initStock,
     invoices: initInvoices,
-    cnss: { echeanceJour: 10, moisLabel: "يوليوز 2026", declare: false, dateDeclare: "" },
+    cnss: { echeanceJour: 10, moisLabel: "Juillet 2026", declare: false, dateDeclare: "" },
     employees: [
-      { id: 1, nom: "أحمد", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "AF-10234", affilieCNSS: true },
-      { id: 2, nom: "فاطمة", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "AF-10235", affilieCNSS: true },
-      { id: 3, nom: "يوسف", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "", affilieCNSS: false },
+      { id: 1, nom: "Ahmed", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "AF-10234", affilieCNSS: true },
+      { id: 2, nom: "Fatima", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "AF-10235", affilieCNSS: true },
+      { id: 3, nom: "Youssef", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "", affilieCNSS: false },
     ],
   },
   atlas: {
-    nom: "فيرمة الأطلس",
+    nom: "Ferme Atlas",
     gps: { lat: 32.2833, lng: -6.9000 },
     parcelles: [
-      { code: "B1", crop: "avocat", nom: "أفوكا - الربوة", ha: 2.0, statut: "ok", irrigation: "اليوم 07:00", recolte: 35, dernierTraitement: "14 يوليوز", secu: 0 },
-      { code: "B2", crop: "fraise", nom: "الفريز - القبة", ha: 1.1, statut: "recolte", irrigation: "اليوم 06:00", recolte: 80, dernierTraitement: "16 يوليوز", secu: 0 },
+      { code: "B1", crop: "avocat", nom: "Avocat - الربوة", ha: 2.0, statut: "ok", irrigation: "Aujourd'hui 07:00", recolte: 35, dernierTraitement: "14 juillet", secu: 0 },
+      { code: "B2", crop: "fraise", nom: "الFraise - القبة", ha: 1.1, statut: "recolte", irrigation: "Aujourd'hui 06:00", recolte: 80, dernierTraitement: "16 juillet", secu: 0 },
     ],
     workers: [
-      { id: 1, nom: "رشيد", parcelle: "B1", tache: "سقي", type: "نهار", dukhul: "-", khuruj: "-", qte: 1, taux: 100, moisQte: 22, dawra: "شهر", statut: "مؤدى", affilieCNSS: true, cnssNumero: "AF-20011" },
-      { id: 2, nom: "سلمى", parcelle: "B2", tache: "جني", type: "ساعات", dukhul: "06:00", khuruj: "11:00", qte: 5, taux: 15, moisQte: 60, dawra: "15", statut: "غير مؤدى", affilieCNSS: false, cnssNumero: "" },
+      { id: 1, nom: "Pulvérisationيد", parcelle: "B1", tache: "Irrigation", type: "Jour", dukhul: "-", khuruj: "-", qte: 1, taux: 100, moisQte: 22, dawra: "Mois", statut: "Payé", affilieCNSS: true, cnssNumero: "AF-20011" },
+      { id: 2, nom: "Salma", parcelle: "B2", tache: "Récolte", type: "Heures", dukhul: "06:00", khuruj: "11:00", qte: 5, taux: 15, moisQte: 60, dawra: "15", statut: "Non payé", affilieCNSS: false, cnssNumero: "" },
     ],
-    wazin: [{ id: 1, date: "19 يوليوز", parcelle: "B2", wazan: "وزان تادلة", patron: "شركة تادلة للفواكه", kg: 210, prixKg: 8.8, statut: "مؤدى" }],
+    wazin: [{ id: 1, date: "19 juillet", parcelle: "B2", wazan: "Pesée Tadla", patron: "Société Tadla Fruits", kg: 210, prixKg: 8.8, statut: "Payé" }],
     costs: [{ code: "B1", dawa: 400, ma: 300, omal: 400 }, { code: "B2", dawa: 650, ma: 250, omal: 500 }],
-    plan: [{ code: "B1", produit: "تسميد ورقي", dozParHa: 1.5, wehda: "لتر", tarikh: "27 يوليوز" }],
+    plan: [{ code: "B1", produit: "Fertilisation ورقي", dozParHa: 1.5, wehda: "litre", tarikh: "27 juillet" }],
     depenses: [],
     stock: [],
     invoices: [],
-    cnss: { echeanceJour: 10, moisLabel: "يوليوز 2026", declare: true, dateDeclare: "05 يوليوز" },
+    cnss: { echeanceJour: 10, moisLabel: "Juillet 2026", declare: true, dateDeclare: "05 juillet" },
     employees: [
-      { id: 1, nom: "رشيد", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "AF-20011", affilieCNSS: true },
-      { id: 2, nom: "سلمى", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "", affilieCNSS: false },
+      { id: 1, nom: "Pulvérisationيد", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "AF-20011", affilieCNSS: true },
+      { id: 2, nom: "Salma", prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "", affilieCNSS: false },
     ],
   },
 };
@@ -199,16 +199,16 @@ function ZMLogo({ size = 40 }) {
   );
 }
 const taskOptions = [
-  { key: "سقي", icon: Droplets },
-  { key: "جني", icon: Scissors },
-  { key: "رش", icon: SprayCan },
-  { key: "تسميد", icon: Sprout },
-  { key: "تعبئة", icon: Package },
+  { key: "Irrigation", icon: Droplets },
+  { key: "Récolte", icon: Scissors },
+  { key: "Pulvérisation", icon: SprayCan },
+  { key: "Fertilisation", icon: Sprout },
+  { key: "Emballage", icon: Package },
 ];
-const statutLabel = { ok: "طبيعي", attention: "يتبع", recolte: "جاهز للقطف", alerte: "تنبيه" };
+const statutLabel = { ok: "Normal", attention: "À surveiller", recolte: "Prêt à récolter", alerte: "Alerte" };
 const alertes = [
-  { icon: AlertTriangle, texte: "S2 — رش يوم 19 يوليوز، خاص التزام مدة الأمان قبل الجني" },
-  { icon: ThermometerSun, texte: "موجة حر متوقعة الخميس — زيدو الري" },
+  { icon: AlertTriangle, texte: "S2 — Pulvérisation يوم 19 juillet، خاص التزام مدة الأمان قبل الRécolte" },
+  { icon: ThermometerSun, texte: "موجة حر متوقعة الخميس — augmentez l'irrigation" },
 ];
 
 function hoursBetween(t1, t2) {
@@ -228,8 +228,8 @@ function LockedFeature({ nom }) {
       <div style={{ background: "rgba(244,162,97,0.15)", borderRadius: 999, width: 64, height: 64 }} className="flex items-center justify-center mb-4">
         <Lock size={26} color="#F4A261" />
       </div>
-      <h3 style={{ fontWeight: 800, fontSize: "1rem" }} className="mb-1.5">{nom} — ميزة غير مفعّلة</h3>
-      <p style={{ color: "#9C9186", fontSize: "0.82rem", maxWidth: 320 }}>هاد الوحدة جزء من زيرو مانويل لكن ماتفعّلاتش بعد فالحساب ديالك. تواصل مع مزود الخدمة باش تفعّلها.</p>
+      <h3 style={{ fontWeight: 800, fontSize: "1rem" }} className="mb-1.5">{nom} — fonctionnalité non activée</h3>
+      <p style={{ color: "#9C9186", fontSize: "0.82rem", maxWidth: 320 }}>هاد Unité fait partie de Zero Manuel لكن ماتفعّNonتش بعد فالحhب à vous. Contacter مزود الخدمة باش تفعّلها.</p>
     </div>
   );
 }
@@ -237,7 +237,7 @@ function LockedFeature({ nom }) {
 function AddButton({ label, open, onClick }) {
   return (
     <button onClick={onClick} style={{ background: open ? c.line : c.cardGreen, color: open ? c.ink : "#fff", borderRadius: 11, padding: "9px 15px", boxShadow: open ? "none" : "0 4px 12px -3px rgba(42,157,143,0.4)" }} className="flex items-center gap-1.5 hover:opacity-90">
-      {open ? <X size={15} /> : <Plus size={15} />}<span style={{ fontSize: "0.8rem", fontWeight: 700 }}>{open ? "إلغاء" : label}</span>
+      {open ? <X size={15} /> : <Plus size={15} />}<span style={{ fontSize: "0.8rem", fontWeight: 700 }}>{open ? "Annuler" : label}</span>
     </button>
   );
 }
@@ -280,12 +280,12 @@ function LoginScreen({ onLogin }) {
     setLoading(true);
     const { data, error: authError } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (authError) { setError("البريد ولا كلمة السر غلط، عاود جرب"); return; }
+    if (authError) { setError("E-mail ou mot de passe incorrect, réessayez"); return; }
     onLogin(data.session);
   }
 
   return (
-    <div dir="rtl" style={{ background: `linear-gradient(160deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 55%, #163832 100%)`, minHeight: "100vh", position: "relative", overflow: "hidden" }} className="flex flex-col items-center justify-center p-6">
+    <div dir="ltr" style={{ background: `linear-gradient(160deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 55%, #163832 100%)`, minHeight: "100vh", position: "relative", overflow: "hidden" }} className="flex flex-col items-center justify-center p-6">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@700;800;900&family=Inter:wght@400;600;700;800;900&display=swap');
         @keyframes logoPop { 0% { transform: scale(0) rotate(-25deg); opacity: 0; } 60% { transform: scale(1.15) rotate(6deg); opacity: 1; } 80% { transform: scale(0.95) rotate(-3deg); } 100% { transform: scale(1) rotate(0deg); } }
         @keyframes logoBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
@@ -326,24 +326,24 @@ function LoginScreen({ onLogin }) {
           </svg>
         </div>
       </div>
-      <h1 className="font-display logo-title" style={{ color: "#fff", fontWeight: 800, fontSize: "1.55rem", position: "relative" }}>زيرو مانويل</h1>
-      <p className="logo-title mb-8" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8rem", position: "relative" }}>دخل بالبريد وكلمة السر ديالك</p>
+      <h1 className="font-display logo-title" style={{ color: "#fff", fontWeight: 800, fontSize: "1.55rem", position: "relative" }}>Zero Manuel</h1>
+      <p className="logo-title mb-8" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8rem", position: "relative" }}>دخل بالبريد وMot de passe à vous</p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full relative" style={{ maxWidth: 340 }}>
         <input
-          type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="البريد الإلكتروني"
+          type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="E-mail"
           style={{ background: "#fff", borderRadius: 12, padding: "13px 16px", fontSize: "0.85rem", border: "none", outline: "none" }}
         />
         <input
-          type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="كلمة السر"
+          type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe"
           style={{ background: "#fff", borderRadius: 12, padding: "13px 16px", fontSize: "0.85rem", border: "none", outline: "none" }}
         />
         {error && <p style={{ color: "#FCA5A5", fontSize: "0.76rem", textAlign: "center" }}>{error}</p>}
         <button type="submit" disabled={loading} style={{ background: c.cardGreen, color: "#fff", borderRadius: 12, padding: "13px 0", fontWeight: 700, fontSize: "0.86rem", boxShadow: "0 8px 20px rgba(42,157,143,0.35)" }}>
-          {loading ? "كيدخل..." : "تسجيل الدخول"}
+          {loading ? "Connexion..." : "Se connecter"}
         </button>
       </form>
-      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", maxWidth: 300 }} className="mt-6 text-center">ماعندكش حساب؟ تواصل مع مسؤول الفيرمة باش يزيدك.</p>
+      <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "0.7rem", maxWidth: 300 }} className="mt-6 text-center">ماVous avezش حhب؟ Contacter مسؤول الفيرمة باش يزيدك.</p>
     </div>
   );
 }
@@ -351,7 +351,7 @@ function LoginScreen({ onLogin }) {
 const emptyFarmData = {
   nom: "", gps: { lat: 34.92, lng: -6.10 },
   parcelles: [], workers: [], wazin: [], costs: [], plan: [], depenses: [], stock: [], invoices: [],
-  cnss: { echeanceJour: 10, moisLabel: "يوليوز 2026", declare: false, dateDeclare: "" },
+  cnss: { echeanceJour: 10, moisLabel: "Juillet 2026", declare: false, dateDeclare: "" },
   employees: [], moduleAccess: {},
 };
 
@@ -370,7 +370,7 @@ export default function App() {
   const [marketplaceGlobal, setMarketplaceGlobal] = useState(initMarketplace);
   const [incidentsGlobal, setIncidentsGlobal] = useState(initIncidents);
   const [showReportIssue, setShowReportIssue] = useState(false);
-  const [issueForm, setIssueForm] = useState({ produit: "avocat", probleme: "", severite: "متوسط" });
+  const [issueForm, setIssueForm] = useState({ produit: "avocat", probleme: "", severite: "Moyen" });
   const [analystMessages, setAnalystMessages] = useState([]);
   const [analystQuestion, setAnalystQuestion] = useState("");
   const [analystLoading, setAnalystLoading] = useState(false);
@@ -380,37 +380,37 @@ export default function App() {
   const recognitionRef = useRef(null);
   const [alertesIncompletes, setAlertesIncompletes] = useState([]);
   const [permMatrix, setPermMatrix] = useState(buildPermMatrixInit());
-  const [tab, setTab] = useState("لوحة");
+  const [tab, setTab] = useState("Tableau de bord");
   const [selected, setSelected] = useState(farmsInit.zm.parcelles[0]);
 
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [showAddWazin, setShowAddWazin] = useState(false);
   const [showAddCost, setShowAddCost] = useState(false);
   const [showAddPlan, setShowAddPlan] = useState(false);
-  const [wForm, setWForm] = useState({ nom: "", parcelle: "", tache: "", type: "ساعات", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
+  const [wForm, setWForm] = useState({ nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
   const [isRecording, setIsRecording] = useState(false);
   const [playingAudioId, setPlayingAudioId] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
-  const [zForm, setZForm] = useState({ parcelle: "", wazan: "", patron: "", kg: "", prixKg: "", statut: "فالانتظار" });
-  const [cForm, setCForm] = useState({ parcelle: "", naw3: "دواء", mablagh: "" });
-  const [pForm, setPForm] = useState({ parcelle: "", produit: "", dozParHa: "", wehda: "لتر", tarikh: "" });
+  const [zForm, setZForm] = useState({ parcelle: "", wazan: "", patron: "", kg: "", prixKg: "", statut: "En attente" });
+  const [cForm, setCForm] = useState({ parcelle: "", naw3: "Produit phyto", mablagh: "" });
+  const [pForm, setPForm] = useState({ parcelle: "", produit: "", dozParHa: "", wehda: "litre", tarikh: "" });
   const [showAddFarm, setShowAddFarm] = useState(false);
   const [showAddListing, setShowAddListing] = useState(false);
-  const [mForm, setMForm] = useState({ type: "أعرض", produit: "", kammiya: "", wehda: "كيلو", prix: "", description: "", contactTel: "" });
-  const [mFilter, setMFilter] = useState("الكل");
+  const [mForm, setMForm] = useState({ type: "J'offre", produit: "", kammiya: "", wehda: "kilo", prix: "", description: "", contactTel: "" });
+  const [mFilter, setMFilter] = useState("Tout");
   const [fForm, setFForm] = useState({ nom: "", lat: "", lng: "" });
   const [showAddStock, setShowAddStock] = useState(false);
-  const [sForm, setSForm] = useState({ nom: "", categorie: "دواء", wehda: "كيلو", mouvement: "دخول", kammiya: "", seuil: "", prix: "", fournisseur: "", factureFile: "", factureNom: "", poNumero: "" });
+  const [sForm, setSForm] = useState({ nom: "", categorie: "Produit phyto", wehda: "kilo", mouvement: "Entrée", kammiya: "", seuil: "", prix: "", fournisseur: "", factureFile: "", factureNom: "", poNumero: "" });
   const [showAddCommande, setShowAddCommande] = useState(false);
-  const [cmdForm, setCmdForm] = useState({ produit: "", qte: "", wehda: "كيلو", motif: "", destFarmId: "" });
+  const [cmdForm, setCmdForm] = useState({ produit: "", qte: "", wehda: "kilo", motif: "", destFarmId: "" });
   const [processingId, setProcessingId] = useState(null);
   const [poForm, setPoForm] = useState({ fournisseur: "", fournisseurEmail: "", prix: "" });
   const [showAddInvoice, setShowAddInvoice] = useState(false);
   const [invForm, setInvForm] = useState({ client: "", produit: "avocat", qte: "", prixUnitaire: "", tva: "" });
   const [periode, setPeriode] = useState(2);
   const [showAddDepense, setShowAddDepense] = useState(false);
-  const [dForm, setDForm] = useState({ type: "عمال", detail: "", montant: "" });
+  const [dForm, setDForm] = useState({ type: "Main-d'œuvre", detail: "", montant: "" });
   const [showAddParcelle, setShowAddParcelle] = useState(false);
   const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "" });
 
@@ -439,8 +439,8 @@ export default function App() {
       return {
         id: w.id, nom: w.nom_ouvrier, parcelle: codeById[w.parcelle_id] || "—", parcelleId: w.parcelle_id,
         tache: w.tache, type: w.type_paie, dukhul: w.heure_entree || "-", khuruj: w.heure_sortie || "-",
-        qte: Number(w.quantite) || 0, taux: Number(w.taux) || 0, dawra: w.dawra || "شهر",
-        statut: w.statut_paiement || "غير مؤدى", audioNote: w.audio_note_url || "",
+        qte: Number(w.quantite) || 0, taux: Number(w.taux) || 0, dawra: w.dawra || "Mois",
+        statut: w.statut_paiement || "Non payé", audioNote: w.audio_note_url || "",
         distKm, confirme: w.confirme || false,
       };
     });
@@ -479,7 +479,7 @@ export default function App() {
       .select("role, nom_affiche, farms(id, nom, gps_lat, gps_lng, cnss_echeance_jour, cnss_declare)")
       .eq("user_id", userId);
     if (error || !memberships || memberships.length === 0) {
-      alert("ماكاينش فيرمة مرتبطة بهاد الحساب — تواصل مع المسؤول ديالك باش يزيدك فـ farm_members.");
+      alert("Aucune ferme n'est liée à ce compte — contactez votre administrateur pour vous ajouter dans farm_members.");
       setLoadingData(false);
       setCheckingSession(false);
       return;
@@ -500,8 +500,8 @@ export default function App() {
     setCurrentUser({ id: userId, nom, role, farms: farmIds });
     const firstFarm = farmIds[0];
     setCurrentFarmId(firstFarm);
-    const perms = MODULES.filter((m) => permMatrix[role][m] !== "بلا وصول");
-    setTab(perms[0] || "لوحة");
+    const perms = MODULES.filter((m) => permMatrix[role][m] !== "بNon وصول");
+    setTab(perms[0] || "Tableau de bord");
     await loadFarmDetails(firstFarm);
     await loadCommandes();
     setLoadingData(false);
@@ -550,9 +550,9 @@ export default function App() {
     const totalCost = data.costs.reduce((s, cp) => s + cp.dawa + cp.ma + cp.omal, 0);
     const totalDawa = data.costs.reduce((s, cp) => s + cp.dawa, 0);
     const totalMaOmal = data.costs.reduce((s, cp) => s + cp.ma + cp.omal, 0);
-    const totalHeures = data.workers.filter((w) => w.type === "ساعات").reduce((s, w) => s + w.qte, 0);
+    const totalHeures = data.workers.filter((w) => w.type === "Heures").reduce((s, w) => s + w.qte, 0);
     const totalKhlas = data.workers.reduce((s, w) => s + w.qte * w.taux, 0);
-    const enAttente = data.wazin.filter((w) => w.statut === "فالانتظار").length;
+    const enAttente = data.wazin.filter((w) => w.statut === "En attente").length;
     return { totalHarvest, totalCost, totalDawa, totalMaOmal, totalHeures, totalKhlas, enAttente };
   }, [data]);
 
@@ -570,7 +570,7 @@ export default function App() {
   if (checkingSession || loadingData) {
     return (
       <div style={{ minHeight: "100vh", background: c.headerGreen }} className="flex items-center justify-center">
-        <span style={{ color: "#fff", fontSize: "0.85rem", fontWeight: 700 }}>كيحمل...</span>
+        <span style={{ color: "#fff", fontSize: "0.85rem", fontWeight: 700 }}>Chargement...</span>
       </div>
     );
   }
@@ -579,11 +579,11 @@ export default function App() {
     return <LoginScreen onLogin={loginWithSession} />;
   }
 
-  const permTabs = MODULES.filter((m) => permMatrix[currentUser.role][m] !== "بلا وصول");
+  const permTabs = MODULES.filter((m) => permMatrix[currentUser.role][m] !== "بNon وصول");
   const isWorker = currentUser.role === "Worker";
   const canManageFarms = currentUser.role === "Owner" || currentUser.role === "Manager";
   const myFarmIds = canManageFarms ? Object.keys(farms) : currentUser.farms;
-  function canEdit(moduleKey) { return permMatrix[currentUser.role][moduleKey] === "تعديل"; }
+  function canEdit(moduleKey) { return permMatrix[currentUser.role][moduleKey] === "Modification"; }
   function isLocked(moduleKey) { return !(data.moduleAccess && data.moduleAccess[moduleKey]); }
 
   function updateFarm(patch) { setFarms((prev) => ({ ...prev, [currentFarmId]: { ...prev[currentFarmId], ...patch } })); }
@@ -593,11 +593,11 @@ export default function App() {
   const visibleWorkers = isWorker ? data.workers.filter((w) => w.nom === currentUser.nom) : data.workers;
 
   const allTabs = [
-    { key: "لوحة", icon: LayoutGrid }, { key: "الفيرمات", icon: Building2 }, { key: "الطلبات", icon: ClipboardList }, { key: "السوق", icon: Store }, { key: "القطع", icon: Sprout }, { key: "العمال", icon: Users },
-    { key: "المخزون", icon: Package }, { key: "الوزينات", icon: Truck }, { key: "الفواتير", icon: FileSpreadsheet }, { key: "CNSS", icon: CalendarClock }, { key: "التكلفة", icon: Wallet }, { key: "المصاريف", icon: Receipt }, { key: "الربحية", icon: TrendingUp }, { key: "المحلل الذكي", icon: Brain }, { key: "السجل", icon: FileText },
+    { key: "Tableau de bord", icon: LayoutGrid }, { key: "Fermes", icon: Building2 }, { key: "Commandes", icon: ClipboardList }, { key: "Marché", icon: Store }, { key: "Parcelles", icon: Sprout }, { key: "Employés", icon: Users },
+    { key: "Stock", icon: Package }, { key: "Réceptions", icon: Truck }, { key: "Factures", icon: FileSpreadsheet }, { key: "CNSS", icon: CalendarClock }, { key: "Coûts", icon: Wallet }, { key: "Dépenses", icon: Receipt }, { key: "Rentabilité", icon: TrendingUp }, { key: "Assistant IA", icon: Brain }, { key: "Plan de traitement", icon: FileText },
   ];
   const tabs = allTabs.filter((t) => permTabs.includes(t.key));
-  if (currentUser.role === "Owner") tabs.push({ key: "الصلاحيات", icon: Lock });
+  if (currentUser.role === "Owner") tabs.push({ key: "Permissions", icon: Lock });
 
   function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); }
 
@@ -605,7 +605,7 @@ export default function App() {
     updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, affilieCNSS: !e.affilieCNSS } : e) });
   }
   function marquerDeclare() {
-    updateFarm({ cnss: { ...data.cnss, declare: true, dateDeclare: "20 يوليوز" } });
+    updateFarm({ cnss: { ...data.cnss, declare: true, dateDeclare: "20 juillet" } });
   }
   function updateEcheance(jour) {
     updateFarm({ cnss: { ...data.cnss, echeanceJour: Number(jour) } });
@@ -615,11 +615,11 @@ export default function App() {
     const headers = ["Matricule", "Nom", "Prénom", "J/H Travaillé", "HS 0%", "HS 25%", "HS 50%", "HS 100%", "J/H  récup. - Rappel", "J. Férié", "Congé", "Congé payé", "Congés restants", "Congé Familial", "Avance", "Jours CNSS", "Net", "Catégorie", "Type salaire", "Date entrée", "Mode de Paiement", "Salaire base", "Situation Familiale", "Nombre d'enfants", "Abattement", "Poste", "Service", "Compte", "Nature contrat", "CIN", "N°CNSS"];
     const rows = data.workers.map((w, i) => {
       const emp = getEmployee(w.nom);
-      const joursTravailles = w.type === "ساعات" ? Math.round(w.moisQte / 8) : w.moisQte;
+      const joursTravailles = w.type === "Heures" ? Math.round(w.moisQte / 8) : w.moisQte;
       const net = w.moisQte * w.taux;
       return [
         String(w.id).slice(-6).padStart(6, "0"), w.nom, emp.prenom || "", joursTravailles, "", "", "", "", "", 0, 0, 0, 0, 0, 0,
-        joursTravailles, net, w.dawra === "شهر" ? "Permanent" : "Occasionnel", w.dawra === "شهر" ? "Mensuel" : "Quinzaine",
+        joursTravailles, net, w.dawra === "Mois" ? "Permanent" : "Occasionnel", w.dawra === "Mois" ? "Mensuel" : "Quinzaine",
         emp.dateEntree || "", "", w.taux, emp.situationFamiliale || "", emp.nombreEnfants || "", "", w.tache, w.parcelle, "", "", emp.cin || "", emp.cnssNumero || "",
       ];
     });
@@ -632,21 +632,21 @@ export default function App() {
   }
 
   function exportBDS() {
-    const headers = ["رقم CNSS", "الاسم", "مسجل؟", "أيام/ساعات هاد الشهر", "الأجرة المصرحة (DH)"];
+    const headers = ["N° CNSS", "اNonسم", "Inscrit ?", "Jours/heures ce mois", "Salaire déclaré (DH)"];
     const rows = data.workers.map((w) => {
       const emp = getEmployee(w.nom);
-      const joursEquiv = w.type === "ساعات" ? Math.round((w.moisQte / 8) * 10) / 10 : w.moisQte;
-      return [emp.cnssNumero || "—", w.nom, emp.affilieCNSS ? "نعم" : "لا", `${w.moisQte} ${w.type === "ساعات" ? "سا (" + joursEquiv + " يوم تقريبا)" : "نهار"}`, w.moisQte * w.taux];
+      const joursEquiv = w.type === "Heures" ? Math.round((w.moisQte / 8) * 10) / 10 : w.moisQte;
+      return [emp.cnssNumero || "—", w.nom, emp.affilieCNSS ? "Oui" : "Non", `${w.moisQte} ${w.type === "Heures" ? "h (" + joursEquiv + " يوم تقريبا)" : "Jour"}`, w.moisQte * w.taux];
     });
     const totalSalaire = data.workers.reduce((s, w) => s + w.moisQte * w.taux, 0);
     const aoa = [
-      [`جدول التصريح CNSS — ${data.nom}`],
-      [`الشهر: ${data.cnss.moisLabel}`],
+      [`Tableau de déclaration CNSS — ${data.nom}`],
+      [`الMois: ${data.cnss.moisLabel}`],
       [],
       headers,
       ...rows,
       [],
-      ["", "المجموع", "", "", totalSalaire],
+      ["", "Total", "", "", totalSalaire],
     ];
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     ws["!cols"] = [{ wch: 14 }, { wch: 18 }, { wch: 10 }, { wch: 24 }, { wch: 16 }];
@@ -670,7 +670,7 @@ export default function App() {
       };
       mr.start();
       setIsRecording(true);
-    }).catch(() => alert("ماقدرناش نوصلو للميكروفون — تأكد من صلاحية الميكروفون فالمتصفح"));
+    }).catch(() => alert("Impossible d'accéder au micro — vérifiez l'autorisation microphone du navigateur"));
   }
   function stopRecording() {
     mediaRecorderRef.current?.stop();
@@ -696,7 +696,7 @@ export default function App() {
   }
 
   async function insertPointage(nom) {
-    const qte = wForm.type === "ساعات" ? hoursBetween(wForm.dukhul, wForm.khuruj) : Number(wForm.nahar) || 1;
+    const qte = wForm.type === "Heures" ? hoursBetween(wForm.dukhul, wForm.khuruj) : Number(wForm.nahar) || 1;
     const parcelleCode = wForm.parcelle || (data.parcelles[0] && data.parcelles[0].code) || "";
     const parcelleObj = data.parcelles.find((p) => p.code === parcelleCode);
     const gps = await getGPSPosition();
@@ -706,12 +706,12 @@ export default function App() {
       parcelle_id: parcelleObj ? parcelleObj.id : null,
       tache: wForm.tache || "—",
       type_paie: wForm.type,
-      heure_entree: wForm.type === "ساعات" ? wForm.dukhul : null,
-      heure_sortie: wForm.type === "ساعات" ? wForm.khuruj : null,
+      heure_entree: wForm.type === "Heures" ? wForm.dukhul : null,
+      heure_sortie: wForm.type === "Heures" ? wForm.khuruj : null,
       quantite: qte,
       taux: Number(wForm.taux) || 0,
       dawra: wForm.dawra,
-      statut_paiement: "غير مؤدى",
+      statut_paiement: "Non payé",
       audio_note_url: wForm.audioNote || null,
       gps_lat: gps ? gps.lat : null,
       gps_lng: gps ? gps.lng : null,
@@ -720,9 +720,9 @@ export default function App() {
 
     if (!navigator.onLine) {
       queueOffline("workers_log", payload);
-      alert("ماكاينش انترنت — تسجل البونطاج محليا وغادي يتصيفط وحدو ملي يرجع النت");
+      alert("Pas de connexion — le pointage est enregistré localement et sera synchronisé automatiquement au retour du réseau");
       ensureEmployee(nom);
-      setWForm({ nom: "", parcelle: "", tache: "", type: "ساعات", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
+      setWForm({ nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
       setShowAddWorker(false);
       return;
     }
@@ -730,10 +730,10 @@ export default function App() {
     const { error } = await supabase.from("workers_log").insert(payload);
     if (error) {
       queueOffline("workers_log", payload);
-      alert("ماقدرناش نوصلو للسيرفر دابا — تسجل محليا وغادي يتصيفط ملي يتحسن النت");
+      alert("Impossible de joindre le serveur — enregistré localement, sera synchronisé dès que la connexion revient");
     }
     ensureEmployee(nom);
-    setWForm({ nom: "", parcelle: "", tache: "", type: "ساعات", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
+    setWForm({ nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
     setShowAddWorker(false);
     loadFarmDetails(currentFarmId);
   }
@@ -764,7 +764,7 @@ export default function App() {
   }
   async function toggleStatut(id) {
     const w = data.workers.find((x) => x.id === id);
-    const newStatut = w.statut === "مؤدى" ? "غير مؤدى" : "مؤدى";
+    const newStatut = w.statut === "Payé" ? "Non payé" : "Payé";
     const { error } = await supabase.from("workers_log").update({ statut_paiement: newStatut }).eq("id", id);
     if (error) { alert("وقع مشكل: " + error.message); return; }
     updateFarm({ workers: data.workers.map((x) => x.id === id ? { ...x, statut: newStatut } : x) });
@@ -777,15 +777,15 @@ export default function App() {
     updateFarm({ workers: data.workers.map((x) => x.id === id ? { ...x, confirme: newConfirme } : x) });
   }
   function exportJournalPaie() {
-    const headers = ["#", "الاسم", "المهمة", "القطعة", "نوع الخلاص", "الكمية اليوم", "الأجرة", "مجموع اليوم (DH)", "مجموع الدورة (DH)", "الدورة", "الحالة"];
+    const headers = ["#", "اNonسم", "المهمة", "Parcellesة", "نوع الخNonص", "Quantité du jour", "الأجرة", "Total du jour (DH)", "Total du cycle (DH)", "Cycle", "الحالة"];
     const rows = data.workers.map((w, i) => [
-      i + 1, w.nom, w.tache, w.parcelle, w.type === "ساعات" ? "بالساعة" : "بالنهار",
-      w.qte, w.taux, w.qte * w.taux, w.moisQte * w.taux, w.dawra === "15" ? "كل 15 يوم" : "بالشهر", w.statut,
+      i + 1, w.nom, w.tache, w.parcelle, w.type === "Heures" ? "بالhعة" : "بالJour",
+      w.qte, w.taux, w.qte * w.taux, w.moisQte * w.taux, w.dawra === "15" ? "Tous les 15 jours" : "بالMois", w.statut,
     ]);
-    const totalRow = ["", "المجموع", "", "", "", "", "", data.workers.reduce((s, w) => s + w.qte * w.taux, 0), data.workers.reduce((s, w) => s + w.moisQte * w.taux, 0), "", ""];
+    const totalRow = ["", "Total", "", "", "", "", "", data.workers.reduce((s, w) => s + w.qte * w.taux, 0), data.workers.reduce((s, w) => s + w.moisQte * w.taux, 0), "", ""];
     const aoa = [
-      [`جورنال دو باي — ${data.nom}`],
-      ["تاريخ الإصدار: 20 يوليوز 2026"],
+      [`Journal de paie — ${data.nom}`],
+      ["Date d'émission: 20 Juillet 2026"],
       [],
       headers,
       ...rows,
@@ -800,29 +800,29 @@ export default function App() {
   }
   function addWazin() {
     if (!zForm.wazan.trim() || !zForm.kg) return;
-    updateFarm({ wazin: [{ id: Date.now(), date: "20 يوليوز", parcelle: zForm.parcelle || data.parcelles[0].code, wazan: zForm.wazan, patron: zForm.patron || zForm.wazan, kg: Number(zForm.kg), prixKg: Number(zForm.prixKg) || 0, statut: zForm.statut }, ...data.wazin] });
-    setZForm({ parcelle: "", wazan: "", patron: "", kg: "", prixKg: "", statut: "فالانتظار" });
+    updateFarm({ wazin: [{ id: Date.now(), date: "20 juillet", parcelle: zForm.parcelle || data.parcelles[0].code, wazan: zForm.wazan, patron: zForm.patron || zForm.wazan, kg: Number(zForm.kg), prixKg: Number(zForm.prixKg) || 0, statut: zForm.statut }, ...data.wazin] });
+    setZForm({ parcelle: "", wazan: "", patron: "", kg: "", prixKg: "", statut: "En attente" });
     setShowAddWazin(false);
   }
   function addCost() {
     if (!cForm.mablagh) return;
     const target = cForm.parcelle || data.parcelles[0].code;
-    const key = cForm.naw3 === "دواء" ? "dawa" : cForm.naw3 === "ماء" ? "ma" : "omal";
+    const key = cForm.naw3 === "Produit phyto" ? "dawa" : cForm.naw3 === "Eau" ? "ma" : "omal";
     updateFarm({ costs: data.costs.map((cp) => cp.code === target ? { ...cp, [key]: cp[key] + Number(cForm.mablagh) } : cp) });
-    setCForm({ parcelle: "", naw3: "دواء", mablagh: "" });
+    setCForm({ parcelle: "", naw3: "Produit phyto", mablagh: "" });
     setShowAddCost(false);
   }
   function addPlan() {
     if (!pForm.produit.trim() || !pForm.dozParHa) return;
     updateFarm({ plan: [...data.plan, { code: pForm.parcelle || data.parcelles[0].code, produit: pForm.produit, dozParHa: Number(pForm.dozParHa), wehda: pForm.wehda, tarikh: pForm.tarikh || "—" }] });
-    setPForm({ parcelle: "", produit: "", dozParHa: "", wehda: "لتر", tarikh: "" });
+    setPForm({ parcelle: "", produit: "", dozParHa: "", wehda: "litre", tarikh: "" });
     setShowAddPlan(false);
   }
 
   function addDepense() {
     if (!dForm.detail.trim() || !dForm.montant) return;
-    updateFarm({ depenses: [{ id: Date.now(), dayOffset: 0, dateLabel: "20 يوليوز", type: dForm.type, detail: dForm.detail, montant: Number(dForm.montant) }, ...data.depenses] });
-    setDForm({ type: "عمال", detail: "", montant: "" });
+    updateFarm({ depenses: [{ id: Date.now(), dayOffset: 0, dateLabel: "20 juillet", type: dForm.type, detail: dForm.detail, montant: Number(dForm.montant) }, ...data.depenses] });
+    setDForm({ type: "Main-d'œuvre", detail: "", montant: "" });
     setShowAddDepense(false);
   }
 
@@ -841,41 +841,41 @@ export default function App() {
     let nouvelleKammiya = n;
     let seuilItem = Number(sForm.seuil) || 10;
     if (existing) {
-      nouvelleKammiya = sForm.mouvement === "دخول" ? existing.kammiya + n : Math.max(0, existing.kammiya - n);
+      nouvelleKammiya = sForm.mouvement === "Entrée" ? existing.kammiya + n : Math.max(0, existing.kammiya - n);
       seuilItem = existing.seuil;
       const { error } = await supabase.from("stock_items").update({ kammiya: nouvelleKammiya }).eq("id", existing.id);
-      if (error) { alert("وقع مشكل فالمخزون: " + error.message); return; }
+      if (error) { alert("وقع مشكل فStock: " + error.message); return; }
     } else {
       const { error } = await supabase.from("stock_items").insert({
         farm_id: currentFarmId, nom: sForm.nom, categorie: sForm.categorie, kammiya: n, wehda: sForm.wehda, seuil: seuilItem,
       });
-      if (error) { alert("وقع مشكل فالمخزون: " + error.message); return; }
+      if (error) { alert("وقع مشكل فStock: " + error.message); return; }
     }
 
-    // طلب أوطوماتيكي ملي المخزون يوصل لحد التنبيه — بلا تكرار إذا كان عندو طلب مفتوح ديجا
+    // طلب Automatique ملي Stock يوصل لحد الAlerte — بNon تكرار إذا كان عندو طلب مفتوح ديجا
     if (nouvelleKammiya <= seuilItem) {
-      const dejaTalab = commandesGlobal.some((cmd) => cmd.farmId === currentFarmId && cmd.produit === sForm.nom && (cmd.statut === "جديد" || cmd.statut === "تم الطلب"));
+      const dejaTalab = commandesGlobal.some((cmd) => cmd.farmId === currentFarmId && cmd.produit === sForm.nom && (cmd.statut === "Nouveau" || cmd.statut === "Commandé"));
       if (!dejaTalab) {
         await supabase.from("commandes").insert({
-          farm_id: currentFarmId, demande_par: "النظام (أوطوماتيكي)", produit: sForm.nom,
-          qte: seuilItem * 2, wehda: sForm.wehda || "كيلو",
-          motif: `المخزون وصل ${nouvelleKammiya} (حد التنبيه ${seuilItem}) — طلب تلقائي`, statut: "جديد",
+          farm_id: currentFarmId, demande_par: "Système (automatique)", produit: sForm.nom,
+          qte: seuilItem * 2, wehda: sForm.wehda || "kilo",
+          motif: `Stock وصل ${nouvelleKammiya} (حد الAlerte ${seuilItem}) — demande automatique`, statut: "Nouveau",
         });
       }
     }
 
-    if (sForm.mouvement === "دخول" && sForm.prix) {
+    if (sForm.mouvement === "Entrée" && sForm.prix) {
       const bonReceptionNumero = `BR-${Math.floor(Math.random() * 9000 + 1000)}`;
       const manque = [];
-      if (!sForm.poNumero) manque.push("بون الكوموند");
-      if (!sForm.factureFile) manque.push("صورة بون التسليم/الفاتورة");
+      if (!sForm.poNumero) manque.push("Bon de commande");
+      if (!sForm.factureFile) manque.push("Photo du bon de livraison/facture");
       const complet = manque.length === 0;
-      setAchatsGlobal([{ id: Date.now(), farmId: currentFarmId, farmNom: data.nom, produit: sForm.nom, kammiya: n, wehda: sForm.wehda, prix: Number(sForm.prix), fournisseur: sForm.fournisseur || "—", date: "20 يوليوز", vu: false, factureFile: sForm.factureFile, factureNom: sForm.factureNom, poNumero: sForm.poNumero, bonReceptionNumero, complet }, ...achatsGlobal]);
+      setAchatsGlobal([{ id: Date.now(), farmId: currentFarmId, farmNom: data.nom, produit: sForm.nom, kammiya: n, wehda: sForm.wehda, prix: Number(sForm.prix), fournisseur: sForm.fournisseur || "—", date: "20 juillet", vu: false, factureFile: sForm.factureFile, factureNom: sForm.factureNom, poNumero: sForm.poNumero, bonReceptionNumero, complet }, ...achatsGlobal]);
       if (!complet) {
-        setAlertesIncompletes([{ id: Date.now(), farmNom: data.nom, personne: currentUser.nom, produit: sForm.nom, manque, date: "20 يوليوز" }, ...alertesIncompletes]);
+        setAlertesIncompletes([{ id: Date.now(), farmNom: data.nom, personne: currentUser.nom, produit: sForm.nom, manque, date: "20 juillet" }, ...alertesIncompletes]);
       }
     }
-    setSForm({ nom: "", categorie: "دواء", wehda: "كيلو", mouvement: "دخول", kammiya: "", seuil: "", prix: "", fournisseur: "", factureFile: "", factureNom: "", poNumero: "" });
+    setSForm({ nom: "", categorie: "Produit phyto", wehda: "kilo", mouvement: "Entrée", kammiya: "", seuil: "", prix: "", fournisseur: "", factureFile: "", factureNom: "", poNumero: "" });
     setShowAddStock(false);
     await loadFarmDetails(currentFarmId);
     await loadCommandes();
@@ -887,26 +887,26 @@ export default function App() {
     const montantHT = qte * pu;
     const montantTVA = montantHT * (tva / 100);
     const numero = `FAC-${Math.floor(Math.random() * 9000 + 1000)}`;
-    updateFarm({ invoices: [{ id: Date.now(), numero, date: "20 يوليوز", client: invForm.client, produit: invForm.produit, qte, prixUnitaire: pu, tva, montantHT, montantTVA, montantTTC: montantHT + montantTVA }, ...data.invoices] });
+    updateFarm({ invoices: [{ id: Date.now(), numero, date: "20 juillet", client: invForm.client, produit: invForm.produit, qte, prixUnitaire: pu, tva, montantHT, montantTVA, montantTTC: montantHT + montantTVA }, ...data.invoices] });
     setInvForm({ client: "", produit: "avocat", qte: "", prixUnitaire: "", tva: "" });
     setShowAddInvoice(false);
   }
 
   function exportInvoice(inv) {
     const aoa = [
-      [`زيرو مانويل — ${data.nom}`],
+      [`Zero Manuel — ${data.nom}`],
       ["فاتورة / Facture"],
       [`رقم: ${inv.numero}`],
       [`التاريخ: ${inv.date}`],
       [],
-      ["الزبون / Client", inv.client],
+      ["Client", inv.client],
       [],
-      ["المنتج", "الكمية (كلغ)", "سعر الوحدة (DH)", "المبلغ HT (DH)"],
+      ["المنتج", "Quantité (kg)", "Prix unitaire (DH)", "Montant HT (DH)"],
       [inv.produit, inv.qte, inv.prixUnitaire, inv.montantHT],
       [],
-      ["مجموع HT", inv.montantHT],
+      ["Total HT", inv.montantHT],
       [`TVA (${inv.tva}%)`, inv.montantTVA],
-      ["المجموع TTC", inv.montantTTC],
+      ["الTotal TTC", inv.montantTTC],
     ];
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     ws["!cols"] = [{ wch: 22 }, { wch: 18 }, { wch: 16 }, { wch: 16 }];
@@ -921,12 +921,12 @@ export default function App() {
     const totalTTC = data.invoices.reduce((s, i) => s + i.montantTTC, 0);
     const aoa = [
       [`ملخص TVA مبسط — ${data.nom}`],
-      ["ملاحظة: هذا ملخص داخلي وليس تصريحا ضريبيا رسميا — راجع محاسبك المعتمد"],
+      ["Note : ceci est un résumé interne, pas une déclaration fiscale officielle — consultez votre comptable agréé"],
       [],
-      ["رقم الفاتورة", "التاريخ", "الزبون", "HT", "TVA", "TTC"],
+      ["Numéro de facture", "التاريخ", "Client", "HT", "TVA", "TTC"],
       ...data.invoices.map((i) => [i.numero, i.date, i.client, i.montantHT, i.montantTVA, i.montantTTC]),
       [],
-      ["المجموع", "", "", totalHT, totalTVA, totalTTC],
+      ["Total", "", "", totalHT, totalTVA, totalTTC],
     ];
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     ws["!cols"] = [{ wch: 14 }, { wch: 12 }, { wch: 20 }, { wch: 12 }, { wch: 12 }, { wch: 12 }];
@@ -941,29 +941,29 @@ export default function App() {
     const { error } = await supabase.from("commandes").insert({
       farm_id: currentFarmId, dest_farm_id: destId, demande_par: currentUser.nom,
       produit: cmdForm.produit, qte: Number(cmdForm.qte), wehda: cmdForm.wehda,
-      motif: cmdForm.motif || "—", statut: "جديد",
+      motif: cmdForm.motif || "—", statut: "Nouveau",
     });
     if (error) { alert("وقع مشكل: " + error.message); return; }
-    setCmdForm({ produit: "", qte: "", wehda: "كيلو", motif: "", destFarmId: "" });
+    setCmdForm({ produit: "", qte: "", wehda: "kilo", motif: "", destFarmId: "" });
     setShowAddCommande(false);
     await loadCommandes();
   }
 
   function exportBonCommande(cmd) {
     const aoa = [
-      ["زيرو مانويل — بون دي كوموند"],
-      [`رقم البون: ${cmd.poNumero}`],
+      ["Zero Manuel — Bon de commande"],
+      [`رقم Le bon: ${cmd.poNumero}`],
       [`التاريخ: ${cmd.date}`],
       [],
-      ["الفيرمة الطالبة", cmd.farmNom],
-      ["الشخص الطالب", cmd.demandePar],
-      ["السبب", cmd.motif],
+      ["Ferme demandeuse", cmd.farmNom],
+      ["Demandeur", cmd.demandePar],
+      ["Motif", cmd.motif],
       [],
-      ["المنتج", "الكمية", "الوحدة", "السعر الإجمالي (DH)"],
+      ["المنتج", "الكمية", "Unité", "Prix total (DH)"],
       [cmd.produit, cmd.qte, cmd.wehda, cmd.prix],
       [],
-      ["المورد", cmd.fournisseur],
-      ["بريد المورد", cmd.fournisseurEmail],
+      ["Fournisseur", cmd.fournisseur],
+      ["بريد Fournisseur", cmd.fournisseurEmail],
     ];
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     ws["!cols"] = [{ wch: 22 }, { wch: 26 }, { wch: 14 }, { wch: 18 }];
@@ -976,12 +976,12 @@ export default function App() {
     if (!poForm.fournisseur.trim() || !poForm.prix) return;
     const poNumero = `PO-${Math.floor(Math.random() * 9000 + 1000)}`;
     const { error } = await supabase.from("commandes").update({
-      statut: "تم الطلب", fournisseur: poForm.fournisseur, fournisseur_email: poForm.fournisseurEmail,
+      statut: "Commandé", fournisseur: poForm.fournisseur, fournisseur_email: poForm.fournisseurEmail,
       prix: poForm.prix, po_numero: poNumero,
     }).eq("id", id);
     if (error) { alert("وقع مشكل: " + error.message); return; }
     const cmd = commandesGlobal.find((x) => x.id === id);
-    const updated = { ...cmd, statut: "تم الطلب", fournisseur: poForm.fournisseur, fournisseurEmail: poForm.fournisseurEmail, prix: poForm.prix, poNumero };
+    const updated = { ...cmd, statut: "Commandé", fournisseur: poForm.fournisseur, fournisseurEmail: poForm.fournisseurEmail, prix: poForm.prix, poNumero };
     setPoForm({ fournisseur: "", fournisseurEmail: "", prix: "" });
     setProcessingId(null);
     await loadCommandes();
@@ -989,14 +989,14 @@ export default function App() {
   }
 
   function mailtoLink(cmd) {
-    const subject = encodeURIComponent(`بون دي كوموند ${cmd.poNumero} — ${cmd.produit}`);
-    const body = encodeURIComponent(`السلام عليكم،\n\nمرفق بون دي كوموند رقم ${cmd.poNumero}:\n- المنتج: ${cmd.produit}\n- الكمية: ${cmd.qte} ${cmd.wehda}\n- السعر الإجمالي: ${cmd.prix} DH\n- الفيرمة الطالبة: ${cmd.farmNom}\n\nشكرا،\nزيرو مانويل`);
+    const subject = encodeURIComponent(`Bon de commande ${cmd.poNumero} — ${cmd.produit}`);
+    const body = encodeURIComponent(`السNonم عليكم،\n\nمرفق Bon de commande رقم ${cmd.poNumero}:\n- المنتج: ${cmd.produit}\n- الكمية: ${cmd.qte} ${cmd.wehda}\n- السعر الإجمالي: ${cmd.prix} DH\n- Ferme demandeuse: ${cmd.farmNom}\n\nMerci,\nZero Manuel`);
     return `mailto:${cmd.fournisseurEmail}?subject=${subject}&body=${body}`;
   }
 
   function startListening() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) { alert("المتصفح ديالك ماكيدعمش التعرف على الصوت — جرب Chrome"); return; }
+    if (!SR) { alert("Votre navigateur ne supporte pas la reconnaissance vocale — essayez Chrome"); return; }
     const rec = new SR();
     rec.lang = "ar-MA";
     rec.interimResults = false;
@@ -1029,16 +1029,16 @@ export default function App() {
     setAnalystLoading(true);
 
     const stockAlerts = data.stock.filter((s) => s.kammiya <= s.seuil).map((s) => `${s.nom}: باقي ${s.kammiya} ${s.wehda} (حد ${s.seuil})`);
-    const wazinAttente = data.wazin.filter((w) => w.statut === "فالانتظار").map((w) => `${w.wazan}: ${w.kg}كلغ × ${w.prixKg}DH`);
+    const wazinAttente = data.wazin.filter((w) => w.statut === "En attente").map((w) => `${w.wazan}: ${w.kg}kg × ${w.prixKg}DH`);
     const context = `
-معطيات فيرمة "${data.nom}" اليوم (20 يوليوز 2026):
-- إنتاج اليوم: ${kpis.totalHarvest} كلغ
-- تكلفة الشهر: ${kpis.totalCost} DH (دواء: ${kpis.totalDawa}, ماء+عمال: ${kpis.totalMaOmal})
-- عدد العمال اليوم: ${data.workers.length}, مجموع خلاصهم: ${kpis.totalKhlas} DH
-- الربحية لكل قطعة: ${rentabilite.map((r) => `${r.code}(${r.nom}): مدخول ${r.revenu}DH، تكلفة ${r.cout}DH، ربح ${r.profit}DH (${r.marge}%)`).join(" | ")}
-- تنبيهات المخزون: ${stockAlerts.length ? stockAlerts.join(", ") : "ماكاينش"}
-- وزينات فالانتظار الأداء: ${wazinAttente.length ? wazinAttente.join(", ") : "ماكاينش"}
-- تصريح CNSS لهاد الشهر: ${data.cnss.declare ? "تم" : "ماتداروش بعد"}
+معطيات فيرمة "${data.nom}" Aujourd'hui (20 Juillet 2026):
+- Production du jour: ${kpis.totalHarvest} kg
+- Coûts du mois: ${kpis.totalCost} DH (Produit phyto: ${kpis.totalDawa}, Eau+Main-d'œuvre: ${kpis.totalMaOmal})
+- عدد Employés Aujourd'hui: ${data.workers.length}, مجموع خNonصهم: ${kpis.totalKhlas} DH
+- Rentabilité لكل parcellesة: ${rentabilite.map((r) => `${r.code}(${r.nom}): مEntrée ${r.revenu}DH، تكلفة ${r.cout}DH، ربح ${r.profit}DH (${r.marge}%)`).join(" | ")}
+- Alerteات Stock: ${stockAlerts.length ? stockAlerts.join(", ") : "Aucun(e)"}
+- وزينات En attente الأداء: ${wazinAttente.length ? wazinAttente.join(", ") : "Aucun(e)"}
+- Déclaration CNSS لهاد الMois: ${data.cnss.declare ? "Fait" : "Pas encore fait"}
 `.trim();
 
     try {
@@ -1050,32 +1050,32 @@ export default function App() {
           max_tokens: 700,
           messages: [{
             role: "user",
-            content: `أنت محلل مالي وفلاحي خبير كتخدم مع فيرمة أفوكا وفريز فالمغرب. جاوب بالدارجة المغربية، مختصر ومباشر، بنقط واضحة، بناء على المعطيات الحقيقية التالية فقط (لا تخترع أرقام):\n\n${context}\n\nسؤال المستخدم: ${question}`,
+            content: `أنت محلل مالي وفNonحي خبير كتخدم مع فيرمة Avocat وFraise فالمغرب. Répondez en français، مختصر ومباشر، بنقط واضحة، بناء على المعطيات الحقيقية التالية فقط (Non تخترع أرقام):\n\n${context}\n\nQuestion de l'utilisateur: ${question}`,
           }],
         }),
       });
       const json = await resp.json();
       const textBlocks = (json.content || []).filter((b) => b.type === "text").map((b) => b.text).join("\n");
-      const finalText = textBlocks || "ماقدرتش نجاوب دابا، عاود جرب.";
+      const finalText = textBlocks || "Je n'ai pas pu répondre pour le moment, réessayez.";
       setAnalystMessages((prev) => [...prev, { role: "assistant", text: finalText }]);
       if (autoSpeak) speakText(finalText);
     } catch (err) {
-      setAnalystMessages((prev) => [...prev, { role: "assistant", text: "وقع مشكل فالاتصال بالمحلل. عاود جرب من بعد." }]);
+      setAnalystMessages((prev) => [...prev, { role: "assistant", text: "Problème de connexion à l'assistant. Réessayez plus tard." }]);
     }
     setAnalystLoading(false);
   }
 
   function addIncident() {
     if (!issueForm.probleme.trim()) return;
-    setIncidentsGlobal([{ id: Date.now(), farmNom: data.nom, gps: data.gps, produit: issueForm.produit, probleme: issueForm.probleme, severite: issueForm.severite, date: "20 يوليوز" }, ...incidentsGlobal]);
-    setIssueForm({ produit: "avocat", probleme: "", severite: "متوسط" });
+    setIncidentsGlobal([{ id: Date.now(), farmNom: data.nom, gps: data.gps, produit: issueForm.produit, probleme: issueForm.probleme, severite: issueForm.severite, date: "20 juillet" }, ...incidentsGlobal]);
+    setIssueForm({ produit: "avocat", probleme: "", severite: "Moyen" });
     setShowReportIssue(false);
   }
 
   function addListing() {
     if (!mForm.produit.trim() || !mForm.kammiya) return;
-    setMarketplaceGlobal([{ id: Date.now(), farmId: currentFarmId, farmNom: data.nom, type: mForm.type, produit: mForm.produit, kammiya: Number(mForm.kammiya), wehda: mForm.wehda, prix: mForm.prix, description: mForm.description, contactNom: currentUser.nom, contactTel: mForm.contactTel || "—", date: "20 يوليوز" }, ...marketplaceGlobal]);
-    setMForm({ type: "أعرض", produit: "", kammiya: "", wehda: "كيلو", prix: "", description: "", contactTel: "" });
+    setMarketplaceGlobal([{ id: Date.now(), farmId: currentFarmId, farmNom: data.nom, type: mForm.type, produit: mForm.produit, kammiya: Number(mForm.kammiya), wehda: mForm.wehda, prix: mForm.prix, description: mForm.description, contactNom: currentUser.nom, contactTel: mForm.contactTel || "—", date: "20 juillet" }, ...marketplaceGlobal]);
+    setMForm({ type: "J'offre", produit: "", kammiya: "", wehda: "kilo", prix: "", description: "", contactTel: "" });
     setShowAddListing(false);
   }
   function removeListing(id) {
@@ -1090,7 +1090,7 @@ export default function App() {
       [id]: {
         nom: fForm.nom,
         gps: { lat: Number(fForm.lat) || 34.9200, lng: Number(fForm.lng) || -6.1000 },
-        parcelles: [], workers: [], wazin: [], costs: [], plan: [], depenses: [], stock: [], invoices: [], cnss: { echeanceJour: 10, moisLabel: "يوليوز 2026", declare: false, dateDeclare: "" }, employees: [],
+        parcelles: [], workers: [], wazin: [], costs: [], plan: [], depenses: [], stock: [], invoices: [], cnss: { echeanceJour: 10, moisLabel: "Juillet 2026", declare: false, dateDeclare: "" }, employees: [],
       },
     }));
     setFForm({ nom: "", lat: "", lng: "" });
@@ -1099,7 +1099,7 @@ export default function App() {
   }
 
   return (
-    <div dir="rtl" style={{ background: c.bg, minHeight: "100vh", color: c.ink, fontFamily: "'Inter', sans-serif", paddingBottom: 80 }}>
+    <div dir="ltr" style={{ background: c.bg, minHeight: "100vh", color: c.ink, fontFamily: "'Inter', sans-serif", paddingBottom: 80 }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600&display=swap');
         .font-display { font-family: 'Manrope', sans-serif; letter-spacing: -0.01em; }
         button { transition: all 0.15s ease; cursor: pointer; }
@@ -1125,7 +1125,7 @@ export default function App() {
           )}
           <div style={{ position: "relative" }}>
             <Bell size={19} color="#fff" />
-            <span style={{ position: "absolute", top: -5, left: -6, background: c.danger, color: "#fff", fontSize: "0.6rem", fontWeight: 700, borderRadius: 999, width: 15, height: 15 }} className="flex items-center justify-center">{alertes.length + (canManageFarms ? commandesGlobal.filter((cmd) => myFarmIds.includes(cmd.farmId) && cmd.statut === "جديد").length : 0) + ((canManageFarms || currentUser.role === "Accountant") ? achatsGlobal.filter((a) => myFarmIds.includes(a.farmId) && !a.vu).length : 0) + (currentUser.role === "Owner" ? alertesIncompletes.length : 0) + ((permTabs.includes("CNSS") && !data.cnss.declare && data.cnss.echeanceJour && (data.cnss.echeanceJour - 20) <= 3) ? 1 : 0)}</span>
+            <span style={{ position: "absolute", top: -5, left: -6, background: c.danger, color: "#fff", fontSize: "0.6rem", fontWeight: 700, borderRadius: 999, width: 15, height: 15 }} className="flex items-center justify-center">{alertes.length + (canManageFarms ? commandesGlobal.filter((cmd) => myFarmIds.includes(cmd.farmId) && cmd.statut === "Nouveau").length : 0) + ((canManageFarms || currentUser.role === "Accountant") ? achatsGlobal.filter((a) => myFarmIds.includes(a.farmId) && !a.vu).length : 0) + (currentUser.role === "Owner" ? alertesIncompletes.length : 0) + ((permTabs.includes("CNSS") && !data.cnss.declare && data.cnss.echeanceJour && (data.cnss.echeanceJour - 20) <= 3) ? 1 : 0)}</span>
           </div>
           <button onClick={async () => { await supabase.auth.signOut(); setCurrentUser(null); setFarms({}); setCurrentFarmId(null); }}><LogOut size={18} color="rgba(255,255,255,0.85)" /></button>
         </div>
@@ -1134,30 +1134,30 @@ export default function App() {
       {!isOnline && (
         <div style={{ background: c.orange }} className="px-5 py-2 flex items-center gap-2 sticky top-0 z-10">
           <WifiOff size={14} color="#fff" />
-          <span style={{ color: "#fff", fontSize: "0.76rem", fontWeight: 700 }}>بلا انترنت — البيانات كتتسجل محليا وغادي تتصيفط ملي يرجع النت</span>
+          <span style={{ color: "#fff", fontSize: "0.76rem", fontWeight: 700 }}>بNon Internet — البيانات كتتسجل محليا وغادي تتصيفط ملي يرجع النت</span>
         </div>
       )}
       {isOnline && pendingSync.length > 0 && (
         <div style={{ background: c.blue }} className="px-5 py-2 flex items-center justify-between sticky top-0 z-10">
-          <div className="flex items-center gap-2"><RefreshCw size={14} color="#fff" /><span style={{ color: "#fff", fontSize: "0.76rem", fontWeight: 700 }}>{pendingSync.length} عملية محفوظة محليا كتتصيفط...</span></div>
-          <button onClick={syncPendingQueue} style={{ background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: "3px 10px" }}><span style={{ color: "#fff", fontSize: "0.7rem", fontWeight: 700 }}>عاود حاول</span></button>
+          <div className="flex items-center gap-2"><RefreshCw size={14} color="#fff" /><span style={{ color: "#fff", fontSize: "0.76rem", fontWeight: 700 }}>{pendingSync.length} opération(s) enregistrée(s) localement en cours de synchronisation...</span></div>
+          <button onClick={syncPendingQueue} style={{ background: "rgba(255,255,255,0.2)", borderRadius: 8, padding: "3px 10px" }}><span style={{ color: "#fff", fontSize: "0.7rem", fontWeight: 700 }}>Réessayer</span></button>
         </div>
       )}
 
       <main className="p-4">
-        {tab === "لوحة" && (
+        {tab === "Tableau de bord" && (
           <>
             <div className="grid grid-cols-2 gap-3">
-              <StatCard title={{ icon: <Sprout size={17} color="#fff" />, label: "إنتاج اليوم" }} value={kpis.totalHarvest.toLocaleString()} unit="كلغ"
-                sub={[{ label: "قطع", value: data.parcelles.length }, { label: "هكتار", value: data.parcelles.reduce((s, p) => s + p.ha, 0).toFixed(1) }]} />
-              <StatCard title={{ icon: <Wallet size={17} color="#fff" />, label: "تكلفة الشهر" }} value={kpis.totalCost.toLocaleString()} unit="DH"
-                sub={[{ label: "دواء", value: `${kpis.totalDawa} DH` }, { label: "ماء + عمال", value: `${kpis.totalMaOmal} DH` }]} />
-              <StatCard title={{ icon: <Users size={17} color="#fff" />, label: "اللجنة اليوم" }} value={data.workers.length} unit="عمال"
-                sub={[{ label: "سوايع", value: `${kpis.totalHeures} س` }, { label: "خلاص اليوم", value: `${kpis.totalKhlas} DH` }]} />
-              <StatCard title={{ icon: <AlertTriangle size={17} color="#fff" />, label: "شحنة فالانتظار الأداء" }} value={kpis.enAttente} unit="شحنة" variant="orange" />
+              <StatCard title={{ icon: <Sprout size={17} color="#fff" />, label: "Production du jour" }} value={kpis.totalHarvest.toLocaleString()} unit="kg"
+                sub={[{ label: "parcelles", value: data.parcelles.length }, { label: "hectares", value: data.parcelles.reduce((s, p) => s + p.ha, 0).toFixed(1) }]} />
+              <StatCard title={{ icon: <Wallet size={17} color="#fff" />, label: "Coûts du mois" }} value={kpis.totalCost.toLocaleString()} unit="DH"
+                sub={[{ label: "Produit phyto", value: `${kpis.totalDawa} DH` }, { label: "Eau + main-d'œuvre", value: `${kpis.totalMaOmal} DH` }]} />
+              <StatCard title={{ icon: <Users size={17} color="#fff" />, label: "Équipe du jour" }} value={data.workers.length} unit="Main-d'œuvre"
+                sub={[{ label: "heures", value: `${kpis.totalHeures} س` }, { label: "خNonص Aujourd'hui", value: `${kpis.totalKhlas} DH` }]} />
+              <StatCard title={{ icon: <AlertTriangle size={17} color="#fff" />, label: "Envoi En attente الأداء" }} value={kpis.enAttente} unit="Envoi" variant="orange" />
             </div>
             <div className="mt-6">
-              <h2 className="font-display mb-3" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>التنبيهات</h2>
+              <h2 className="font-display mb-3" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>الAlerteات</h2>
               <div className="flex flex-col gap-2">
                 {alertes.map((a, i) => { const Icon = a.icon; return (
                   <div key={i} style={{ background: c.white, border: `1px solid ${c.line}`, borderRight: `4px solid ${c.orange}`, borderRadius: 12 }} className="p-3 flex items-center gap-3">
@@ -1169,19 +1169,19 @@ export default function App() {
           </>
         )}
 
-        {tab === "الفيرمات" && (
+        {tab === "Fermes" && (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>الفيرمات ديالي ({myFarmIds.length})</h2>
-              <AddButton label="زيد فيرمة" open={showAddFarm} onClick={() => setShowAddFarm(!showAddFarm)} />
+              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Fermes à moi ({myFarmIds.length})</h2>
+              <AddButton label="Ajouter une ferme" open={showAddFarm} onClick={() => setShowAddFarm(!showAddFarm)} />
             </div>
-            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">كل فيرمة معزولة تماما — لا حد يشوف بيانات فيرمة أخرى غير اللي عندو وصول ليها</p>
+            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">كل فيرمة معزولة Faitاما — Non personne ne voit les données d'une autre ferme sauf s'il y a accès</p>
             {showAddFarm && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-3 gap-3">
-                <Field label="اسم الفيرمة"><input value={fForm.nom} onChange={(e) => setFForm({ ...fForm, nom: e.target.value })} placeholder="مثلا فيرمة سوس" style={inputStyle} /></Field>
-                <Field label="GPS Lat (اختياري)"><input value={fForm.lat} onChange={(e) => setFForm({ ...fForm, lat: e.target.value })} placeholder="34.92" style={inputStyle} /></Field>
-                <Field label="GPS Lng (اختياري)"><input value={fForm.lng} onChange={(e) => setFForm({ ...fForm, lng: e.target.value })} placeholder="-6.10" style={inputStyle} /></Field>
-                <div className="col-span-3"><button onClick={addFarm} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, width: "100%" }}>إنشاء الفيرمة</button></div>
+                <Field label="Nom de la ferme"><input value={fForm.nom} onChange={(e) => setFForm({ ...fForm, nom: e.target.value })} placeholder="مثNon فيرمة سوس" style={inputStyle} /></Field>
+                <Field label="GPS Lat (optionnel)"><input value={fForm.lat} onChange={(e) => setFForm({ ...fForm, lat: e.target.value })} placeholder="34.92" style={inputStyle} /></Field>
+                <Field label="GPS Lng (optionnel)"><input value={fForm.lng} onChange={(e) => setFForm({ ...fForm, lng: e.target.value })} placeholder="-6.10" style={inputStyle} /></Field>
+                <div className="col-span-3"><button onClick={addFarm} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, width: "100%" }}>Créer la ferme</button></div>
               </div>
             )}
             <div className="flex flex-col gap-2">
@@ -1193,10 +1193,10 @@ export default function App() {
                       <div style={{ background: c.bg, borderRadius: 10, width: 36, height: 36 }} className="flex items-center justify-center"><Building2 size={16} color={c.cardGreen} /></div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: "0.88rem" }}>{f.nom}</div>
-                        <div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>{f.parcelles.length} قطع · {f.workers.length} عمال</div>
+                        <div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>{f.parcelles.length} parcelles · {f.workers.length} Main-d'œuvre</div>
                       </div>
                     </div>
-                    {active && <span style={{ fontSize: "0.68rem", fontWeight: 700, color: c.cardGreenDeep }}>مفتوحة دابا</span>}
+                    {active && <span style={{ fontSize: "0.68rem", fontWeight: 700, color: c.cardGreenDeep }}>Ouverte actuellement</span>}
                   </button>
                 );
               })}
@@ -1204,39 +1204,39 @@ export default function App() {
           </div>
         )}
 
-        {tab === "الطلبات" && (() => {
-          if (isLocked("الطلبات")) return <LockedFeature nom="الطلبات" />;
+        {tab === "Commandes" && (() => {
+          if (isLocked("Commandes")) return <LockedFeature nom="Commandes" />;
           const mesCommandes = canManageFarms ? commandesGlobal.filter((cmd) => myFarmIds.includes(cmd.farmId)) : commandesGlobal.filter((cmd) => cmd.farmId === currentFarmId);
-          const nouvelles = mesCommandes.filter((cmd) => cmd.statut === "جديد");
+          const nouvelles = mesCommandes.filter((cmd) => cmd.statut === "Nouveau");
           return (
             <div>
               <div className="flex items-center justify-between mb-1">
-                <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>{canManageFarms ? "الطلبات — كل الفيرمات" : "طلبات الفيرمة"}</h2>
-                <AddButton label="طلب جديد" open={showAddCommande} onClick={() => setShowAddCommande(!showAddCommande)} />
+                <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>{canManageFarms ? "Commandes — toutes les fermes" : "Commandes de la ferme"}</h2>
+                <AddButton label="طلب Nouveau" open={showAddCommande} onClick={() => setShowAddCommande(!showAddCommande)} />
               </div>
-              <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">{canManageFarms ? "كل طلب من أي فيرمة كيطيح ليك هنا — دير بون دي كوموند وصيفطو للمورد" : "دير طلب وغادي يوصل للمسؤول باش يشري ليك"}</p>
+              <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">{canManageFarms ? "Chaque demande de n'importe quelle ferme arrive ici — créez un bon de commande et envoyez-le au fournisseur" : "Faites une demande et elle arrivera au responsable pour l'achat"}</p>
 
               {showAddCommande && (
                 <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-2 gap-3">
-                  <Field label="المنتج"><input value={cmdForm.produit} onChange={(e) => setCmdForm({ ...cmdForm, produit: e.target.value })} placeholder="مثلا: مبيد فطريات" style={inputStyle} /></Field>
+                  <Field label="المنتج"><input value={cmdForm.produit} onChange={(e) => setCmdForm({ ...cmdForm, produit: e.target.value })} placeholder="مثNon: Fongicide" style={inputStyle} /></Field>
                   <Field label="الكمية"><input type="number" value={cmdForm.qte} onChange={(e) => setCmdForm({ ...cmdForm, qte: e.target.value })} style={inputStyle} /></Field>
-                  <Field label="الوحدة"><select value={cmdForm.wehda} onChange={(e) => setCmdForm({ ...cmdForm, wehda: e.target.value })} style={inputStyle}><option>كيلو</option><option>لتر</option><option>كيس</option><option>وحدة</option></select></Field>
-                  <Field label="السبب"><input value={cmdForm.motif} onChange={(e) => setCmdForm({ ...cmdForm, motif: e.target.value })} placeholder="مثلا: المخزون خلص" style={inputStyle} /></Field>
+                  <Field label="Unité"><select value={cmdForm.wehda} onChange={(e) => setCmdForm({ ...cmdForm, wehda: e.target.value })} style={inputStyle}><option>kilo</option><option>litre</option><option>sac</option><option>وحدة</option></select></Field>
+                  <Field label="Motif"><input value={cmdForm.motif} onChange={(e) => setCmdForm({ ...cmdForm, motif: e.target.value })} placeholder="مثNon: Stock خلص" style={inputStyle} /></Field>
                   {canManageFarms && myFarmIds.length > 1 && (
-                    <Field label="الفيرمة الوجهة (فين غادي تدخل السلعة)">
+                    <Field label="Ferme de destination (où la marchandise sera reçue)">
                       <select value={cmdForm.destFarmId} onChange={(e) => setCmdForm({ ...cmdForm, destFarmId: e.target.value })} style={inputStyle}>
-                        <option value="">نفس الفيرمة الحالية ({data.nom})</option>
+                        <option value="">Ferme actuelle ({data.nom})</option>
                         {myFarmIds.filter((fid) => fid !== currentFarmId).map((fid) => (<option key={fid} value={fid}>{farms[fid].nom}</option>))}
                       </select>
                     </Field>
                   )}
-                  <div className="col-span-2"><button onClick={addCommande} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>إرسال الطلب</button></div>
+                  <div className="col-span-2"><button onClick={addCommande} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>إرhل الطلب</button></div>
                 </div>
               )}
 
               {canManageFarms && nouvelles.length > 0 && (
                 <div style={{ background: "rgba(244,162,97,0.1)", border: `1px solid ${c.orange}`, borderRadius: 14 }} className="p-3 mb-4 flex items-center gap-2">
-                  <Bell size={16} color={c.orange} /><span style={{ fontSize: "0.82rem", fontWeight: 700, color: c.inkSoft }}>عندك {nouvelles.length} طلب جديد كيتسنى المعالجة</span>
+                  <Bell size={16} color={c.orange} /><span style={{ fontSize: "0.82rem", fontWeight: 700, color: c.inkSoft }}>Vous avez {nouvelles.length} طلب Nouveau كيتسنى المعالجة</span>
                 </div>
               )}
 
@@ -1248,81 +1248,81 @@ export default function App() {
                         {canManageFarms && <span style={{ background: c.bg, borderRadius: 999, padding: "2px 9px", fontSize: "0.68rem", fontWeight: 700, color: c.inkSoft }}>{cmd.farmNom}</span>}
                         <span style={{ fontWeight: 700, fontSize: "0.88rem" }}>{cmd.produit}</span>
                       </div>
-                      <span style={{ fontSize: "0.68rem", fontWeight: 700, color: cmd.statut === "جديد" ? c.orange : c.cardGreenDeep, background: cmd.statut === "جديد" ? "rgba(244,162,97,0.14)" : "rgba(42,157,143,0.12)", borderRadius: 999, padding: "3px 9px" }}>{cmd.statut}</span>
+                      <span style={{ fontSize: "0.68rem", fontWeight: 700, color: cmd.statut === "Nouveau" ? c.orange : c.cardGreenDeep, background: cmd.statut === "Nouveau" ? "rgba(244,162,97,0.14)" : "rgba(42,157,143,0.12)", borderRadius: 999, padding: "3px 9px" }}>{cmd.statut}</span>
                     </div>
                     {cmd.destFarmId && cmd.destFarmId !== cmd.farmId && (
                       <div className="flex items-center gap-1.5 mb-2" style={{ fontSize: "0.74rem", color: c.blue, fontWeight: 700 }}>
-                        <ArrowRight size={12} /> متجهة لفيرمة: {cmd.destFarmNom}
+                        <ArrowRight size={12} /> destinée à la ferme : {cmd.destFarmNom}
                       </div>
                     )}
                     <div className="grid grid-cols-2 gap-2 mb-2" style={{ fontSize: "0.78rem" }}>
-                      <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>طلب بواسطة</span><span style={{ fontWeight: 600, color: cmd.demandePar.includes("أوطوماتيكي") ? c.blue : c.ink }}>{cmd.demandePar.includes("أوطوماتيكي") ? "🤖 " : ""}{cmd.demandePar}</span></div>
+                      <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Demandé par</span><span style={{ fontWeight: 600, color: cmd.demandePar.includes("Automatique") ? c.blue : c.ink }}>{cmd.demandePar.includes("Automatique") ? "🤖 " : ""}{cmd.demandePar}</span></div>
                       <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>الكمية</span><span className="font-mono" style={{ fontWeight: 600 }}>{cmd.qte} {cmd.wehda}</span></div>
-                      <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>السبب</span><span>{cmd.motif}</span></div>
+                      <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Motif</span><span>{cmd.motif}</span></div>
                       <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>التاريخ</span><span>{cmd.date}</span></div>
                     </div>
 
-                    {cmd.statut === "تم الطلب" && (
+                    {cmd.statut === "Commandé" && (
                       <div style={{ background: c.bg, borderRadius: 10 }} className="p-2.5 flex items-center justify-between">
-                        <div style={{ fontSize: "0.76rem" }}><span style={{ color: c.inkMuted2 }}>المورد: </span><span style={{ fontWeight: 700 }}>{cmd.fournisseur}</span><span style={{ color: c.inkMuted2 }}> · {cmd.poNumero} · {cmd.prix} DH</span></div>
+                        <div style={{ fontSize: "0.76rem" }}><span style={{ color: c.inkMuted2 }}>Fournisseur: </span><span style={{ fontWeight: 700 }}>{cmd.fournisseur}</span><span style={{ color: c.inkMuted2 }}> · {cmd.poNumero} · {cmd.prix} DH</span></div>
                         <div className="flex items-center gap-2">
-                          <button onClick={() => exportBonCommande(cmd)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 8, padding: "5px 9px" }} className="flex items-center gap-1"><Download size={13} color={c.cardGreenDeep} /><span style={{ fontSize: "0.7rem", fontWeight: 700, color: c.cardGreenDeep }}>البون</span></button>
-                          {cmd.fournisseurEmail && <a href={mailtoLink(cmd)} style={{ background: c.cardGreen, borderRadius: 8, padding: "5px 9px" }} className="flex items-center gap-1"><Mail size={13} color="#fff" /><span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#fff" }}>صيفط للمورد</span></a>}
+                          <button onClick={() => exportBonCommande(cmd)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 8, padding: "5px 9px" }} className="flex items-center gap-1"><Download size={13} color={c.cardGreenDeep} /><span style={{ fontSize: "0.7rem", fontWeight: 700, color: c.cardGreenDeep }}>Le bon</span></button>
+                          {cmd.fournisseurEmail && <a href={mailtoLink(cmd)} style={{ background: c.cardGreen, borderRadius: 8, padding: "5px 9px" }} className="flex items-center gap-1"><Mail size={13} color="#fff" /><span style={{ fontSize: "0.7rem", fontWeight: 700, color: "#fff" }}>Envoyer au fournisseur</span></a>}
                         </div>
                       </div>
                     )}
 
-                    {cmd.statut === "جديد" && canManageFarms && processingId !== cmd.id && (
-                      <button onClick={() => setProcessingId(cmd.id)} style={{ background: c.orange, color: "#fff", borderRadius: 10, padding: "8px 0", fontWeight: 700, fontSize: "0.8rem", width: "100%" }} className="flex items-center justify-center gap-1.5"><FileCheck size={14} />إنشاء بون دي كوموند</button>
+                    {cmd.statut === "Nouveau" && canManageFarms && processingId !== cmd.id && (
+                      <button onClick={() => setProcessingId(cmd.id)} style={{ background: c.orange, color: "#fff", borderRadius: 10, padding: "8px 0", fontWeight: 700, fontSize: "0.8rem", width: "100%" }} className="flex items-center justify-center gap-1.5"><FileCheck size={14} />Créer un bon de commande</button>
                     )}
-                    {cmd.statut === "جديد" && canManageFarms && processingId === cmd.id && (
+                    {cmd.statut === "Nouveau" && canManageFarms && processingId === cmd.id && (
                       <div style={{ background: c.bg, borderRadius: 12 }} className="p-3 grid grid-cols-3 gap-2 mt-1">
-                        <Field label="المورد (اسم الشركة)"><input value={poForm.fournisseur} onChange={(e) => setPoForm({ ...poForm, fournisseur: e.target.value })} style={inputStyle} /></Field>
-                        <Field label="بريد المورد"><input value={poForm.fournisseurEmail} onChange={(e) => setPoForm({ ...poForm, fournisseurEmail: e.target.value })} placeholder="supplier@example.com" style={inputStyle} /></Field>
-                        <Field label="السعر الإجمالي (DH)"><input type="number" value={poForm.prix} onChange={(e) => setPoForm({ ...poForm, prix: e.target.value })} style={inputStyle} /></Field>
+                        <Field label="Fournisseur (nom de l'entreprise)"><input value={poForm.fournisseur} onChange={(e) => setPoForm({ ...poForm, fournisseur: e.target.value })} style={inputStyle} /></Field>
+                        <Field label="بريد Fournisseur"><input value={poForm.fournisseurEmail} onChange={(e) => setPoForm({ ...poForm, fournisseurEmail: e.target.value })} placeholder="supplier@example.com" style={inputStyle} /></Field>
+                        <Field label="Prix total (DH)"><input type="number" value={poForm.prix} onChange={(e) => setPoForm({ ...poForm, prix: e.target.value })} style={inputStyle} /></Field>
                         <div className="col-span-3 flex gap-2">
-                          <button onClick={() => processCommande(cmd.id)} style={{ background: c.cardGreen, color: "#fff", borderRadius: 9, padding: "9px 0", fontWeight: 700, fontSize: "0.8rem", flex: 1 }}>تأكيد وتوليد البون</button>
-                          <button onClick={() => setProcessingId(null)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 9, padding: "9px 14px", fontWeight: 700, fontSize: "0.8rem" }}>إلغاء</button>
+                          <button onClick={() => processCommande(cmd.id)} style={{ background: c.cardGreen, color: "#fff", borderRadius: 9, padding: "9px 0", fontWeight: 700, fontSize: "0.8rem", flex: 1 }}>Confirmer et générer le bon</button>
+                          <button onClick={() => setProcessingId(null)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 9, padding: "9px 14px", fontWeight: 700, fontSize: "0.8rem" }}>Annuler</button>
                         </div>
                       </div>
                     )}
                   </div>
                 ))}
-                {mesCommandes.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>ماكاينش طلبات دابا</p>}
+                {mesCommandes.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>Aucun(e) طلبات دابا</p>}
               </div>
             </div>
           );
         })()}
 
-        {tab === "السوق" && (() => {
-          if (isLocked("السوق")) return <LockedFeature nom="السوق" />;
-          const filtered = marketplaceGlobal.filter((l) => mFilter === "الكل" ? true : mFilter === "إعلاناتي" ? l.farmId === currentFarmId : l.type === mFilter);
+        {tab === "Marché" && (() => {
+          if (isLocked("Marché")) return <LockedFeature nom="Marché" />;
+          const filtered = marketplaceGlobal.filter((l) => mFilter === "Tout" ? true : mFilter === "إعNonناتي" ? l.farmId === currentFarmId : l.type === mFilter);
           return (
             <div>
               <div className="flex items-center justify-between mb-1">
-                <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>سوق التبادل بين الفيرمات</h2>
-                <AddButton label="زيد إعلان" open={showAddListing} onClick={() => setShowAddListing(!showAddListing)} />
+                <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>سوق التبادل بين Fermes</h2>
+                <AddButton label="زيد إعNonن" open={showAddListing} onClick={() => setShowAddListing(!showAddListing)} />
               </div>
-              <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">فيرمة عندها زايد، فيرمة أخرى محتاجة — تبادل مباشر بلا وسيط</p>
+              <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">فيرمة عندها زايد، فيرمة أخرى Besoinة — تبادل مباشر بNon وسيط</p>
 
               <div className="flex gap-2 mb-4 flex-wrap">
-                {["الكل", "أعرض", "محتاج", "إعلاناتي"].map((f) => (
+                {["Tout", "J'offre", "Besoin", "إعNonناتي"].map((f) => (
                   <button key={f} onClick={() => setMFilter(f)} style={{ background: mFilter === f ? c.cardGreen : c.white, color: mFilter === f ? "#fff" : c.ink, border: `1px solid ${mFilter === f ? c.cardGreen : c.line}`, borderRadius: 10, padding: "7px 12px", fontSize: "0.78rem", fontWeight: 700 }}>{f}</button>
                 ))}
               </div>
 
               {showAddListing && (
                 <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-3 gap-3">
-                  <Field label="النوع"><select value={mForm.type} onChange={(e) => setMForm({ ...mForm, type: e.target.value })} style={inputStyle}><option value="أعرض">أعرض للبيع/التبادل</option><option value="محتاج">محتاج نشري</option></select></Field>
-                  <Field label="المنتج"><input list="stockNamesM" value={mForm.produit} onChange={(e) => setMForm({ ...mForm, produit: e.target.value })} placeholder="مبيد فطريات..." style={inputStyle} />
+                  <Field label="Type"><select value={mForm.type} onChange={(e) => setMForm({ ...mForm, type: e.target.value })} style={inputStyle}><option value="J'offre">J'offre للبيع/التبادل</option><option value="Besoin">Besoin نشري</option></select></Field>
+                  <Field label="المنتج"><input list="stockNamesM" value={mForm.produit} onChange={(e) => setMForm({ ...mForm, produit: e.target.value })} placeholder="Fongicide..." style={inputStyle} />
                     <datalist id="stockNamesM">{data.stock.map((s) => <option key={s.id} value={s.nom} />)}</datalist>
                   </Field>
-                  <Field label="الوحدة"><select value={mForm.wehda} onChange={(e) => setMForm({ ...mForm, wehda: e.target.value })} style={inputStyle}><option>كيلو</option><option>لتر</option><option>كيس</option><option>وحدة</option></select></Field>
+                  <Field label="Unité"><select value={mForm.wehda} onChange={(e) => setMForm({ ...mForm, wehda: e.target.value })} style={inputStyle}><option>kilo</option><option>litre</option><option>sac</option><option>وحدة</option></select></Field>
                   <Field label="الكمية"><input type="number" value={mForm.kammiya} onChange={(e) => setMForm({ ...mForm, kammiya: e.target.value })} style={inputStyle} /></Field>
-                  <Field label="السعر/وحدة (DH) — اختياري"><input type="number" value={mForm.prix} onChange={(e) => setMForm({ ...mForm, prix: e.target.value })} style={inputStyle} /></Field>
-                  <Field label="رقم الهاتف للتواصل"><input value={mForm.contactTel} onChange={(e) => setMForm({ ...mForm, contactTel: e.target.value })} placeholder="0661-..." style={inputStyle} /></Field>
-                  <div className="col-span-3"><Field label="وصف قصير"><input value={mForm.description} onChange={(e) => setMForm({ ...mForm, description: e.target.value })} style={inputStyle} /></Field></div>
-                  <div className="col-span-3"><button onClick={addListing} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, width: "100%" }}>نشر الإعلان</button></div>
+                  <Field label="Prix/unité (DH) — optionnel"><input type="number" value={mForm.prix} onChange={(e) => setMForm({ ...mForm, prix: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Numéro de téléphone de contact"><input value={mForm.contactTel} onChange={(e) => setMForm({ ...mForm, contactTel: e.target.value })} placeholder="0661-..." style={inputStyle} /></Field>
+                  <div className="col-span-3"><Field label="Brève description"><input value={mForm.description} onChange={(e) => setMForm({ ...mForm, description: e.target.value })} style={inputStyle} /></Field></div>
+                  <div className="col-span-3"><button onClick={addListing} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, width: "100%" }}>نشر الإعNonن</button></div>
                 </div>
               )}
 
@@ -1331,7 +1331,7 @@ export default function App() {
                   <div key={l.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <span style={{ background: l.type === "أعرض" ? "rgba(42,157,143,0.12)" : "rgba(244,162,97,0.14)", color: l.type === "أعرض" ? c.cardGreenDeep : c.orange, borderRadius: 999, padding: "3px 10px", fontSize: "0.68rem", fontWeight: 700 }}>{l.type}</span>
+                        <span style={{ background: l.type === "J'offre" ? "rgba(42,157,143,0.12)" : "rgba(244,162,97,0.14)", color: l.type === "J'offre" ? c.cardGreenDeep : c.orange, borderRadius: 999, padding: "3px 10px", fontSize: "0.68rem", fontWeight: 700 }}>{l.type}</span>
                         <span style={{ background: c.bg, borderRadius: 999, padding: "2px 9px", fontSize: "0.66rem", fontWeight: 700, color: c.inkSoft }}>{l.farmNom}</span>
                       </div>
                       <span style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{l.date}</span>
@@ -1345,20 +1345,20 @@ export default function App() {
                         <button onClick={() => removeListing(l.id)}><Trash2 size={16} color={c.danger} /></button>
                       ) : (
                         <a href={`tel:${l.contactTel}`} style={{ background: c.cardGreen, borderRadius: 9, padding: "8px 14px" }} className="flex items-center gap-1.5">
-                          <Phone size={13} color="#fff" /><span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#fff" }}>تواصل مع {l.contactNom}</span>
+                          <Phone size={13} color="#fff" /><span style={{ fontSize: "0.75rem", fontWeight: 700, color: "#fff" }}>Contacter {l.contactNom}</span>
                         </a>
                       )}
                     </div>
                   </div>
                 ))}
-                {filtered.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>ماكاينش إعلانات فهاد الفئة دابا</p>}
+                {filtered.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>Aucun(e) إعNonنات فهاد Catégorie دابا</p>}
               </div>
             </div>
           );
         })()}
 
-        {tab === "القطع" && (() => {
-          if (isLocked("القطع")) return <LockedFeature nom="القطع" />;
+        {tab === "Parcelles" && (() => {
+          if (isLocked("Parcelles")) return <LockedFeature nom="Parcelles" />;
           const nearby = incidentsGlobal
             .map((inc) => ({ ...inc, dist: distanceKm(data.gps, inc.gps) }))
             .filter((inc) => inc.dist <= 60)
@@ -1366,17 +1366,17 @@ export default function App() {
           return (
           <div>
             <div className="flex items-center justify-between mb-1">
-              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>إنذار مبكر — آفات وأمراض قريبة منك</h2>
-              <AddButton label="بلّغ عن مشكل" open={showReportIssue} onClick={() => setShowReportIssue(!showReportIssue)} />
+              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Alerte précoce — ravageurs et maladies proches de vous</h2>
+              <AddButton label="Signaler un problème" open={showReportIssue} onClick={() => setShowReportIssue(!showReportIssue)} />
             </div>
-            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">مبني على القرب الجغرافي الحقيقي (GPS) بين كل مستخدمي زيرو مانويل — دائرة 60 كلم</p>
+            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">مبني على القرب الجغرافي الحقيقي (GPS) entre tous les utilisateurs de Zero Manuel — rayon de 60 km</p>
 
             {showReportIssue && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-3 gap-3">
-                <Field label="المحصول المتأثر"><select value={issueForm.produit} onChange={(e) => setIssueForm({ ...issueForm, produit: e.target.value })} style={inputStyle}><option value="avocat">أفوكا</option><option value="fraise">فريز</option></select></Field>
-                <Field label="اسم الآفة/المرض"><input value={issueForm.probleme} onChange={(e) => setIssueForm({ ...issueForm, probleme: e.target.value })} placeholder="مثلا: عنكبوت أحمر" style={inputStyle} /></Field>
-                <Field label="الشدة"><select value={issueForm.severite} onChange={(e) => setIssueForm({ ...issueForm, severite: e.target.value })} style={inputStyle}><option>خفيف</option><option>متوسط</option><option>خطير</option></select></Field>
-                <div className="col-span-3"><button onClick={addIncident} style={{ background: c.danger, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%" }}>نشر التنبيه للجيران</button></div>
+                <Field label="Culture affectée"><select value={issueForm.produit} onChange={(e) => setIssueForm({ ...issueForm, produit: e.target.value })} style={inputStyle}><option value="avocat">Avocat</option><option value="fraise">Fraise</option></select></Field>
+                <Field label="Nom du ravageur/maladie"><input value={issueForm.probleme} onChange={(e) => setIssueForm({ ...issueForm, probleme: e.target.value })} placeholder="مثNon: Acarien rouge" style={inputStyle} /></Field>
+                <Field label="Gravité"><select value={issueForm.severite} onChange={(e) => setIssueForm({ ...issueForm, severite: e.target.value })} style={inputStyle}><option>Léger</option><option>Moyen</option><option>Grave</option></select></Field>
+                <div className="col-span-3"><button onClick={addIncident} style={{ background: c.danger, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%" }}>نشر الAlerte للجيران</button></div>
               </div>
             )}
 
@@ -1386,18 +1386,18 @@ export default function App() {
                   <div key={inc.id} style={{ background: "rgba(193,89,79,0.08)", border: `1px solid ${c.danger}`, borderRadius: 12 }} className="p-3 flex items-center gap-3">
                     <AlertTriangle size={17} color={c.danger} />
                     <span style={{ fontSize: "0.82rem", color: c.inkSoft }}>
-                      <b>{inc.probleme}</b> فـ{inc.produit === "avocat" ? "الأفوكا" : "الفريز"} — بلغ عنه <b>{inc.farmNom}</b> على بعد <b>{inc.dist} كلم</b> منك (شدة: {inc.severite}) · {inc.date}
+                      <b>{inc.probleme}</b> فـ{inc.produit === "avocat" ? "الAvocat" : "الFraise"} — signalé par <b>{inc.farmNom}</b> à <b>{inc.dist} كلم</b> de vous (gravité : {inc.severite}) · {inc.date}
                     </span>
                   </div>
                 ))}
               </div>
             ) : (
-              <p style={{ color: c.inkMuted2, fontSize: "0.8rem" }} className="mb-6">ماكاينش تنبيهات قريبة منك دابا — الوضعية هادئة فمنطقتك 👍</p>
+              <p style={{ color: c.inkMuted2, fontSize: "0.8rem" }} className="mb-6">Aucun(e) Alerteات قريبة منك دابا — الوضعية هادئة فمنطقتك 👍</p>
             )}
 
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>موقع الفيرمة بالقمر الصناعي</h2>
-              <span style={{ color: c.inkMuted2, fontSize: "0.68rem" }}>موقع تجريبي — عطينا الإحداثيات الحقيقية باش نبدلوه</span>
+              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Localisation de la ferme par satellite</h2>
+              <span style={{ color: c.inkMuted2, fontSize: "0.68rem" }}>Position de démonstration — donnez les vraies coordonnées pour la remplacer</span>
             </div>
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", overflow: "hidden" }} className="mb-5">
               <iframe
@@ -1408,25 +1408,25 @@ export default function App() {
               />
             </div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>خريطة القطع</h2>
+              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Carte Parcelles</h2>
               <div className="flex items-center gap-2">
-                <span style={{ color: c.inkMuted2, fontSize: "0.75rem" }}>{data.parcelles.reduce((s, p) => s + p.ha, 0).toFixed(1)} هكتار</span>
-                {canEdit("القطع") && <AddButton label="زيد قطعة" open={showAddParcelle} onClick={() => setShowAddParcelle(!showAddParcelle)} />}
+                <span style={{ color: c.inkMuted2, fontSize: "0.75rem" }}>{data.parcelles.reduce((s, p) => s + p.ha, 0).toFixed(1)} hectares</span>
+                {canEdit("Parcelles") && <AddButton label="زيد parcellesة" open={showAddParcelle} onClick={() => setShowAddParcelle(!showAddParcelle)} />}
               </div>
             </div>
 
             {showAddParcelle && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
-                <Field label="الرمز (مثلا A1)"><input value={pcForm.code} onChange={(e) => setPcForm({ ...pcForm, code: e.target.value })} style={inputStyle} /></Field>
-                <Field label="الاسم"><input value={pcForm.nom} onChange={(e) => setPcForm({ ...pcForm, nom: e.target.value })} style={inputStyle} /></Field>
-                <Field label="المحصول"><select value={pcForm.crop} onChange={(e) => setPcForm({ ...pcForm, crop: e.target.value })} style={inputStyle}><option value="avocat">أفوكا</option><option value="fraise">فريز</option></select></Field>
-                <Field label="المساحة (هكتار)"><input type="number" step="0.1" value={pcForm.ha} onChange={(e) => setPcForm({ ...pcForm, ha: e.target.value })} style={inputStyle} /></Field>
-                <div className="col-span-2 flex items-end"><button onClick={addParcelle} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>إضافة القطعة</button></div>
+                <Field label="الرمز (مثNon A1)"><input value={pcForm.code} onChange={(e) => setPcForm({ ...pcForm, code: e.target.value })} style={inputStyle} /></Field>
+                <Field label="اNonسم"><input value={pcForm.nom} onChange={(e) => setPcForm({ ...pcForm, nom: e.target.value })} style={inputStyle} /></Field>
+                <Field label="المحصول"><select value={pcForm.crop} onChange={(e) => setPcForm({ ...pcForm, crop: e.target.value })} style={inputStyle}><option value="avocat">Avocat</option><option value="fraise">Fraise</option></select></Field>
+                <Field label="Superficie (ha)"><input type="number" step="0.1" value={pcForm.ha} onChange={(e) => setPcForm({ ...pcForm, ha: e.target.value })} style={inputStyle} /></Field>
+                <div className="col-span-2 flex items-end"><button onClick={addParcelle} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>Ajouter Parcellesة</button></div>
               </div>
             )}
 
             {data.parcelles.length === 0 ? (
-              <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }} className="mb-4">ماكاينش قطع مسجلة فهاد الفيرمة بعد — زيد أول قطعة بزر "زيد قطعة" فوق</p>
+              <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }} className="mb-4">Aucune parcelle enregistrée pour cette ferme — ajoutez la première avec le bouton "زيد parcellesة" فوق</p>
             ) : (
             <div className="grid grid-cols-4 gap-2.5">
               {data.parcelles.map((p) => { const active = selected && selected.code === p.code; return (
@@ -1442,10 +1442,10 @@ export default function App() {
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="mt-3 p-4">
               <div className="flex items-center justify-between mb-2"><h3 style={{ fontWeight: 800, fontSize: "0.95rem" }}>{selected.nom}</h3><span className="font-mono" style={{ fontSize: "0.78rem", color: c.inkMuted2 }}>{selected.code}</span></div>
               <div className="grid grid-cols-2 gap-2" style={{ fontSize: "0.8rem" }}>
-                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>المساحة</span><span style={{ fontWeight: 700 }}>{selected.ha} هكتار</span></div>
-                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>الري القادم</span><span style={{ fontWeight: 700 }}>{selected.irrigation}</span></div>
-                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>آخر معالجة</span><span style={{ fontWeight: 700 }}>{selected.dernierTraitement}</span></div>
-                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>أمان القطف</span><span style={{ fontWeight: 700, color: selected.secu > 0 ? c.danger : c.cardGreen }}>{selected.secu > 0 ? `${selected.secu} أيام` : "جاهز"}</span></div>
+                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>المhحة</span><span style={{ fontWeight: 700 }}>{selected.ha} hectares</span></div>
+                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Prochaine irrigation</span><span style={{ fontWeight: 700 }}>{selected.irrigation}</span></div>
+                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Dernier traitement</span><span style={{ fontWeight: 700 }}>{selected.dernierTraitement}</span></div>
+                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Délai de sécurité récolte</span><span style={{ fontWeight: 700, color: selected.secu > 0 ? c.danger : c.cardGreen }}>{selected.secu > 0 ? `${selected.secu} أيام` : "جاهز"}</span></div>
               </div>
             </div>
             )}
@@ -1453,37 +1453,37 @@ export default function App() {
           );
         })()}
 
-        {tab === "العمال" && (
-          isLocked("العمال") ? <LockedFeature nom="العمال والبونطاج" /> :
+        {tab === "Employés" && (
+          isLocked("Employés") ? <LockedFeature nom="Employés et pointage" /> :
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>{isWorker ? "البونطاج ديالي" : "بونتاج العمال اليوم"}</h2>
+              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>{isWorker ? "Mon pointage" : "Pointage Employés Aujourd'hui"}</h2>
               <div className="flex items-center gap-2">
                 {!isWorker && (
                   <button onClick={exportJournalPaie} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 10, padding: "8px 12px" }} className="flex items-center gap-1.5">
-                    <Download size={15} color={c.cardGreenDeep} /><span style={{ fontSize: "0.8rem", fontWeight: 700, color: c.cardGreenDeep }}>جورنال دو باي</span>
+                    <Download size={15} color={c.cardGreenDeep} /><span style={{ fontSize: "0.8rem", fontWeight: 700, color: c.cardGreenDeep }}>Journal de paie</span>
                   </button>
                 )}
-                <AddButton label="بونتي" open={showAddWorker} onClick={() => setShowAddWorker(!showAddWorker)} />
+                <AddButton label="Pointer" open={showAddWorker} onClick={() => setShowAddWorker(!showAddWorker)} />
               </div>
             </div>
 
             {!isWorker && (() => {
               const w15 = data.workers.filter((w) => w.dawra === "15");
-              const wMois = data.workers.filter((w) => w.dawra === "شهر");
+              const wMois = data.workers.filter((w) => w.dawra === "Mois");
               const total15 = w15.reduce((s, w) => s + w.moisQte * w.taux, 0);
               const totalMois = wMois.reduce((s, w) => s + w.moisQte * w.taux, 0);
               return (
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 14, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-3">
-                    <div className="flex items-center justify-between mb-1"><span style={{ fontWeight: 700, fontSize: "0.82rem" }}>دورة 15 يوم</span><span style={{ fontSize: "0.68rem", color: c.orange, fontWeight: 700 }}>الخلاص: 31 يوليوز</span></div>
+                    <div className="flex items-center justify-between mb-1"><span style={{ fontWeight: 700, fontSize: "0.82rem" }}>دورة 15 jours</span><span style={{ fontSize: "0.68rem", color: c.orange, fontWeight: 700 }}>الخNonص: 31 يوليوز</span></div>
                     <div style={{ fontWeight: 800, fontSize: "1.1rem", color: c.cardGreenDeep }}>{total15} DH</div>
-                    <div style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{w15.length} عمال: {w15.map((w) => w.nom).join("، ") || "—"}</div>
+                    <div style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{w15.length} Main-d'œuvre: {w15.map((w) => w.nom).join("، ") || "—"}</div>
                   </div>
                   <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 14, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-3">
-                    <div className="flex items-center justify-between mb-1"><span style={{ fontWeight: 700, fontSize: "0.82rem" }}>دورة الشهر</span><span style={{ fontSize: "0.68rem", color: c.orange, fontWeight: 700 }}>الخلاص: 31 يوليوز</span></div>
+                    <div className="flex items-center justify-between mb-1"><span style={{ fontWeight: 700, fontSize: "0.82rem" }}>دورة الMois</span><span style={{ fontSize: "0.68rem", color: c.orange, fontWeight: 700 }}>الخNonص: 31 يوليوز</span></div>
                     <div style={{ fontWeight: 800, fontSize: "1.1rem", color: c.cardGreenDeep }}>{totalMois} DH</div>
-                    <div style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{wMois.length} عمال: {wMois.map((w) => w.nom).join("، ") || "—"}</div>
+                    <div style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{wMois.length} Main-d'œuvre: {wMois.map((w) => w.nom).join("، ") || "—"}</div>
                   </div>
                 </div>
               );
@@ -1496,7 +1496,7 @@ export default function App() {
               if (tacheEntries.length === 0) return null;
               return (
                 <div className="mb-4">
-                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }} className="mb-2">مجموع اليوم حسب المهمة</h3>
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }} className="mb-2">مجموع Aujourd'hui par tâche</h3>
                   <div className="flex gap-2 flex-wrap">
                     {tacheEntries.map(([tache, total]) => (
                       <div key={tache} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="px-3 py-2">
@@ -1520,14 +1520,14 @@ export default function App() {
               if (names.length === 0) return null;
               return (
                 <div className="mb-4">
-                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }} className="mb-2">رصيد كل عامل (هاد الدورة)</h3>
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }} className="mb-2">رصيد كل Ouvrier (هاد Cycle)</h3>
                   <div className="flex flex-col gap-2">
                     {names.map((nom) => (
                       <div key={nom} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="px-3 py-2 flex items-center justify-between">
                         <span style={{ fontWeight: 700, fontSize: "0.82rem" }}>{nom}</span>
                         <div className="text-left">
                           <span className="font-mono" style={{ fontWeight: 800, fontSize: "0.85rem" }}>{balances[nom].total} DH</span>
-                          <div style={{ fontSize: "0.66rem", color: c.inkMuted2 }}>مؤكد: {balances[nom].confirmed} DH</div>
+                          <div style={{ fontSize: "0.66rem", color: c.inkMuted2 }}>Confirmé: {balances[nom].confirmed} DH</div>
                         </div>
                       </div>
                     ))}
@@ -1548,7 +1548,7 @@ export default function App() {
                 {isWorker && iconMode ? (
                   <>
                     <div>
-                      <span style={{ fontSize: "0.72rem", fontWeight: 700, color: c.inkMuted2 }} className="mb-2 block">القطعة</span>
+                      <span style={{ fontSize: "0.72rem", fontWeight: 700, color: c.inkMuted2 }} className="mb-2 block">Parcellesة</span>
                       <div className="grid grid-cols-4 gap-2">
                         {data.parcelles.map((p) => {
                           const active = wForm.parcelle === p.code;
@@ -1582,22 +1582,22 @@ export default function App() {
                     <div>
                       <span style={{ fontSize: "0.72rem", fontWeight: 700, color: c.inkMuted2 }} className="mb-2 block">نوع الوقت</span>
                       <div className="grid grid-cols-2 gap-2">
-                        <button onClick={() => setWForm({ ...wForm, type: "ساعات" })} style={{ background: wForm.type === "ساعات" ? c.cardGreen : c.bg, border: `2px solid ${wForm.type === "ساعات" ? c.cardGreen : c.line}`, borderRadius: 14, padding: "14px 4px" }} className="flex flex-col items-center gap-1.5">
-                          <Clock size={22} color={wForm.type === "ساعات" ? "#fff" : c.inkSoft} /><span style={{ fontSize: "0.78rem", fontWeight: 800, color: wForm.type === "ساعات" ? "#fff" : c.ink }}>بالساعة</span>
+                        <button onClick={() => setWForm({ ...wForm, type: "Heures" })} style={{ background: wForm.type === "Heures" ? c.cardGreen : c.bg, border: `2px solid ${wForm.type === "Heures" ? c.cardGreen : c.line}`, borderRadius: 14, padding: "14px 4px" }} className="flex flex-col items-center gap-1.5">
+                          <Clock size={22} color={wForm.type === "Heures" ? "#fff" : c.inkSoft} /><span style={{ fontSize: "0.78rem", fontWeight: 800, color: wForm.type === "Heures" ? "#fff" : c.ink }}>بالhعة</span>
                         </button>
-                        <button onClick={() => setWForm({ ...wForm, type: "نهار" })} style={{ background: wForm.type === "نهار" ? c.cardGreen : c.bg, border: `2px solid ${wForm.type === "نهار" ? c.cardGreen : c.line}`, borderRadius: 14, padding: "14px 4px" }} className="flex flex-col items-center gap-1.5">
-                          <CalendarClock size={22} color={wForm.type === "نهار" ? "#fff" : c.inkSoft} /><span style={{ fontSize: "0.78rem", fontWeight: 800, color: wForm.type === "نهار" ? "#fff" : c.ink }}>بالنهار</span>
+                        <button onClick={() => setWForm({ ...wForm, type: "Jour" })} style={{ background: wForm.type === "Jour" ? c.cardGreen : c.bg, border: `2px solid ${wForm.type === "Jour" ? c.cardGreen : c.line}`, borderRadius: 14, padding: "14px 4px" }} className="flex flex-col items-center gap-1.5">
+                          <CalendarClock size={22} color={wForm.type === "Jour" ? "#fff" : c.inkSoft} /><span style={{ fontSize: "0.78rem", fontWeight: 800, color: wForm.type === "Jour" ? "#fff" : c.ink }}>بالJour</span>
                         </button>
                       </div>
                     </div>
-                    {wForm.type === "ساعات" ? (
+                    {wForm.type === "Heures" ? (
                       <div className="grid grid-cols-2 gap-3">
-                        <Field label="وقت الدخول"><input type="time" value={wForm.dukhul} onChange={(e) => setWForm({ ...wForm, dukhul: e.target.value })} style={{ ...inputStyle, fontSize: "1.1rem", textAlign: "center", padding: "14px 8px" }} /></Field>
-                        <Field label="وقت الخروج"><input type="time" value={wForm.khuruj} onChange={(e) => setWForm({ ...wForm, khuruj: e.target.value })} style={{ ...inputStyle, fontSize: "1.1rem", textAlign: "center", padding: "14px 8px" }} /></Field>
+                        <Field label="Heure d'entrée"><input type="time" value={wForm.dukhul} onChange={(e) => setWForm({ ...wForm, dukhul: e.target.value })} style={{ ...inputStyle, fontSize: "1.1rem", textAlign: "center", padding: "14px 8px" }} /></Field>
+                        <Field label="Heure de sortie"><input type="time" value={wForm.khuruj} onChange={(e) => setWForm({ ...wForm, khuruj: e.target.value })} style={{ ...inputStyle, fontSize: "1.1rem", textAlign: "center", padding: "14px 8px" }} /></Field>
                       </div>
                     ) : (
                       <div>
-                        <span style={{ fontSize: "0.72rem", fontWeight: 700, color: c.inkMuted2 }} className="mb-2 block">عدد النهارات</span>
+                        <span style={{ fontSize: "0.72rem", fontWeight: 700, color: c.inkMuted2 }} className="mb-2 block">Nombre de jours</span>
                         <div className="flex items-center justify-center gap-4">
                           <button onClick={() => setWForm({ ...wForm, nahar: Math.max(0.5, Number(wForm.nahar) - 0.5) })} style={{ background: c.bg, borderRadius: 999, width: 44, height: 44, fontSize: "1.4rem", fontWeight: 800, color: c.ink }}>−</button>
                           <span className="font-mono" style={{ fontSize: "1.4rem", fontWeight: 800, minWidth: 50, textAlign: "center" }}>{wForm.nahar}</span>
@@ -1608,21 +1608,21 @@ export default function App() {
                   </>
                 ) : (
                 <div className="grid grid-cols-2 gap-3">
-                  {!isWorker && (<Field label="اسم العامل"><input value={wForm.nom} onChange={(e) => setWForm({ ...wForm, nom: e.target.value })} placeholder="اسم العامل" style={inputStyle} /></Field>)}
-                  <Field label="القطعة"><select value={wForm.parcelle} onChange={(e) => setWForm({ ...wForm, parcelle: e.target.value })} style={inputStyle}><option value="">اختار</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code} — {p.nom}</option>)}</select></Field>
-                  <Field label="المهمة"><input value={wForm.tache} onChange={(e) => setWForm({ ...wForm, tache: e.target.value })} placeholder="جني، سقي، تعبئة..." style={inputStyle} /></Field>
-                  <Field label="نوع الخلاص"><select value={wForm.type} onChange={(e) => setWForm({ ...wForm, type: e.target.value })} style={inputStyle}><option value="ساعات">بالساعة</option><option value="نهار">بالنهار</option></select></Field>
-                  {wForm.type === "ساعات" ? (
+                  {!isWorker && (<Field label="اسم الOuvrier"><input value={wForm.nom} onChange={(e) => setWForm({ ...wForm, nom: e.target.value })} placeholder="اسم الOuvrier" style={inputStyle} /></Field>)}
+                  <Field label="Parcellesة"><select value={wForm.parcelle} onChange={(e) => setWForm({ ...wForm, parcelle: e.target.value })} style={inputStyle}><option value="">Choisir</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code} — {p.nom}</option>)}</select></Field>
+                  <Field label="المهمة"><input value={wForm.tache} onChange={(e) => setWForm({ ...wForm, tache: e.target.value })} placeholder="Récolte, irrigation, emballage..." style={inputStyle} /></Field>
+                  <Field label="نوع الخNonص"><select value={wForm.type} onChange={(e) => setWForm({ ...wForm, type: e.target.value })} style={inputStyle}><option value="Heures">بالhعة</option><option value="Jour">بالJour</option></select></Field>
+                  {wForm.type === "Heures" ? (
                     <>
-                      <Field label="وقت الدخول"><input type="time" value={wForm.dukhul} onChange={(e) => setWForm({ ...wForm, dukhul: e.target.value })} style={inputStyle} /></Field>
-                      <Field label="وقت الخروج"><input type="time" value={wForm.khuruj} onChange={(e) => setWForm({ ...wForm, khuruj: e.target.value })} style={inputStyle} /></Field>
+                      <Field label="Heure d'entrée"><input type="time" value={wForm.dukhul} onChange={(e) => setWForm({ ...wForm, dukhul: e.target.value })} style={inputStyle} /></Field>
+                      <Field label="Heure de sortie"><input type="time" value={wForm.khuruj} onChange={(e) => setWForm({ ...wForm, khuruj: e.target.value })} style={inputStyle} /></Field>
                     </>
-                  ) : (<Field label="عدد النهارات"><input type="number" min="0.5" step="0.5" value={wForm.nahar} onChange={(e) => setWForm({ ...wForm, nahar: e.target.value })} style={inputStyle} /></Field>)}
-                  {!isWorker && (<Field label={wForm.type === "ساعات" ? "الأجرة/ساعة (DH)" : "الأجرة/نهار (DH)"}><input type="number" value={wForm.taux} onChange={(e) => setWForm({ ...wForm, taux: e.target.value })} style={inputStyle} /></Field>)}
-                  {!isWorker && (<Field label="دورة الخلاص"><select value={wForm.dawra} onChange={(e) => setWForm({ ...wForm, dawra: e.target.value })} style={inputStyle}><option value="15">كل 15 يوم</option><option value="شهر">بالشهر</option></select></Field>)}
+                  ) : (<Field label="Nombre de jours"><input type="number" min="0.5" step="0.5" value={wForm.nahar} onChange={(e) => setWForm({ ...wForm, nahar: e.target.value })} style={inputStyle} /></Field>)}
+                  {!isWorker && (<Field label={wForm.type === "Heures" ? "Taux/heure (DH)" : "Taux/jour (DH)"}><input type="number" value={wForm.taux} onChange={(e) => setWForm({ ...wForm, taux: e.target.value })} style={inputStyle} /></Field>)}
+                  {!isWorker && (<Field label="دورة الخNonص"><select value={wForm.dawra} onChange={(e) => setWForm({ ...wForm, dawra: e.target.value })} style={inputStyle}><option value="15">Tous les 15 jours</option><option value="Mois">بالMois</option></select></Field>)}
                 </div>
                 )}
-                {wForm.type === "ساعات" && (<div className="flex items-center gap-2" style={{ color: c.inkMuted2, fontSize: "0.78rem" }}><Clock size={14} /><span>مجموع الساعات: {hoursBetween(wForm.dukhul, wForm.khuruj)} سا</span></div>)}
+                {wForm.type === "Heures" && (<div className="flex items-center gap-2" style={{ color: c.inkMuted2, fontSize: "0.78rem" }}><Clock size={14} /><span>مجموع الHeures: {hoursBetween(wForm.dukhul, wForm.khuruj)} h</span></div>)}
 
                 <div style={{ background: c.bg, borderRadius: 12 }} className="p-3 flex items-center gap-3">
                   {!isRecording ? (
@@ -1631,7 +1631,7 @@ export default function App() {
                     <button onClick={stopRecording} style={{ background: c.danger, borderRadius: 999, width: 40, height: 40, animation: "pulse 1.2s infinite" }} className="flex items-center justify-center flex-shrink-0"><Square size={15} color="#fff" fill="#fff" /></button>
                   )}
                   <div className="flex flex-col gap-1 flex-1">
-                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: c.inkSoft }}>{isRecording ? "🔴 كيسجل... كليك باش توقف" : wForm.audioNote ? "✓ ملاحظة صوتية مسجلة" : "ملاحظة صوتية (اختياري) — هضر بالدارجة"}</span>
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700, color: c.inkSoft }}>{isRecording ? "🔴 sacجل... كليك باش توقف" : wForm.audioNote ? "✓ مNonحظة صوتية Inscritة" : "مNonحظة صوتية (اختياري) — هضر بالدارجة"}</span>
                     {wForm.audioNote && !isRecording && (
                       <div className="flex items-center gap-2">
                         <audio controls src={wForm.audioNote} style={{ height: 32, maxWidth: 220 }} />
@@ -1640,12 +1640,12 @@ export default function App() {
                     )}
                   </div>
                 </div>
-                <button onClick={isWorker ? addMyPointage : addWorker} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "11px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, fontSize: "0.85rem" }}>تسجيل البونطاج</button>
+                <button onClick={isWorker ? addMyPointage : addWorker} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "11px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, fontSize: "0.85rem" }}>Enregistrer Le bonطاج</button>
               </div>
             )}
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", overflow: "hidden" }}>
               <div className="grid" style={{ gridTemplateColumns: isWorker ? "1.2fr 1.3fr 1.2fr 0.3fr" : "0.8fr 0.45fr 0.9fr 0.8fr 0.55fr 0.6fr 0.6fr 0.7fr 0.3fr", background: c.bg, fontSize: "0.64rem", color: c.inkMuted2, fontWeight: 700 }}>
-                {(isWorker ? ["القطعة", "المهمة", "الوقت / الكمية", ""] : ["العامل", "القطعة", "المهمة", "الوقت / الكمية", "الدورة", "الموقع", "الخلاص", "الحالة", ""]).map((h) => (<div key={h} className="px-2 py-2">{h}</div>))}
+                {(isWorker ? ["Parcellesة", "المهمة", "Heure / Quantité", ""] : ["الOuvrier", "Parcellesة", "المهمة", "Heure / Quantité", "Cycle", "Localisation", "الخNonص", "الحالة", ""]).map((h) => (<div key={h} className="px-2 py-2">{h}</div>))}
               </div>
               {visibleWorkers.map((w) => (
                 <React.Fragment key={w.id}>
@@ -1660,29 +1660,29 @@ export default function App() {
                       </button>
                     )}
                   </div>
-                  <div className="px-2 py-2" style={{ color: c.inkMuted2, fontSize: "0.7rem" }}>{w.type === "ساعات" ? `${w.dukhul}–${w.khuruj} (${w.qte}سا)` : `${w.qte} نهار`}</div>
-                  {!isWorker && <div className="px-2 py-2"><span style={{ background: c.bg, borderRadius: 999, padding: "2px 7px", fontSize: "0.62rem", fontWeight: 700, color: c.inkSoft }}>{w.dawra === "15" ? "15 يوم" : "الشهر"}</span></div>}
+                  <div className="px-2 py-2" style={{ color: c.inkMuted2, fontSize: "0.7rem" }}>{w.type === "Heures" ? `${w.dukhul}–${w.khuruj} (${w.qte}h)` : `${w.qte} Jour`}</div>
+                  {!isWorker && <div className="px-2 py-2"><span style={{ background: c.bg, borderRadius: 999, padding: "2px 7px", fontSize: "0.62rem", fontWeight: 700, color: c.inkSoft }}>{w.dawra === "15" ? "15 jours" : "الMois"}</span></div>}
                   {!isWorker && (
                     <div className="px-2 py-2">
                       {w.distKm == null ? (
                         <span style={{ fontSize: "0.62rem", color: c.inkMuted2 }}>—</span>
                       ) : w.distKm <= 2 ? (
-                        <span title="قريب من الفيرمة" style={{ color: c.cardGreenDeep, fontSize: "0.62rem", fontWeight: 700 }}>✓ {w.distKm}كلم</span>
+                        <span title="Proche de la ferme" style={{ color: c.cardGreenDeep, fontSize: "0.62rem", fontWeight: 700 }}>✓ {w.distKm}كلم</span>
                       ) : (
-                        <span title="بعيد من الفيرمة — تأكد منو" style={{ color: c.danger, fontSize: "0.62rem", fontWeight: 700 }}>⚠️ {w.distKm}كلم</span>
+                        <span title="Loin de la ferme — à vérifier" style={{ color: c.danger, fontSize: "0.62rem", fontWeight: 700 }}>⚠️ {w.distKm}كلم</span>
                       )}
                     </div>
                   )}
                   {!isWorker && <div className="px-2 py-2 font-mono" style={{ color: c.cardGreenDeep, fontWeight: 700 }}>{w.qte * w.taux} DH</div>}
                   {!isWorker && (
                     <div className="px-2 py-2 flex flex-col gap-1">
-                      <button onClick={() => toggleStatut(w.id)} style={{ background: w.statut === "مؤدى" ? "rgba(42,157,143,0.12)" : "rgba(244,162,97,0.15)", borderRadius: 999, padding: "2px 6px" }} className="flex items-center gap-1">
-                        <CheckCircle2 size={10} color={w.statut === "مؤدى" ? c.cardGreenDeep : c.orange} />
-                        <span style={{ fontSize: "0.6rem", fontWeight: 700, color: w.statut === "مؤدى" ? c.cardGreenDeep : c.orange }}>{w.statut}</span>
+                      <button onClick={() => toggleStatut(w.id)} style={{ background: w.statut === "Payé" ? "rgba(42,157,143,0.12)" : "rgba(244,162,97,0.15)", borderRadius: 999, padding: "2px 6px" }} className="flex items-center gap-1">
+                        <CheckCircle2 size={10} color={w.statut === "Payé" ? c.cardGreenDeep : c.orange} />
+                        <span style={{ fontSize: "0.6rem", fontWeight: 700, color: w.statut === "Payé" ? c.cardGreenDeep : c.orange }}>{w.statut}</span>
                       </button>
                       <button onClick={() => toggleConfirme(w.id)} style={{ background: w.confirme ? "rgba(92,134,168,0.12)" : "rgba(148,163,184,0.15)", borderRadius: 999, padding: "2px 6px" }} className="flex items-center gap-1">
                         <ShieldCheck size={10} color={w.confirme ? c.blue : c.inkMuted2} />
-                        <span style={{ fontSize: "0.6rem", fontWeight: 700, color: w.confirme ? c.blue : c.inkMuted2 }}>{w.confirme ? "مؤكد" : "قيد المراجعة"}</span>
+                        <span style={{ fontSize: "0.6rem", fontWeight: 700, color: w.confirme ? c.blue : c.inkMuted2 }}>{w.confirme ? "Confirmé" : "En cours de révision"}</span>
                       </button>
                     </div>
                   )}
@@ -1696,16 +1696,16 @@ export default function App() {
                 </React.Fragment>
               ))}
             </div>
-            {!isWorker && <div className="flex justify-end mt-2"><span style={{ fontWeight: 800, fontSize: "0.85rem" }}>مجموع خلاص اليوم: {kpis.totalKhlas} DH</span></div>}
+            {!isWorker && <div className="flex justify-end mt-2"><span style={{ fontWeight: 800, fontSize: "0.85rem" }}>مجموع خNonص Aujourd'hui: {kpis.totalKhlas} DH</span></div>}
           </div>
         )}
 
-        {tab === "المخزون" && (
-          isLocked("المخزون") ? <LockedFeature nom="المخزون" /> :
+        {tab === "Stock" && (
+          isLocked("Stock") ? <LockedFeature nom="Stock" /> :
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>مخزون المدخلات</h2>
-              {canEdit("المخزون") && <AddButton label="حركة مخزون" open={showAddStock} onClick={() => setShowAddStock(!showAddStock)} />}
+              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>مخزون المدخNonت</h2>
+              {canEdit("Stock") && <AddButton label="Mouvement de stock" open={showAddStock} onClick={() => setShowAddStock(!showAddStock)} />}
             </div>
 
             {data.stock.filter((s) => s.kammiya <= s.seuil).length > 0 && (
@@ -1713,7 +1713,7 @@ export default function App() {
                 {data.stock.filter((s) => s.kammiya <= s.seuil).map((s) => (
                   <div key={s.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRight: `4px solid ${c.danger}`, borderRadius: 12, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-3 flex items-center gap-3">
                     <AlertTriangle size={17} color={c.danger} />
-                    <span style={{ fontSize: "0.82rem", color: c.inkSoft }}>{s.nom} — باقي غير {s.kammiya} {s.wehda} (حد التنبيه {s.seuil}) — خاص تشري</span>
+                    <span style={{ fontSize: "0.82rem", color: c.inkSoft }}>{s.nom} — باقي غير {s.kammiya} {s.wehda} (حد الAlerte {s.seuil}) — il faut acheter</span>
                   </div>
                 ))}
               </div>
@@ -1721,40 +1721,40 @@ export default function App() {
 
             {showAddStock && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-3 gap-3">
-                <Field label="اسم المنتج"><input list="stockNames" value={sForm.nom} onChange={(e) => setSForm({ ...sForm, nom: e.target.value })} placeholder="مبيد فطريات..." style={inputStyle} />
+                <Field label="Nom du produit"><input list="stockNames" value={sForm.nom} onChange={(e) => setSForm({ ...sForm, nom: e.target.value })} placeholder="Fongicide..." style={inputStyle} />
                   <datalist id="stockNames">{data.stock.map((s) => <option key={s.id} value={s.nom} />)}</datalist>
                 </Field>
-                <Field label="الفئة"><select value={sForm.categorie} onChange={(e) => setSForm({ ...sForm, categorie: e.target.value })} style={inputStyle}><option>دواء</option><option>سماد</option><option>تعبئة</option><option>أخرى</option></select></Field>
-                <Field label="نوع الحركة"><select value={sForm.mouvement} onChange={(e) => setSForm({ ...sForm, mouvement: e.target.value })} style={inputStyle}><option value="دخول">دخول (شراء)</option><option value="خروج">خروج (استعمال)</option></select></Field>
+                <Field label="Catégorie"><select value={sForm.categorie} onChange={(e) => setSForm({ ...sForm, categorie: e.target.value })} style={inputStyle}><option>Produit phyto</option><option>Engrais</option><option>Emballage</option><option>أخرى</option></select></Field>
+                <Field label="Type de mouvement"><select value={sForm.mouvement} onChange={(e) => setSForm({ ...sForm, mouvement: e.target.value })} style={inputStyle}><option value="Entrée">Entrée (شراء)</option><option value="Sortie">Sortie (استMain-d'œuvre)</option></select></Field>
                 <Field label="الكمية"><input type="number" value={sForm.kammiya} onChange={(e) => setSForm({ ...sForm, kammiya: e.target.value })} style={inputStyle} /></Field>
-                <Field label="الوحدة"><select value={sForm.wehda} onChange={(e) => setSForm({ ...sForm, wehda: e.target.value })} style={inputStyle}><option>كيلو</option><option>لتر</option><option>كيس</option></select></Field>
-                <Field label="حد التنبيه (لمنتج جديد)"><input type="number" value={sForm.seuil} onChange={(e) => setSForm({ ...sForm, seuil: e.target.value })} style={inputStyle} /></Field>
-                {sForm.mouvement === "دخول" && (
+                <Field label="Unité"><select value={sForm.wehda} onChange={(e) => setSForm({ ...sForm, wehda: e.target.value })} style={inputStyle}><option>kilo</option><option>litre</option><option>sac</option></select></Field>
+                <Field label="حد الAlerte (لمنتج Nouveau)"><input type="number" value={sForm.seuil} onChange={(e) => setSForm({ ...sForm, seuil: e.target.value })} style={inputStyle} /></Field>
+                {sForm.mouvement === "Entrée" && (
                   <>
-                    <Field label="سعر الشراء الإجمالي (DH)"><input type="number" value={sForm.prix} onChange={(e) => setSForm({ ...sForm, prix: e.target.value })} placeholder="اختياري — كيصيفط فاتورة للمحاسب" style={inputStyle} /></Field>
-                    <Field label="المورد"><input value={sForm.fournisseur} onChange={(e) => setSForm({ ...sForm, fournisseur: e.target.value })} style={inputStyle} /></Field>
-                    <Field label="بون الكوموند المرتبط">
+                    <Field label="Prix d'achat total (DH)"><input type="number" value={sForm.prix} onChange={(e) => setSForm({ ...sForm, prix: e.target.value })} placeholder="اختياري — كيصيفط فاتورة للComptable" style={inputStyle} /></Field>
+                    <Field label="Fournisseur"><input value={sForm.fournisseur} onChange={(e) => setSForm({ ...sForm, fournisseur: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="Bon de commande lié">
                       <select value={sForm.poNumero} onChange={(e) => setSForm({ ...sForm, poNumero: e.target.value })} style={inputStyle}>
-                        <option value="">— بلا بون (كيولي ناقص) —</option>
-                        {commandesGlobal.filter((cmd) => (cmd.farmId === currentFarmId || cmd.destFarmId === currentFarmId) && cmd.statut === "تم الطلب").map((cmd) => (<option key={cmd.id} value={cmd.poNumero}>{cmd.poNumero} — {cmd.produit}{cmd.farmId !== currentFarmId ? ` (من ${cmd.farmNom})` : ""}</option>))}
+                        <option value="">— بNon بون (كيولي ناقص) —</option>
+                        {commandesGlobal.filter((cmd) => (cmd.farmId === currentFarmId || cmd.destFarmId === currentFarmId) && cmd.statut === "Commandé").map((cmd) => (<option key={cmd.id} value={cmd.poNumero}>{cmd.poNumero} — {cmd.produit}{cmd.farmId !== currentFarmId ? ` (من ${cmd.farmNom})` : ""}</option>))}
                       </select>
                     </Field>
-                    <Field label="صورة/سكان بون التسليم أو الفاتورة">
+                    <Field label="Photo/scan du bon de livraison ou de la facture">
                       <input type="file" accept="image/*,application/pdf" capture="environment" onChange={handleFactureFile} style={{ ...inputStyle, padding: "6px 8px" }} />
                       {sForm.factureNom && <span style={{ fontSize: "0.68rem", color: c.cardGreenDeep, fontWeight: 700 }}>✓ {sForm.factureNom}</span>}
                     </Field>
                     <div className="col-span-3" style={{ background: "rgba(244,162,97,0.1)", borderRadius: 10, padding: "8px 10px" }}>
-                      <span style={{ fontSize: "0.7rem", color: c.inkSoft }}>⚠️ خاص التلاتة: بون الريسيبسيون (كيتولد وحدو) + بون الكوموند + صورة بون التسليم/الفاتورة. إيلا ناقص واحد، غادي يوصل تنبيه للمالك.</span>
+                      <span style={{ fontSize: "0.7rem", color: c.inkSoft }}>⚠️ خاص التNonتة: Bon de réception (كيتولد وحدو) + Bon de commande + Photo du bon de livraison/facture. إيNon ناقص واحد، غادي يوصل Alerte للمالك.</span>
                     </div>
                   </>
                 )}
-                <div className="col-span-3"><button onClick={addStockMovement} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>تسجيل الحركة</button></div>
+                <div className="col-span-3"><button onClick={addStockMovement} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>Enregistrer le mouvement</button></div>
               </div>
             )}
 
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
               <div className="grid" style={{ gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1fr", background: c.bg, fontSize: "0.68rem", color: c.inkMuted2, fontWeight: 700 }}>
-                {["المنتج", "الفئة", "الكمية المتوفرة", "حد التنبيه", "الحالة"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
+                {["المنتج", "Catégorie", "Quantité disponible", "حد الAlerte", "الحالة"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
               </div>
               {data.stock.map((s) => {
                 const low = s.kammiya <= s.seuil;
@@ -1765,30 +1765,30 @@ export default function App() {
                     <div className="px-3 py-2 font-mono" style={{ fontWeight: 700, color: low ? c.danger : c.ink }}>{s.kammiya} {s.wehda}</div>
                     <div className="px-3 py-2 font-mono" style={{ color: c.inkMuted2 }}>{s.seuil} {s.wehda}</div>
                     <div className="px-3 py-2">
-                      <span style={{ background: low ? "rgba(193,89,79,0.12)" : "rgba(42,157,143,0.12)", color: low ? c.danger : c.cardGreenDeep, borderRadius: 999, padding: "3px 9px", fontSize: "0.68rem", fontWeight: 700 }}>{low ? "منخفض" : "كافي"}</span>
+                      <span style={{ background: low ? "rgba(193,89,79,0.12)" : "rgba(42,157,143,0.12)", color: low ? c.danger : c.cardGreenDeep, borderRadius: 999, padding: "3px 9px", fontSize: "0.68rem", fontWeight: 700 }}>{low ? "Faible" : "Suffisant"}</span>
                     </div>
                   </div>
                 );
               })}
-              {data.stock.length === 0 && <div className="px-3 py-4" style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>ماكاينش منتجات مسجلة فالمخزون</div>}
+              {data.stock.length === 0 && <div className="px-3 py-4" style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>Aucun(e) منتجات Inscritة فStock</div>}
             </div>
           </div>
         )}
 
-        {tab === "الوزينات" && (() => {
-          if (isLocked("الوزينات")) return <LockedFeature nom="الوزينات" />;
+        {tab === "Réceptions" && (() => {
+          if (isLocked("Réceptions")) return <LockedFeature nom="Réceptions" />;
           const uniquePatrons = [...new Set(data.wazin.map((w) => w.patron || w.wazan))];
           const parPatron = uniquePatrons.map((patron) => {
             const lignes = data.wazin.filter((w) => (w.patron || w.wazan) === patron);
             const totalKg = lignes.reduce((s, w) => s + w.kg, 0);
             const totalDH = lignes.reduce((s, w) => s + w.kg * w.prixKg, 0);
-            const enAttente = lignes.filter((w) => w.statut === "فالانتظار").reduce((s, w) => s + w.kg * w.prixKg, 0);
+            const enAttente = lignes.filter((w) => w.statut === "En attente").reduce((s, w) => s + w.kg * w.prixKg, 0);
             return { patron, wazins: [...new Set(lignes.map((w) => w.wazan))], totalKg, totalDH, enAttente };
           });
           return (
           <div>
-            <h2 className="font-display mb-1" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>حسب الباطرون (مجمّع)</h2>
-            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">عدة وزينات ممكن يرجعو لنفس الشخص/الشركة — هنا المجموع الحقيقي المستحق ليه</p>
+            <h2 className="font-display mb-1" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Par patron (regroupé)</h2>
+            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">عدة وزينات ممكن يرجعو لنفس الشخص/الشركة — هنا Total الحقيقي المستحق ليه</p>
             <div className="flex flex-col gap-2 mb-6">
               {parPatron.map((pp) => (
                 <div key={pp.patron} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 14, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-3">
@@ -1797,33 +1797,33 @@ export default function App() {
                     <span className="font-mono" style={{ fontWeight: 800, color: c.cardGreenDeep }}>{pp.totalDH.toLocaleString()} DH</span>
                   </div>
                   <div style={{ fontSize: "0.72rem", color: c.inkMuted2 }} className="flex items-center justify-between">
-                    <span>الوزينات: {pp.wazins.join(" · ")} — {pp.totalKg} كلغ</span>
-                    {pp.enAttente > 0 && <span style={{ color: c.orange, fontWeight: 700 }}>فالانتظار: {pp.enAttente.toLocaleString()} DH</span>}
+                    <span>Réceptions: {pp.wazins.join(" · ")} — {pp.totalKg} kg</span>
+                    {pp.enAttente > 0 && <span style={{ color: c.orange, fontWeight: 700 }}>En attente: {pp.enAttente.toLocaleString()} DH</span>}
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="flex items-center justify-between mb-3"><h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>سجل الوزينات — تفصيل</h2><AddButton label="زيد شحنة" open={showAddWazin} onClick={() => setShowAddWazin(!showAddWazin)} /></div>
+            <div className="flex items-center justify-between mb-3"><h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>سجل Réceptions — détail</h2><AddButton label="زيد Envoi" open={showAddWazin} onClick={() => setShowAddWazin(!showAddWazin)} /></div>
             {showAddWazin && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-2 gap-3">
-                <Field label="القطعة"><select value={zForm.parcelle} onChange={(e) => setZForm({ ...zForm, parcelle: e.target.value })} style={inputStyle}><option value="">اختار</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code}</option>)}</select></Field>
-                <Field label="الوزان"><input value={zForm.wazan} onChange={(e) => setZForm({ ...zForm, wazan: e.target.value })} placeholder="وزان سيدي بنور..." style={inputStyle} /></Field>
-                <Field label="الباطرون (اختياري إيلا كيفرق عن اسم الوزان)">
-                  <input list="patronsList" value={zForm.patron} onChange={(e) => setZForm({ ...zForm, patron: e.target.value })} placeholder="مثلا: الحاج مصطفى" style={inputStyle} />
+                <Field label="Parcellesة"><select value={zForm.parcelle} onChange={(e) => setZForm({ ...zForm, parcelle: e.target.value })} style={inputStyle}><option value="">Choisir</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code}</option>)}</select></Field>
+                <Field label="Pesée"><input value={zForm.wazan} onChange={(e) => setZForm({ ...zForm, wazan: e.target.value })} placeholder="Pesée Sidi Bennour..." style={inputStyle} /></Field>
+                <Field label="الباطرون (اختياري إيNon كيفرق عن اسم Pesée)">
+                  <input list="patronsList" value={zForm.patron} onChange={(e) => setZForm({ ...zForm, patron: e.target.value })} placeholder="مثNon: Haj Mustapha" style={inputStyle} />
                   <datalist id="patronsList">{uniquePatrons.map((p) => <option key={p} value={p} />)}</datalist>
                 </Field>
-                <Field label="الكمية (كلغ)"><input type="number" value={zForm.kg} onChange={(e) => setZForm({ ...zForm, kg: e.target.value })} style={inputStyle} /></Field>
-                <Field label="السعر/كلغ (DH)"><input type="number" step="0.1" value={zForm.prixKg} onChange={(e) => setZForm({ ...zForm, prixKg: e.target.value })} style={inputStyle} /></Field>
-                <Field label="الحالة"><select value={zForm.statut} onChange={(e) => setZForm({ ...zForm, statut: e.target.value })} style={inputStyle}><option>فالانتظار</option><option>مؤدى</option></select></Field>
-                <div className="flex items-end"><button onClick={addWazin} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>تسجيل الشحنة</button></div>
+                <Field label="Quantité (kg)"><input type="number" value={zForm.kg} onChange={(e) => setZForm({ ...zForm, kg: e.target.value })} style={inputStyle} /></Field>
+                <Field label="Prix/kg (DH)"><input type="number" step="0.1" value={zForm.prixKg} onChange={(e) => setZForm({ ...zForm, prixKg: e.target.value })} style={inputStyle} /></Field>
+                <Field label="الحالة"><select value={zForm.statut} onChange={(e) => setZForm({ ...zForm, statut: e.target.value })} style={inputStyle}><option>En attente</option><option>Payé</option></select></Field>
+                <div className="flex items-end"><button onClick={addWazin} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>Enregistrer الEnvoi</button></div>
               </div>
             )}
             <div className="flex flex-col gap-2">
               {data.wazin.map((w) => (
                 <div key={w.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-3 flex items-center justify-between">
                   <div className="flex flex-col"><span style={{ fontWeight: 700, fontSize: "0.85rem" }}>{w.wazan}</span><span className="font-mono" style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{w.patron || w.wazan} · {w.parcelle} · {w.date}</span></div>
-                  <div className="flex flex-col items-end"><span className="font-mono" style={{ fontSize: "0.82rem", fontWeight: 700 }}>{w.kg} كلغ · {w.prixKg} DH</span><span style={{ fontSize: "0.7rem", fontWeight: 700, color: w.statut === "مؤدى" ? c.cardGreenDeep : c.orange }}>{w.statut}</span></div>
+                  <div className="flex flex-col items-end"><span className="font-mono" style={{ fontSize: "0.82rem", fontWeight: 700 }}>{w.kg} kg · {w.prixKg} DH</span><span style={{ fontSize: "0.7rem", fontWeight: 700, color: w.statut === "Payé" ? c.cardGreenDeep : c.orange }}>{w.statut}</span></div>
                 </div>
               ))}
             </div>
@@ -1831,8 +1831,8 @@ export default function App() {
           );
         })()}
 
-        {tab === "الفواتير" && (() => {
-          if (isLocked("الفواتير")) return <LockedFeature nom="الفواتير" />;
+        {tab === "Factures" && (() => {
+          if (isLocked("Factures")) return <LockedFeature nom="Factures" />;
           const totalHT = data.invoices.reduce((s, i) => s + i.montantHT, 0);
           const totalTVA = data.invoices.reduce((s, i) => s + i.montantTVA, 0);
           const totalTTC = data.invoices.reduce((s, i) => s + i.montantTTC, 0);
@@ -1843,11 +1843,11 @@ export default function App() {
             <div>
               {currentUser.role === "Owner" && alertesIncompletes.length > 0 && (
                 <div className="mb-5">
-                  <h2 className="font-display mb-2" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>⚠️ عمليات ناقصة — تنبيه للمالك</h2>
+                  <h2 className="font-display mb-2" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>⚠️ عمليات ناقصة — Alerte للمالك</h2>
                   <div className="flex flex-col gap-2">
                     {alertesIncompletes.map((al) => (
                       <div key={al.id} style={{ background: "rgba(193,89,79,0.08)", border: `1px solid ${c.danger}`, borderRadius: 12 }} className="p-3">
-                        <span style={{ fontSize: "0.82rem", color: c.inkSoft }}><b>{al.personne}</b> دخل سلعة (<b>{al.produit}</b>) فـ<b>{al.farmNom}</b> ولكن ماكملش خدمتو — ناقصو: <span style={{ color: c.danger, fontWeight: 700 }}>{al.manque.join(" و ")}</span> · {al.date}</span>
+                        <span style={{ fontSize: "0.82rem", color: c.inkSoft }}><b>{al.personne}</b> a reçu une marchandise (<b>{al.produit}</b>) فـ<b>{al.farmNom}</b> mais n'a pas terminé — il manque : <span style={{ color: c.danger, fontWeight: 700 }}>{al.manque.join(" و ")}</span> · {al.date}</span>
                       </div>
                     ))}
                   </div>
@@ -1856,10 +1856,10 @@ export default function App() {
               {showAchats && (
                 <div className="mb-6">
                   <div className="flex items-center justify-between mb-1">
-                    <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>مشتريات المدخلات — كل الفيرمات</h2>
-                    {nouveauxAchats.length > 0 && <span style={{ background: "rgba(193,89,79,0.12)", color: c.danger, borderRadius: 999, padding: "3px 10px", fontSize: "0.7rem", fontWeight: 700 }}>{nouveauxAchats.length} جديد</span>}
+                    <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>مشتريات المدخNonت — كل Fermes</h2>
+                    {nouveauxAchats.length > 0 && <span style={{ background: "rgba(193,89,79,0.12)", color: c.danger, borderRadius: 999, padding: "3px 10px", fontSize: "0.7rem", fontWeight: 700 }}>{nouveauxAchats.length} Nouveau</span>}
                   </div>
-                  <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">توصل هنا مباشرة ملي أي فيرمة تشري دواء/مدخلات — بغض النظر على المدينة</p>
+                  <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">توصل هنا مباشرة ملي أي فيرمة تشري Produit phyto/مدخNonت — quelle que soit la ville</p>
                   <div className="flex flex-col gap-2">
                     {mesAchats.map((a) => (
                       <div key={a.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRight: `4px solid ${a.vu ? c.cardGreen : c.danger}`, borderRadius: 12, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-3 flex items-center justify-between">
@@ -1878,49 +1878,49 @@ export default function App() {
                               <span style={{ background: c.bg, borderRadius: 999, padding: "2px 8px", fontSize: "0.66rem", fontWeight: 700, color: c.inkSoft }}>{a.farmNom}</span>
                               <span style={{ fontWeight: 700, fontSize: "0.85rem" }}>{a.produit}</span>
                               {a.complet === false && <span style={{ background: "rgba(193,89,79,0.12)", color: c.danger, borderRadius: 999, padding: "2px 8px", fontSize: "0.62rem", fontWeight: 700 }}>ناقص</span>}
-                              {a.complet === true && <span style={{ background: "rgba(42,157,143,0.12)", color: c.cardGreenDeep, borderRadius: 999, padding: "2px 8px", fontSize: "0.62rem", fontWeight: 700 }}>مكتمل</span>}
+                              {a.complet === true && <span style={{ background: "rgba(42,157,143,0.12)", color: c.cardGreenDeep, borderRadius: 999, padding: "2px 8px", fontSize: "0.62rem", fontWeight: 700 }}>مكFaitل</span>}
                             </div>
                             <span className="font-mono" style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{a.kammiya} {a.wehda} · {a.fournisseur} · {a.date} · {a.bonReceptionNumero}{a.poNumero ? ` · ${a.poNumero}` : ""}</span>
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
                           <span className="font-mono" style={{ fontWeight: 700 }}>{a.prix.toLocaleString()} DH</span>
-                          {!a.vu && <button onClick={() => setAchatsGlobal(achatsGlobal.map((x) => x.id === a.id ? { ...x, vu: true } : x))} style={{ background: c.cardGreen, borderRadius: 8, padding: "5px 10px" }}><span style={{ fontSize: "0.68rem", fontWeight: 700, color: "#fff" }}>تمت المراجعة</span></button>}
+                          {!a.vu && <button onClick={() => setAchatsGlobal(achatsGlobal.map((x) => x.id === a.id ? { ...x, vu: true } : x))} style={{ background: c.cardGreen, borderRadius: 8, padding: "5px 10px" }}><span style={{ fontSize: "0.68rem", fontWeight: 700, color: "#fff" }}>Faitت المراجعة</span></button>}
                         </div>
                       </div>
                     ))}
-                    {mesAchats.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>ماكاينش مشتريات دابا</p>}
+                    {mesAchats.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>Aucun(e) مشتريات دابا</p>}
                   </div>
                 </div>
               )}
 
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>الفواتير</h2>
-                {canEdit("الفواتير") && <AddButton label="فاتورة جديدة" open={showAddInvoice} onClick={() => setShowAddInvoice(!showAddInvoice)} />}
+                <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Factures</h2>
+                {canEdit("Factures") && <AddButton label="فاتورة Nouveauة" open={showAddInvoice} onClick={() => setShowAddInvoice(!showAddInvoice)} />}
               </div>
 
               {showAddInvoice && (
                 <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-3 gap-3">
-                  <Field label="الزبون (وزان/عميل)"><input value={invForm.client} onChange={(e) => setInvForm({ ...invForm, client: e.target.value })} style={inputStyle} /></Field>
-                  <Field label="المنتج"><select value={invForm.produit} onChange={(e) => setInvForm({ ...invForm, produit: e.target.value })} style={inputStyle}><option value="avocat">أفوكا</option><option value="fraise">فريز</option></select></Field>
-                  <Field label="الكمية (كلغ)"><input type="number" value={invForm.qte} onChange={(e) => setInvForm({ ...invForm, qte: e.target.value })} style={inputStyle} /></Field>
-                  <Field label="سعر الوحدة (DH)"><input type="number" step="0.1" value={invForm.prixUnitaire} onChange={(e) => setInvForm({ ...invForm, prixUnitaire: e.target.value })} style={inputStyle} /></Field>
-                  <Field label="TVA % (تأكد من المحاسب)"><input type="number" value={invForm.tva} onChange={(e) => setInvForm({ ...invForm, tva: e.target.value })} placeholder="0 إذا معفى" style={inputStyle} /></Field>
-                  <div className="flex items-end"><button onClick={addInvoice} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>إصدار الفاتورة</button></div>
+                  <Field label="Client (pesée/client)"><input value={invForm.client} onChange={(e) => setInvForm({ ...invForm, client: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="المنتج"><select value={invForm.produit} onChange={(e) => setInvForm({ ...invForm, produit: e.target.value })} style={inputStyle}><option value="avocat">Avocat</option><option value="fraise">Fraise</option></select></Field>
+                  <Field label="Quantité (kg)"><input type="number" value={invForm.qte} onChange={(e) => setInvForm({ ...invForm, qte: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Prix unitaire (DH)"><input type="number" step="0.1" value={invForm.prixUnitaire} onChange={(e) => setInvForm({ ...invForm, prixUnitaire: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="TVA % (تأكد من الComptable)"><input type="number" value={invForm.tva} onChange={(e) => setInvForm({ ...invForm, tva: e.target.value })} placeholder="0 si exonéré" style={inputStyle} /></Field>
+                  <div className="flex items-end"><button onClick={addInvoice} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>Émettre la facture</button></div>
                 </div>
               )}
 
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span style={{ fontWeight: 700, fontSize: "0.85rem" }}>ملخص TVA (مبسط)</span>
-                  <button onClick={exportTaxSummary} style={{ background: c.bg, borderRadius: 9, padding: "6px 11px" }} className="flex items-center gap-1.5"><Download size={13} color={c.cardGreenDeep} /><span style={{ fontSize: "0.72rem", fontWeight: 700, color: c.cardGreenDeep }}>تصدير</span></button>
+                  <span style={{ fontWeight: 700, fontSize: "0.85rem" }}>Résumé TVA (simplifié)</span>
+                  <button onClick={exportTaxSummary} style={{ background: c.bg, borderRadius: 9, padding: "6px 11px" }} className="flex items-center gap-1.5"><Download size={13} color={c.cardGreenDeep} /><span style={{ fontSize: "0.72rem", fontWeight: 700, color: c.cardGreenDeep }}>Exporter</span></button>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <div><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>مجموع HT</div><div className="font-mono" style={{ fontWeight: 800 }}>{totalHT.toLocaleString()} DH</div></div>
-                  <div><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>مجموع TVA</div><div className="font-mono" style={{ fontWeight: 800 }}>{totalTVA.toLocaleString()} DH</div></div>
-                  <div><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>مجموع TTC</div><div className="font-mono" style={{ fontWeight: 800, color: c.cardGreenDeep }}>{totalTTC.toLocaleString()} DH</div></div>
+                  <div><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>Total HT</div><div className="font-mono" style={{ fontWeight: 800 }}>{totalHT.toLocaleString()} DH</div></div>
+                  <div><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>Total TVA</div><div className="font-mono" style={{ fontWeight: 800 }}>{totalTVA.toLocaleString()} DH</div></div>
+                  <div><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>Total TTC</div><div className="font-mono" style={{ fontWeight: 800, color: c.cardGreenDeep }}>{totalTTC.toLocaleString()} DH</div></div>
                 </div>
-                <p style={{ fontSize: "0.68rem", color: c.inkMuted2 }} className="mt-2">⚠️ ملخص داخلي فقط — ماشي تصريح ضريبي رسمي، تأكد دائما من محاسبك المعتمد قبل أي تصريح لدى الإدارة الضريبية.</p>
+                <p style={{ fontSize: "0.68rem", color: c.inkMuted2 }} className="mt-2">⚠️ ملخص داخلي فقط — ماشي Déclaration ضريبي رسمي، تأكد دائما من Comptableك المعFaitد قبل أي Déclaration لدى الإدارة الضريبية.</p>
               </div>
 
               <div className="flex flex-col gap-2">
@@ -1936,7 +1936,7 @@ export default function App() {
                     </div>
                   </div>
                 ))}
-                {data.invoices.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>ماكاينش فواتير مسجلة</p>}
+                {data.invoices.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>Aucun(e) فواتير Inscritة</p>}
               </div>
             </div>
           );
@@ -1949,66 +1949,66 @@ export default function App() {
           const nonAffilies = data.employees.filter((e) => e.affilieCNSS === false);
           return (
             <div>
-              <h2 className="font-display mb-4" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>التصاريح الاجتماعية (CNSS)</h2>
+              <h2 className="font-display mb-4" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>التصاريح اNonجFaitاعية (CNSS)</h2>
 
               <div style={{ background: data.cnss.declare ? "rgba(42,157,143,0.08)" : urgent ? "rgba(193,89,79,0.08)" : "rgba(244,162,97,0.08)", border: `1px solid ${data.cnss.declare ? c.cardGreen : urgent ? c.danger : c.orange}`, borderRadius: 16 }} className="p-4 mb-5">
                 <div className="flex items-center justify-between mb-2">
-                  <span style={{ fontWeight: 800, fontSize: "0.95rem" }}>تصريح {data.cnss.moisLabel}</span>
+                  <span style={{ fontWeight: 800, fontSize: "0.95rem" }}>Déclaration {data.cnss.moisLabel}</span>
                   {data.cnss.declare ? (
-                    <span style={{ background: "rgba(42,157,143,0.15)", color: c.cardGreenDeep, borderRadius: 999, padding: "3px 10px", fontSize: "0.72rem", fontWeight: 700 }}>✓ تم — {data.cnss.dateDeclare}</span>
+                    <span style={{ background: "rgba(42,157,143,0.15)", color: c.cardGreenDeep, borderRadius: 999, padding: "3px 10px", fontSize: "0.72rem", fontWeight: 700 }}>✓ Fait — {data.cnss.dateDeclare}</span>
                   ) : (
                     <span style={{ background: urgent ? "rgba(193,89,79,0.15)" : "rgba(244,162,97,0.15)", color: urgent ? c.danger : c.orange, borderRadius: 999, padding: "3px 10px", fontSize: "0.72rem", fontWeight: 700 }}>
-                      {joursRestants === null ? "الأجل ماحددش" : joursRestants < 0 ? `متأخر ${Math.abs(joursRestants)} يوم` : joursRestants === 0 ? "الأجل اليوم" : `باقي ${joursRestants} يوم`}
+                      {joursRestants === null ? "Échéance non définie" : joursRestants < 0 ? `En retard ${Math.abs(joursRestants)} يوم` : joursRestants === 0 ? "Échéance aujourd'hui" : `باقي ${joursRestants} يوم`}
                     </span>
                   )}
                 </div>
                 <div className="flex items-end gap-3">
-                  <Field label="يوم الأجل الشهري (تأكد منو مع المحاسب/CNSS)">
+                  <Field label="Jour d'échéance mensuel (à confirmer avec le comptable/CNSS)">
                     <input type="number" min="1" max="31" value={data.cnss.echeanceJour} onChange={(e) => updateEcheance(e.target.value)} style={{ ...inputStyle, width: 90 }} disabled={!canEdit("CNSS")} />
                   </Field>
                   {!data.cnss.declare && canEdit("CNSS") && (
-                    <button onClick={marquerDeclare} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: "0.8rem", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>تسجيل التصريح كمنجز</button>
+                    <button onClick={marquerDeclare} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "9px 16px", fontWeight: 700, fontSize: "0.8rem", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>Enregistrer الDéclaration كمنجز</button>
                   )}
                 </div>
-                <p style={{ fontSize: "0.68rem", color: c.inkMuted2 }} className="mt-2">⚠️ هذا تذكير داخلي فقط — تأكد دائما من التاريخ الرسمي الصحيح مع محاسبك أو موقع CNSS.</p>
+                <p style={{ fontSize: "0.68rem", color: c.inkMuted2 }} className="mt-2">⚠️ هذا تذكير داخلي فقط — تأكد دائما من التاريخ الرسمي الصحيح مع Comptableك أو موقع CNSS.</p>
               </div>
 
               {nonAffilies.length > 0 && (
                 <div style={{ background: "rgba(193,89,79,0.08)", border: `1px solid ${c.danger}`, borderRadius: 14 }} className="p-3 mb-4 flex items-center gap-2">
                   <AlertTriangle size={16} color={c.danger} />
-                  <span style={{ fontSize: "0.8rem", color: c.inkSoft }}>{nonAffilies.length} عامل غير مسجلين فـ CNSS — خطر قانوني محتمل</span>
+                  <span style={{ fontSize: "0.8rem", color: c.inkSoft }}>{nonAffilies.length} Ouvrier Non inscritين فـ CNSS — خطر قانوني محFaitل</span>
                 </div>
               )}
 
               <div className="flex items-center justify-between mb-2">
-                <h3 style={{ fontWeight: 700, fontSize: "0.88rem" }}>جدول التصريح الكامل — كيتبنى وحدو من كل بونطاج</h3>
+                <h3 style={{ fontWeight: 700, fontSize: "0.88rem" }}>Tableau de déclaration complet — généré automatiquement à partir de chaque pointage</h3>
                 <div className="flex items-center gap-2">
-                  <button onClick={exportOmageModele} style={{ background: c.blue, color: "#fff", borderRadius: 10, padding: "7px 13px", boxShadow: "0 4px 14px -3px rgba(92,134,168,0.4)" }} className="flex items-center gap-1.5"><Download size={14} /><span style={{ fontSize: "0.78rem", fontWeight: 700 }}>تصدير OMAGE</span></button>
-                  <button onClick={exportBDS} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "7px 13px", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }} className="flex items-center gap-1.5"><Download size={14} /><span style={{ fontSize: "0.78rem", fontWeight: 700 }}>جدول عادي</span></button>
+                  <button onClick={exportOmageModele} style={{ background: c.blue, color: "#fff", borderRadius: 10, padding: "7px 13px", boxShadow: "0 4px 14px -3px rgba(92,134,168,0.4)" }} className="flex items-center gap-1.5"><Download size={14} /><span style={{ fontSize: "0.78rem", fontWeight: 700 }}>Exporter OMAGE</span></button>
+                  <button onClick={exportBDS} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "7px 13px", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }} className="flex items-center gap-1.5"><Download size={14} /><span style={{ fontSize: "0.78rem", fontWeight: 700 }}>Tableau standard</span></button>
                 </div>
               </div>
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="mb-5">
                 <div className="grid" style={{ gridTemplateColumns: "1fr 1.1fr 0.7fr 1.3fr 1fr", background: c.bg, fontSize: "0.66rem", color: c.inkMuted2, fontWeight: 700 }}>
-                  {["رقم CNSS", "الاسم", "مسجل", "أيام/ساعات هاد الشهر", "الأجرة (DH)"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
+                  {["N° CNSS", "اNonسم", "Inscrit", "Jours/heures ce mois", "Salaire (DH)"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
                 </div>
                 {data.workers.map((w) => { const emp = getEmployee(w.nom); return (
                   <div key={w.id} className="grid items-center" style={{ gridTemplateColumns: "1fr 1.1fr 0.7fr 1.3fr 1fr", borderTop: `1px solid ${c.line}`, fontSize: "0.78rem" }}>
                     <div className="px-3 py-2 font-mono" style={{ color: c.inkMuted2 }}>{emp.cnssNumero || "—"}</div>
                     <div className="px-3 py-2" style={{ fontWeight: 700 }}>{w.nom}</div>
                     <div className="px-3 py-2">{emp.affilieCNSS ? "✓" : <span style={{ color: c.danger }}>✕</span>}</div>
-                    <div className="px-3 py-2 font-mono" style={{ color: c.inkMuted2 }}>{w.moisQte} {w.type === "ساعات" ? "سا" : "نهار"}</div>
+                    <div className="px-3 py-2 font-mono" style={{ color: c.inkMuted2 }}>{w.moisQte} {w.type === "Heures" ? "h" : "Jour"}</div>
                     <div className="px-3 py-2 font-mono" style={{ fontWeight: 700, color: c.cardGreenDeep }}>{w.moisQte * w.taux} DH</div>
                   </div>
                 );})}
               </div>
 
-              <h3 style={{ fontWeight: 700, fontSize: "0.88rem" }} className="mb-1">ملفات العمال — معلومات ثابتة (كتتعمر أوطوماتيكيا فكل تصدير)</h3>
-              <p style={{ color: c.inkMuted2, fontSize: "0.7rem" }} className="mb-2">عمر هاد المعلومات مرة وحدة لكل عامل، وغادي تبقى تتستعمل فكل الأشهر الجاية</p>
+              <h3 style={{ fontWeight: 700, fontSize: "0.88rem" }} className="mb-1">ملفات Employés — معلومات ثابتة (كتتعمر Automatiqueا فكل Exporter)</h3>
+              <p style={{ color: c.inkMuted2, fontSize: "0.7rem" }} className="mb-2">عمر هاد المعلومات مرة وحدة لكل Ouvrier، وغادي تبقى تتستعمل فكل الأMois الجاية</p>
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "auto", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.74rem" }}>
                   <thead>
                     <tr style={{ background: c.bg }}>
-                      {["العامل", "الاسم الشخصي", "CIN", "تاريخ الدخول", "الحالة العائلية", "عدد الأولاد", "رقم CNSS", "الحالة"].map((h) => (<th key={h} className="px-2 py-2 text-right" style={{ color: c.inkMuted2, fontSize: "0.66rem" }}>{h}</th>))}
+                      {["الOuvrier", "اNonسم الشخصي", "CIN", "Date d'entrée", "Situation familiale", "عدد الأوNonد", "N° CNSS", "الحالة"].map((h) => (<th key={h} className="px-2 py-2 text-right" style={{ color: c.inkMuted2, fontSize: "0.66rem" }}>{h}</th>))}
                     </tr>
                   </thead>
                   <tbody>
@@ -2020,7 +2020,7 @@ export default function App() {
                         <td className="px-2 py-1.5"><input type="date" value={e.dateEntree} onChange={(ev) => updateEmployee(e.id, { dateEntree: ev.target.value })} disabled={!canEdit("CNSS")} style={{ ...inputStyle, padding: "4px 6px", width: 130 }} /></td>
                         <td className="px-2 py-1.5">
                           <select value={e.situationFamiliale} onChange={(ev) => updateEmployee(e.id, { situationFamiliale: ev.target.value })} disabled={!canEdit("CNSS")} style={{ ...inputStyle, padding: "4px 6px", width: 90 }}>
-                            <option value="">—</option><option value="عازب">عازب</option><option value="متزوج">متزوج</option>
+                            <option value="">—</option><option value="Célibataire">Célibataire</option><option value="Marié(e)">Marié(e)</option>
                           </select>
                         </td>
                         <td className="px-2 py-1.5"><input type="number" min="0" value={e.nombreEnfants} onChange={(ev) => updateEmployee(e.id, { nombreEnfants: ev.target.value })} disabled={!canEdit("CNSS")} style={{ ...inputStyle, padding: "4px 6px", width: 60 }} /></td>
@@ -2028,7 +2028,7 @@ export default function App() {
                         <td className="px-2 py-1.5">
                           <button onClick={() => canEdit("CNSS") && toggleAffiliation(e.id)} style={{ background: e.affilieCNSS ? "rgba(42,157,143,0.12)" : "rgba(193,89,79,0.12)", borderRadius: 999, padding: "3px 9px" }} className="flex items-center gap-1">
                             <CheckCircle2 size={12} color={e.affilieCNSS ? c.cardGreenDeep : c.danger} />
-                            <span style={{ fontSize: "0.66rem", fontWeight: 700, color: e.affilieCNSS ? c.cardGreenDeep : c.danger }}>{e.affilieCNSS ? "مسجل" : "غير مسجل"}</span>
+                            <span style={{ fontSize: "0.66rem", fontWeight: 700, color: e.affilieCNSS ? c.cardGreenDeep : c.danger }}>{e.affilieCNSS ? "Inscrit" : "Non inscrit"}</span>
                           </button>
                         </td>
                       </tr>
@@ -2040,8 +2040,8 @@ export default function App() {
           );
         })()}
 
-        {tab === "التكلفة" && (() => {
-          if (isLocked("التكلفة")) return <LockedFeature nom="التكلفة" />;
+        {tab === "Coûts" && (() => {
+          if (isLocked("Coûts")) return <LockedFeature nom="Coûts" />;
           const withPerHa = data.costs.map((cp) => {
             const p = data.parcelles.find((x) => x.code === cp.code);
             const total = cp.dawa + cp.ma + cp.omal;
@@ -2052,14 +2052,14 @@ export default function App() {
           const anomalies = withPerHa.filter((x) => avgParHa > 0 && x.parHa > avgParHa * 1.4);
           return (
           <div>
-            <div className="flex items-center justify-between mb-3"><h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>تكلفة القطع — يوليوز 2026</h2>{canEdit("التكلفة") && <AddButton label="زيد تكلفة" open={showAddCost} onClick={() => setShowAddCost(!showAddCost)} />}</div>
+            <div className="flex items-center justify-between mb-3"><h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>تكلفة Parcelles — Juillet 2026</h2>{canEdit("Coûts") && <AddButton label="Ajouter un coût" open={showAddCost} onClick={() => setShowAddCost(!showAddCost)} />}</div>
 
             {anomalies.length > 0 && (
               <div className="mb-4 flex flex-col gap-2">
                 {anomalies.map((a) => (
                   <div key={a.code} style={{ background: "rgba(193,89,79,0.08)", border: `1px solid ${c.danger}`, borderRadius: 12 }} className="p-3 flex items-center gap-2">
                     <AlertTriangle size={16} color={c.danger} />
-                    <span style={{ fontSize: "0.8rem", color: c.inkSoft }}>⚠️ القطعة <b>{a.code} — {parcelleNom(a.code)}</b> تكلفتها للهكتار ({Math.round(a.parHa)} DH) أعلى من المعدل ({Math.round(avgParHa)} DH) بـ{Math.round((a.parHa / avgParHa - 1) * 100)}% — تأكد منها، ممكن غلط ولا سرقة</span>
+                    <span style={{ fontSize: "0.8rem", color: c.inkSoft }}>⚠️ Parcellesة <b>{a.code} — {parcelleNom(a.code)}</b> تكلفتها للhectares ({Math.round(a.parHa)} DH) supérieur à la moyenne ({Math.round(avgParHa)} DH) de {Math.round((a.parHa / avgParHa - 1) * 100)}% — تأكد منها، ممكن غلط وNon سرقة</span>
                   </div>
                 ))}
               </div>
@@ -2067,15 +2067,15 @@ export default function App() {
 
             {showAddCost && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-3 gap-3">
-                <Field label="القطعة"><select value={cForm.parcelle} onChange={(e) => setCForm({ ...cForm, parcelle: e.target.value })} style={inputStyle}><option value="">اختار</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code}</option>)}</select></Field>
-                <Field label="النوع"><select value={cForm.naw3} onChange={(e) => setCForm({ ...cForm, naw3: e.target.value })} style={inputStyle}><option>دواء</option><option>ماء</option><option>عمال</option></select></Field>
-                <Field label="المبلغ (DH)"><input type="number" value={cForm.mablagh} onChange={(e) => setCForm({ ...cForm, mablagh: e.target.value })} style={inputStyle} /></Field>
-                <div className="col-span-3"><button onClick={addCost} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>إضافة للتكلفة</button></div>
+                <Field label="Parcellesة"><select value={cForm.parcelle} onChange={(e) => setCForm({ ...cForm, parcelle: e.target.value })} style={inputStyle}><option value="">Choisir</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code}</option>)}</select></Field>
+                <Field label="Type"><select value={cForm.naw3} onChange={(e) => setCForm({ ...cForm, naw3: e.target.value })} style={inputStyle}><option>Produit phyto</option><option>Eau</option><option>Main-d'œuvre</option></select></Field>
+                <Field label="Montant (DH)"><input type="number" value={cForm.mablagh} onChange={(e) => setCForm({ ...cForm, mablagh: e.target.value })} style={inputStyle} /></Field>
+                <div className="col-span-3"><button onClick={addCost} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>Ajouter au coût</button></div>
               </div>
             )}
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", overflow: "hidden" }}>
               <div className="grid" style={{ gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1fr", background: c.bg, fontSize: "0.68rem", color: c.inkMuted2, fontWeight: 700 }}>
-                {["القطعة", "دواء", "ماء", "عمال", "المجموع"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
+                {["Parcellesة", "Produit phyto", "Eau", "Main-d'œuvre", "Total"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
               </div>
               {withPerHa.map((cp) => { const isAnomaly = anomalies.some((a) => a.code === cp.code); return (
                 <div key={cp.code} className="grid items-center" style={{ gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1fr", borderTop: `1px solid ${c.line}`, fontSize: "0.8rem" }}>
@@ -2092,44 +2092,44 @@ export default function App() {
           );
         })()}
 
-        {tab === "المصاريف" && (
-          isLocked("المصاريف") ? <LockedFeature nom="المصاريف" /> :
+        {tab === "Dépenses" && (
+          isLocked("Dépenses") ? <LockedFeature nom="Dépenses" /> :
           <div>
             <div className="flex items-center justify-between mb-3">
-              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>المصاريف اليومية بالتفصيل</h2>
-              {canEdit("المصاريف") && <AddButton label="زيد مصروف" open={showAddDepense} onClick={() => setShowAddDepense(!showAddDepense)} />}
+              <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Dépenses Aujourd'huiية بالdétail</h2>
+              {canEdit("Dépenses") && <AddButton label="Ajouter une dépense" open={showAddDepense} onClick={() => setShowAddDepense(!showAddDepense)} />}
             </div>
 
             <div className="flex gap-2 mb-4">
-              {[{ l: "اليوم", v: 0 }, { l: "آخر 3 أيام", v: 2 }, { l: "آخر أسبوع", v: 6 }, { l: "الكل", v: 999 }].map((p) => (
+              {[{ l: "Aujourd'hui", v: 0 }, { l: "3 derniers jours", v: 2 }, { l: "Dernière semaine", v: 6 }, { l: "Tout", v: 999 }].map((p) => (
                 <button key={p.v} onClick={() => setPeriode(p.v)} style={{ background: periode === p.v ? c.cardGreen : c.white, color: periode === p.v ? "#fff" : c.ink, border: `1px solid ${periode === p.v ? c.cardGreen : c.line}`, borderRadius: 10, padding: "7px 12px", fontSize: "0.78rem", fontWeight: 700 }}>{p.l}</button>
               ))}
             </div>
 
             {showAddDepense && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-3 gap-3">
-                <Field label="النوع"><select value={dForm.type} onChange={(e) => setDForm({ ...dForm, type: e.target.value })} style={inputStyle}><option>عمال</option><option>دواء</option><option>ماء</option></select></Field>
-                <Field label="التفاصيل"><input value={dForm.detail} onChange={(e) => setDForm({ ...dForm, detail: e.target.value })} placeholder="مثلا: أحمد — سقي (A1)" style={inputStyle} /></Field>
-                <Field label="المبلغ (DH)"><input type="number" value={dForm.montant} onChange={(e) => setDForm({ ...dForm, montant: e.target.value })} style={inputStyle} /></Field>
-                <div className="col-span-3"><button onClick={addDepense} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, width: "100%" }}>تسجيل المصروف</button></div>
+                <Field label="Type"><select value={dForm.type} onChange={(e) => setDForm({ ...dForm, type: e.target.value })} style={inputStyle}><option>Main-d'œuvre</option><option>Produit phyto</option><option>Eau</option></select></Field>
+                <Field label="Détails"><input value={dForm.detail} onChange={(e) => setDForm({ ...dForm, detail: e.target.value })} placeholder="مثNon: Ahmed — Irrigation (A1)" style={inputStyle} /></Field>
+                <Field label="Montant (DH)"><input type="number" value={dForm.montant} onChange={(e) => setDForm({ ...dForm, montant: e.target.value })} style={inputStyle} /></Field>
+                <div className="col-span-3"><button onClick={addDepense} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, width: "100%" }}>Enregistrer la dépense</button></div>
               </div>
             )}
 
             {(() => {
               const filtered = data.depenses.filter((d) => d.dayOffset <= periode);
-              const parType = { عمال: 0, دواء: 0, ماء: 0 };
+              const parType = { Main-d'œuvre: 0, Produit phyto: 0, Eau: 0 };
               filtered.forEach((d) => { parType[d.type] = (parType[d.type] || 0) + d.montant; });
               const total = filtered.reduce((s, d) => s + d.montant, 0);
               return (
                 <>
                   <div className="grid grid-cols-4 gap-3 mb-5">
-                    <div style={{ background: c.cardGreen, borderRadius: 16, padding: "14px 16px", color: "#fff" }}><div style={{ fontSize: "0.68rem", opacity: 0.85 }}>المجموع الكلي</div><div style={{ fontWeight: 800, fontSize: "1.3rem" }}>{total} DH</div></div>
-                    <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", padding: "14px 16px" }}><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>عمال</div><div style={{ fontWeight: 800, fontSize: "1.15rem" }}>{parType["عمال"]} DH</div></div>
-                    <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", padding: "14px 16px" }}><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>دواء</div><div style={{ fontWeight: 800, fontSize: "1.15rem" }}>{parType["دواء"]} DH</div></div>
-                    <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", padding: "14px 16px" }}><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>ماء</div><div style={{ fontWeight: 800, fontSize: "1.15rem" }}>{parType["ماء"]} DH</div></div>
+                    <div style={{ background: c.cardGreen, borderRadius: 16, padding: "14px 16px", color: "#fff" }}><div style={{ fontSize: "0.68rem", opacity: 0.85 }}>Total général</div><div style={{ fontWeight: 800, fontSize: "1.3rem" }}>{total} DH</div></div>
+                    <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", padding: "14px 16px" }}><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>Main-d'œuvre</div><div style={{ fontWeight: 800, fontSize: "1.15rem" }}>{parType["Main-d'œuvre"]} DH</div></div>
+                    <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", padding: "14px 16px" }}><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>Produit phyto</div><div style={{ fontWeight: 800, fontSize: "1.15rem" }}>{parType["Produit phyto"]} DH</div></div>
+                    <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", padding: "14px 16px" }}><div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>Eau</div><div style={{ fontWeight: 800, fontSize: "1.15rem" }}>{parType["Eau"]} DH</div></div>
                   </div>
 
-                  {["20 يوليوز", "19 يوليوز", "18 يوليوز"].filter((dl) => filtered.some((d) => d.dateLabel === dl)).map((dl) => (
+                  {["20 juillet", "19 juillet", "18 juillet"].filter((dl) => filtered.some((d) => d.dateLabel === dl)).map((dl) => (
                     <div key={dl} className="mb-4">
                       <div className="flex items-center justify-between mb-2">
                         <h3 style={{ fontWeight: 700, fontSize: "0.85rem", color: c.inkSoft }}>{dl}</h3>
@@ -2137,7 +2137,7 @@ export default function App() {
                       </div>
                       <div className="flex flex-col gap-2">
                         {filtered.filter((d) => d.dateLabel === dl).map((d) => (
-                          <div key={d.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRight: `4px solid ${d.type === "عمال" ? c.blue : d.type === "دواء" ? c.orange : c.cardGreen}`, borderRadius: 12 }} className="p-3 flex items-center justify-between">
+                          <div key={d.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRight: `4px solid ${d.type === "Main-d'œuvre" ? c.blue : d.type === "Produit phyto" ? c.orange : c.cardGreen}`, borderRadius: 12 }} className="p-3 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <span style={{ background: c.bg, borderRadius: 999, padding: "2px 8px", fontSize: "0.65rem", fontWeight: 700, color: c.inkMuted2 }}>{d.type}</span>
                               <span style={{ fontSize: "0.82rem" }}>{d.detail}</span>
@@ -2148,18 +2148,18 @@ export default function App() {
                       </div>
                     </div>
                   ))}
-                  {filtered.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>ماكاينش مصاريف مسجلة فهاد الفترة</p>}
+                  {filtered.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.82rem" }}>Aucun(e) مصاريف Inscritة فهاد الفترة</p>}
                 </>
               );
             })()}
           </div>
         )}
 
-        {tab === "الربحية" && (
-          isLocked("الربحية") ? <LockedFeature nom="الربحية" /> :
+        {tab === "Rentabilité" && (
+          isLocked("Rentabilité") ? <LockedFeature nom="Rentabilité" /> :
           <div>
-            <h2 className="font-display mb-1" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>الربحية لكل قطعة</h2>
-            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">المدخول (من الوزينات) ناقص التكلفة (دواء + ماء + عمال) = الربح الصافي — هاد الشهر</p>
+            <h2 className="font-display mb-1" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Rentabilité لكل parcellesة</h2>
+            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">Revenu (من Réceptions) ناقص Coûts (Produit phyto + Eau + main-d'œuvre) = Bénéfice net — هاد الMois</p>
 
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-5">
               <ResponsiveContainer width="100%" height={220}>
@@ -2167,7 +2167,7 @@ export default function App() {
                   <CartesianGrid strokeDasharray="3 3" stroke={c.line} vertical={false} />
                   <XAxis dataKey="code" tick={{ fontSize: 11, fill: c.inkMuted2 }} axisLine={{ stroke: c.line }} tickLine={false} />
                   <YAxis tick={{ fontSize: 11, fill: c.inkMuted2 }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(v) => [`${v} DH`, "الربح"]} labelFormatter={(l) => `القطعة ${l}`} contentStyle={{ borderRadius: 10, border: `1px solid ${c.line}`, fontSize: "0.78rem" }} />
+                  <Tooltip formatter={(v) => [`${v} DH`, "Bénéfice"]} labelFormatter={(l) => `Parcellesة ${l}`} contentStyle={{ borderRadius: 10, border: `1px solid ${c.line}`, fontSize: "0.78rem" }} />
                   <Bar dataKey="profit" radius={[6, 6, 0, 0]}>
                     {rentabilite.map((r, i) => (<Cell key={i} fill={r.profit >= 0 ? c.cardGreen : c.danger} />))}
                   </Bar>
@@ -2177,7 +2177,7 @@ export default function App() {
 
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
               <div className="grid" style={{ gridTemplateColumns: "1.5fr 1fr 1fr 1fr 0.8fr", background: c.bg, fontSize: "0.68rem", color: c.inkMuted2, fontWeight: 700 }}>
-                {["القطعة", "المدخول", "التكلفة", "الربح الصافي", "الهامش"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
+                {["Parcellesة", "Revenu", "Coûts", "Bénéfice net", "Marge"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
               </div>
               {rentabilite.map((r) => (
                 <div key={r.code} className="grid items-center" style={{ gridTemplateColumns: "1.5fr 1fr 1fr 1fr 0.8fr", borderTop: `1px solid ${c.line}`, fontSize: "0.8rem" }}>
@@ -2192,23 +2192,23 @@ export default function App() {
           </div>
         )}
 
-        {tab === "المحلل الذكي" && (
-          isLocked("المحلل الذكي") ? <LockedFeature nom="المحلل الذكي" /> :
+        {tab === "Assistant IA" && (
+          isLocked("Assistant IA") ? <LockedFeature nom="Assistant IA" /> :
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
                 <div style={{ background: "rgba(42,157,143,0.12)", borderRadius: 10, padding: 7 }}><Brain size={17} color={c.cardGreenDeep} /></div>
-                <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>المحلل الذكي</h2>
+                <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Assistant IA</h2>
               </div>
               <button onClick={() => setAutoSpeak(!autoSpeak)} style={{ background: autoSpeak ? "rgba(42,157,143,0.12)" : c.white, border: `1px solid ${autoSpeak ? c.cardGreen : c.line}`, borderRadius: 999, padding: "5px 11px" }} className="flex items-center gap-1.5">
                 <Play size={12} color={autoSpeak ? c.cardGreenDeep : c.inkMuted2} />
-                <span style={{ fontSize: "0.68rem", fontWeight: 700, color: autoSpeak ? c.cardGreenDeep : c.inkMuted2 }}>قراءة الجواب صوتيا {autoSpeak ? "✓" : ""}</span>
+                <span style={{ fontSize: "0.68rem", fontWeight: 700, color: autoSpeak ? c.cardGreenDeep : c.inkMuted2 }}>Lire la réponse à voix haute {autoSpeak ? "✓" : ""}</span>
               </button>
             </div>
-            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">كيقرا بيانات الفيرمة الحقيقية (الربحية، التكلفة، المخزون، الوزينات) ويجاوبك بالدارجة — سؤال حر، بالكتابة ولا بالصوت</p>
+            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">كيقرا بيانات الفيرمة الحقيقية (Rentabilité، Coûts، Stock، Réceptions) ويجاوبك بالدارجة — سؤال حر، بالكتابة وNon à l'oral</p>
 
             <div className="flex gap-2 flex-wrap mb-4">
-              {["حلل ليا الربحية هاد الشهر", "فين الخطر الأكبر دابا؟", "شنو خاصني نديرو هاد الأسبوع؟"].map((q) => (
+              {["حلل ليا Rentabilité هاد الMois", "Où est le plus grand risque en ce moment ?", "Que devons-nous faire cette semaine ?"].map((q) => (
                 <button key={q} onClick={() => askAnalyst(q)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 999, padding: "7px 13px", fontSize: "0.74rem", fontWeight: 600, color: c.inkSoft }}>{q}</button>
               ))}
             </div>
@@ -2217,7 +2217,7 @@ export default function App() {
               {analystMessages.length === 0 && !analystLoading && (
                 <div className="flex flex-col items-center justify-center py-10" style={{ color: c.inkMuted2 }}>
                   <Brain size={28} color={c.inkMuted2} />
-                  <p style={{ fontSize: "0.8rem" }} className="mt-2">اسأل المحلل أي سؤال على بيانات الفيرمة ديالك</p>
+                  <p style={{ fontSize: "0.8rem" }} className="mt-2">Posez à l'assistant n'importe quelle question sur les données de votre ferme</p>
                 </div>
               )}
               {analystMessages.map((m, i) => (
@@ -2250,7 +2250,7 @@ export default function App() {
                 value={analystQuestion}
                 onChange={(e) => setAnalystQuestion(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && askAnalyst(analystQuestion)}
-                placeholder={listening ? "كنسمع... هضر دابا" : "اكتب سؤالك هنا ولا كليكي الميكرو..."}
+                placeholder={listening ? "J'écoute... parlez maintenant" : "اكتب سؤالك هنا وNon كليكي الميكرو..."}
                 style={{ ...inputStyle, flex: 1 }}
               />
               <button onClick={() => askAnalyst(analystQuestion)} disabled={analystLoading} style={{ background: c.cardGreen, borderRadius: 11, padding: "11px 16px", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>
@@ -2260,24 +2260,24 @@ export default function App() {
           </div>
         )}
 
-        {tab === "السجل" && (
-          isLocked("السجل") ? <LockedFeature nom="السجل" /> :
+        {tab === "Plan de traitement" && (
+          isLocked("Plan de traitement") ? <LockedFeature nom="Plan de traitement" /> :
           <div>
-            <div className="flex items-center justify-between mb-1"><h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>خطة المعالجة</h2><AddButton label="زيد معالجة" open={showAddPlan} onClick={() => setShowAddPlan(!showAddPlan)} /></div>
-            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">الجرعة/هكتار كتدخلها نتا، والكمية الكلية كتتحسب أوطوماتيكيا</p>
+            <div className="flex items-center justify-between mb-1"><h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Plan de traitement</h2><AddButton label="Ajouter un traitement" open={showAddPlan} onClick={() => setShowAddPlan(!showAddPlan)} /></div>
+            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">Dose/hectare كتدخلها نتا، والكمية Toutية كتتحسب Automatiqueا</p>
             {showAddPlan && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-2 gap-3">
-                <Field label="القطعة"><select value={pForm.parcelle} onChange={(e) => setPForm({ ...pForm, parcelle: e.target.value })} style={inputStyle}><option value="">اختار</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code} — {p.nom}</option>)}</select></Field>
+                <Field label="Parcellesة"><select value={pForm.parcelle} onChange={(e) => setPForm({ ...pForm, parcelle: e.target.value })} style={inputStyle}><option value="">Choisir</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code} — {p.nom}</option>)}</select></Field>
                 <Field label="المنتج"><input value={pForm.produit} onChange={(e) => setPForm({ ...pForm, produit: e.target.value })} style={inputStyle} /></Field>
-                <Field label="الجرعة/هكتار"><input type="number" step="0.1" value={pForm.dozParHa} onChange={(e) => setPForm({ ...pForm, dozParHa: e.target.value })} style={inputStyle} /></Field>
-                <Field label="الوحدة"><select value={pForm.wehda} onChange={(e) => setPForm({ ...pForm, wehda: e.target.value })} style={inputStyle}><option>لتر</option><option>كيلو</option></select></Field>
-                <Field label="التاريخ"><input value={pForm.tarikh} onChange={(e) => setPForm({ ...pForm, tarikh: e.target.value })} placeholder="مثلا 25 يوليوز" style={inputStyle} /></Field>
-                <div className="flex items-end"><button onClick={addPlan} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>إضافة للخطة</button></div>
+                <Field label="Dose/hectare"><input type="number" step="0.1" value={pForm.dozParHa} onChange={(e) => setPForm({ ...pForm, dozParHa: e.target.value })} style={inputStyle} /></Field>
+                <Field label="Unité"><select value={pForm.wehda} onChange={(e) => setPForm({ ...pForm, wehda: e.target.value })} style={inputStyle}><option>litre</option><option>kilo</option></select></Field>
+                <Field label="التاريخ"><input value={pForm.tarikh} onChange={(e) => setPForm({ ...pForm, tarikh: e.target.value })} placeholder="مثNon 25 يوليوز" style={inputStyle} /></Field>
+                <div className="flex items-end"><button onClick={addPlan} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>Ajouter au plan</button></div>
               </div>
             )}
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", overflow: "hidden" }}>
               <div className="grid" style={{ gridTemplateColumns: "1.6fr 0.9fr 1fr 1fr 1.1fr", background: c.bg, fontSize: "0.66rem", color: c.inkMuted2, fontWeight: 700 }}>
-                {["القطعة", "المساحة", "المنتج", "الجرعة/هكتار", "الكمية + التاريخ"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
+                {["Parcellesة", "المhحة", "المنتج", "Dose/hectare", "Quantité + date"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
               </div>
               {data.plan.map((k, i) => { const p = data.parcelles.find((p) => p.code === k.code); const kammiya = p ? (p.ha * k.dozParHa).toFixed(1) : "-"; return (
                 <div key={i} className="grid items-center" style={{ gridTemplateColumns: "1.6fr 0.9fr 1fr 1fr 1.1fr", borderTop: `1px solid ${c.line}`, fontSize: "0.8rem" }}>
@@ -2292,15 +2292,15 @@ export default function App() {
           </div>
         )}
 
-        {tab === "الصلاحيات" && currentUser.role === "Owner" && (
+        {tab === "Permissions" && currentUser.role === "Owner" && (
           <div>
-            <h2 className="font-display mb-1" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>صلاحيات الأدوار</h2>
-            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">حدد لكل دور: بلا وصول / عرض فقط / عرض وتعديل — التغيير كيطبق مباشرة</p>
+            <h2 className="font-display mb-1" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>صNonحيات الأدوار</h2>
+            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">حدد لكل دور: بNon وصول / Lecture seule / عرض وModification — التغيير كيطبق مباشرة</p>
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "auto", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-3">
               <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.76rem" }}>
                 <thead>
                   <tr>
-                    <th className="px-2 py-2 text-right" style={{ color: c.inkMuted2, fontSize: "0.68rem" }}>الوحدة</th>
+                    <th className="px-2 py-2 text-right" style={{ color: c.inkMuted2, fontSize: "0.68rem" }}>Unité</th>
                     {ROLES_LIST.map((r) => (<th key={r} className="px-2 py-2 text-right" style={{ color: c.inkMuted2, fontSize: "0.68rem" }}>{roleLabel[r]}</th>))}
                   </tr>
                 </thead>
@@ -2315,9 +2315,9 @@ export default function App() {
                             onChange={(e) => setPermMatrix((prev) => ({ ...prev, [r]: { ...prev[r], [m]: e.target.value } }))}
                             style={{ background: c.bg, border: `1px solid ${c.line}`, borderRadius: 7, padding: "4px 6px", fontSize: "0.7rem" }}
                           >
-                            <option value="بلا وصول">بلا وصول</option>
-                            <option value="عرض فقط">عرض فقط</option>
-                            <option value="تعديل">تعديل</option>
+                            <option value="بNon وصول">بNon وصول</option>
+                            <option value="Lecture seule">Lecture seule</option>
+                            <option value="Modification">Modification</option>
                           </select>
                         </td>
                       ))}
