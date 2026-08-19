@@ -352,7 +352,7 @@ const emptyFarmData = {
   nom: "", gps: { lat: 34.92, lng: -6.10 },
   parcelles: [], workers: [], wazin: [], costs: [], plan: [], depenses: [], stock: [], invoices: [],
   cnss: { echeanceJour: 10, moisLabel: "يوليوز 2026", declare: false, dateDeclare: "" },
-  employees: [], stockEnabled: false, pointageEnabled: false,
+  employees: [], moduleAccess: {},
 };
 
 export default function App() {
@@ -417,15 +417,16 @@ export default function App() {
   const data = farms[currentFarmId] || emptyFarmData;
 
   async function loadFarmDetails(farmId) {
-    const [{ data: parcellesData }, { data: workersData }, { data: stockData }] = await Promise.all([
+    const [{ data: parcellesData }, { data: workersData }, { data: stockData }, { data: accessData }] = await Promise.all([
       supabase.from("parcelles").select("*").eq("farm_id", farmId),
       supabase.from("workers_log").select("*").eq("farm_id", farmId).order("created_at", { ascending: false }).limit(200),
       supabase.from("stock_items").select("*").eq("farm_id", farmId),
+      supabase.from("module_access").select("module, enabled").eq("farm_id", farmId),
     ]);
-    const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng, stock_enabled, pointage_enabled").eq("id", farmId).single();
+    const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng").eq("id", farmId).single();
     const farmGps = farmRow ? { lat: Number(farmRow.gps_lat) || 34.92, lng: Number(farmRow.gps_lng) || -6.10 } : { lat: 34.92, lng: -6.10 };
-    const stockEnabled = farmRow ? !!farmRow.stock_enabled : false;
-    const pointageEnabled = farmRow ? !!farmRow.pointage_enabled : false;
+    const moduleAccess = {};
+    (accessData || []).forEach((r) => { moduleAccess[r.module] = !!r.enabled; });
     const parcelles = (parcellesData || []).map((p) => ({
       id: p.id, code: p.code, nom: p.nom, crop: p.crop, ha: Number(p.superficie_ha) || 0,
       statut: p.statut || "ok", irrigation: "—", recolte: 0, dernierTraitement: "—", secu: 0,
@@ -450,7 +451,7 @@ export default function App() {
       wehda: s.wehda, seuil: Number(s.seuil) || 10,
     }));
 
-    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, stockEnabled, pointageEnabled } }));
+    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess } }));
     setSelected(parcelles[0] || null);
   }
 
@@ -475,7 +476,7 @@ export default function App() {
     const userId = session.user.id;
     const { data: memberships, error } = await supabase
       .from("farm_members")
-      .select("role, nom_affiche, farms(id, nom, gps_lat, gps_lng, cnss_echeance_jour, cnss_declare, stock_enabled, pointage_enabled)")
+      .select("role, nom_affiche, farms(id, nom, gps_lat, gps_lng, cnss_echeance_jour, cnss_declare)")
       .eq("user_id", userId);
     if (error || !memberships || memberships.length === 0) {
       alert("ماكاينش فيرمة مرتبطة بهاد الحساب — تواصل مع المسؤول ديالك باش يزيدك فـ farm_members.");
@@ -493,7 +494,6 @@ export default function App() {
         nom: m.farms.nom,
         gps: { lat: Number(m.farms.gps_lat) || 34.92, lng: Number(m.farms.gps_lng) || -6.10 },
         cnss: { ...emptyFarmData.cnss, echeanceJour: m.farms.cnss_echeance_jour || 10, declare: m.farms.cnss_declare || false },
-        stockEnabled: !!m.farms.stock_enabled, pointageEnabled: !!m.farms.pointage_enabled,
       };
     });
     setFarms(newFarms);
@@ -584,6 +584,7 @@ export default function App() {
   const canManageFarms = currentUser.role === "Owner" || currentUser.role === "Manager";
   const myFarmIds = canManageFarms ? Object.keys(farms) : currentUser.farms;
   function canEdit(moduleKey) { return permMatrix[currentUser.role][moduleKey] === "تعديل"; }
+  function isLocked(moduleKey) { return !(data.moduleAccess && data.moduleAccess[moduleKey]); }
 
   function updateFarm(patch) { setFarms((prev) => ({ ...prev, [currentFarmId]: { ...prev[currentFarmId], ...patch } })); }
   function parcelleNom(code) { const p = data.parcelles.find((p) => p.code === code); return p ? p.nom : code; }
@@ -1204,6 +1205,7 @@ export default function App() {
         )}
 
         {tab === "الطلبات" && (() => {
+          if (isLocked("الطلبات")) return <LockedFeature nom="الطلبات" />;
           const mesCommandes = canManageFarms ? commandesGlobal.filter((cmd) => myFarmIds.includes(cmd.farmId)) : commandesGlobal.filter((cmd) => cmd.farmId === currentFarmId);
           const nouvelles = mesCommandes.filter((cmd) => cmd.statut === "جديد");
           return (
@@ -1293,6 +1295,7 @@ export default function App() {
         })()}
 
         {tab === "السوق" && (() => {
+          if (isLocked("السوق")) return <LockedFeature nom="السوق" />;
           const filtered = marketplaceGlobal.filter((l) => mFilter === "الكل" ? true : mFilter === "إعلاناتي" ? l.farmId === currentFarmId : l.type === mFilter);
           return (
             <div>
@@ -1355,6 +1358,7 @@ export default function App() {
         })()}
 
         {tab === "القطع" && (() => {
+          if (isLocked("القطع")) return <LockedFeature nom="القطع" />;
           const nearby = incidentsGlobal
             .map((inc) => ({ ...inc, dist: distanceKm(data.gps, inc.gps) }))
             .filter((inc) => inc.dist <= 60)
@@ -1450,7 +1454,7 @@ export default function App() {
         })()}
 
         {tab === "العمال" && (
-          !data.pointageEnabled ? <LockedFeature nom="العمال والبونطاج" /> :
+          isLocked("العمال") ? <LockedFeature nom="العمال والبونطاج" /> :
           <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>{isWorker ? "البونطاج ديالي" : "بونتاج العمال اليوم"}</h2>
@@ -1697,7 +1701,7 @@ export default function App() {
         )}
 
         {tab === "المخزون" && (
-          !data.stockEnabled ? <LockedFeature nom="المخزون" /> :
+          isLocked("المخزون") ? <LockedFeature nom="المخزون" /> :
           <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>مخزون المدخلات</h2>
@@ -1772,6 +1776,7 @@ export default function App() {
         )}
 
         {tab === "الوزينات" && (() => {
+          if (isLocked("الوزينات")) return <LockedFeature nom="الوزينات" />;
           const uniquePatrons = [...new Set(data.wazin.map((w) => w.patron || w.wazan))];
           const parPatron = uniquePatrons.map((patron) => {
             const lignes = data.wazin.filter((w) => (w.patron || w.wazan) === patron);
@@ -1827,6 +1832,7 @@ export default function App() {
         })()}
 
         {tab === "الفواتير" && (() => {
+          if (isLocked("الفواتير")) return <LockedFeature nom="الفواتير" />;
           const totalHT = data.invoices.reduce((s, i) => s + i.montantHT, 0);
           const totalTVA = data.invoices.reduce((s, i) => s + i.montantTVA, 0);
           const totalTTC = data.invoices.reduce((s, i) => s + i.montantTTC, 0);
@@ -1937,6 +1943,7 @@ export default function App() {
         })()}
 
         {tab === "CNSS" && (() => {
+          if (isLocked("CNSS")) return <LockedFeature nom="CNSS" />;
           const joursRestants = data.cnss.echeanceJour ? data.cnss.echeanceJour - 20 : null;
           const urgent = joursRestants !== null && joursRestants <= 3;
           const nonAffilies = data.employees.filter((e) => e.affilieCNSS === false);
@@ -2034,6 +2041,7 @@ export default function App() {
         })()}
 
         {tab === "التكلفة" && (() => {
+          if (isLocked("التكلفة")) return <LockedFeature nom="التكلفة" />;
           const withPerHa = data.costs.map((cp) => {
             const p = data.parcelles.find((x) => x.code === cp.code);
             const total = cp.dawa + cp.ma + cp.omal;
@@ -2085,6 +2093,7 @@ export default function App() {
         })()}
 
         {tab === "المصاريف" && (
+          isLocked("المصاريف") ? <LockedFeature nom="المصاريف" /> :
           <div>
             <div className="flex items-center justify-between mb-3">
               <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>المصاريف اليومية بالتفصيل</h2>
@@ -2147,6 +2156,7 @@ export default function App() {
         )}
 
         {tab === "الربحية" && (
+          isLocked("الربحية") ? <LockedFeature nom="الربحية" /> :
           <div>
             <h2 className="font-display mb-1" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>الربحية لكل قطعة</h2>
             <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">المدخول (من الوزينات) ناقص التكلفة (دواء + ماء + عمال) = الربح الصافي — هاد الشهر</p>
@@ -2183,6 +2193,7 @@ export default function App() {
         )}
 
         {tab === "المحلل الذكي" && (
+          isLocked("المحلل الذكي") ? <LockedFeature nom="المحلل الذكي" /> :
           <div>
             <div className="flex items-center justify-between mb-1">
               <div className="flex items-center gap-2">
@@ -2250,6 +2261,7 @@ export default function App() {
         )}
 
         {tab === "السجل" && (
+          isLocked("السجل") ? <LockedFeature nom="السجل" /> :
           <div>
             <div className="flex items-center justify-between mb-1"><h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>خطة المعالجة</h2><AddButton label="زيد معالجة" open={showAddPlan} onClick={() => setShowAddPlan(!showAddPlan)} /></div>
             <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">الجرعة/هكتار كتدخلها نتا، والكمية الكلية كتتحسب أوطوماتيكيا</p>
