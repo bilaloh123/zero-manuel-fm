@@ -194,7 +194,7 @@ function ZMLogo({ size = 40 }) {
       </defs>
       <circle cx="24" cy="24" r="24" fill="url(#zmLogoGrad)" />
       <path d="M24 35c-7-2-11.5-8.5-10.5-17 8 0 14.5 4.5 17 11.5 1 3 0.5 5.5-1 7-2.5-6-7-9.5-12.5-11 3.5 2.5 6 6 7 9.5z" fill="#FFFBF2" />
-      <circle cx="33.5" cy="14.5" r="3.2" fill="#F4A261" />
+      <circle cx="33.5" cy="14.5" r="3.2" fill="#F4A261" style={{ transformOrigin: "33.5px 14.5px", animation: "dotPop 0.9s ease 0.5s both" }} />
     </svg>
   );
 }
@@ -274,14 +274,28 @@ function LoginScreen({ onLogin }) {
 
   return (
     <div dir="rtl" style={{ background: `linear-gradient(160deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 55%, #163832 100%)`, minHeight: "100vh", position: "relative", overflow: "hidden" }} className="flex flex-col items-center justify-center p-6">
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@700;800;900&family=Inter:wght@400;600;700;800;900&display=swap');`}</style>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@700;800;900&family=Inter:wght@400;600;700;800;900&display=swap');
+        @keyframes logoPop { 0% { transform: scale(0) rotate(-25deg); opacity: 0; } 60% { transform: scale(1.15) rotate(6deg); opacity: 1; } 80% { transform: scale(0.95) rotate(-3deg); } 100% { transform: scale(1) rotate(0deg); } }
+        @keyframes logoBreathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes ringPulse { 0% { transform: scale(0.85); opacity: 0.55; } 100% { transform: scale(1.6); opacity: 0; } }
+        @keyframes dotPop { 0%, 55% { transform: scale(0); opacity: 0; } 75% { transform: scale(1.3); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes titleRise { 0% { opacity: 0; transform: translateY(10px); } 100% { opacity: 1; transform: translateY(0); } }
+        .logo-wrap { animation: logoPop 0.9s cubic-bezier(.34,1.56,.64,1) both, logoBreathe 3.2s ease-in-out 1.1s infinite; }
+        .logo-ring { animation: ringPulse 2.6s ease-out infinite; }
+        .logo-title { animation: titleRise 0.6s ease 0.5s both; }
+      `}</style>
       <div style={{ position: "absolute", top: -80, right: -80, width: 260, height: 260, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
       <div style={{ position: "absolute", bottom: -100, left: -60, width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
-      <div style={{ boxShadow: "0 8px 24px rgba(0,0,0,0.2)", borderRadius: "50%" }} className="mb-4 relative">
-        <ZMLogo size={68} />
+      <div className="relative flex items-center justify-center mb-4" style={{ width: 100, height: 100 }}>
+        <div className="logo-ring absolute rounded-full" style={{ width: 90, height: 90, border: `1.5px solid ${c.cardGreenLight}` }} />
+        <div className="logo-ring absolute rounded-full" style={{ width: 90, height: 90, border: `1.5px solid ${c.orangeLight}`, animationDelay: "0.9s" }} />
+        <div className="logo-wrap relative" style={{ boxShadow: "0 10px 28px rgba(0,0,0,0.25)", borderRadius: "50%" }}>
+          <ZMLogo size={68} />
+        </div>
       </div>
-      <h1 className="font-display" style={{ color: "#fff", fontWeight: 800, fontSize: "1.55rem", position: "relative" }}>زيرو مانويل</h1>
-      <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8rem", position: "relative" }} className="mb-8">دخل بالبريد وكلمة السر ديالك</p>
+      <h1 className="font-display logo-title" style={{ color: "#fff", fontWeight: 800, fontSize: "1.55rem", position: "relative" }}>زيرو مانويل</h1>
+      <p className="logo-title mb-8" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8rem", position: "relative" }}>دخل بالبريد وكلمة السر ديالك</p>
+
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full relative" style={{ maxWidth: 340 }}>
         <input
           type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="البريد الإلكتروني"
