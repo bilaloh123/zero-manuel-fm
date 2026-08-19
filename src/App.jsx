@@ -309,20 +309,48 @@ function LoginScreen({ onLogin }) {
         <div className="logo-wrap relative" style={{ boxShadow: "0 10px 28px rgba(0,0,0,0.25)", borderRadius: "50%" }}>
           <ZMLogo size={68} />
         </div>
-        <div className="fruit-avocado absolute" style={{ top: -14, left: -18 }}>
-          <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
-            <ellipse cx="16" cy="18" rx="10" ry="12" fill="#5C8A64" stroke="#3D5E43" strokeWidth="1.2" />
-            <ellipse cx="16" cy="19" rx="6" ry="7.5" fill="#E9C46A" />
-            <circle cx="16" cy="19" r="3.4" fill="#8B5E3C" />
-            <path d="M13 6c0-2 1.5-4 3.5-4" stroke="#3D5E43" strokeWidth="1.6" strokeLinecap="round" />
+        <div className="fruit-avocado absolute" style={{ top: -16, left: -20 }}>
+          <svg width="34" height="34" viewBox="0 0 40 40" fill="none">
+            <defs>
+              <linearGradient id="avoSkin" x1="8" y1="4" x2="30" y2="36" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#4E7A52" />
+                <stop offset="55%" stopColor="#2F5233" />
+                <stop offset="100%" stopColor="#1C3320" />
+              </linearGradient>
+              <linearGradient id="avoFlesh" x1="12" y1="10" x2="28" y2="32" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#D9E36B" />
+                <stop offset="60%" stopColor="#B7C94A" />
+                <stop offset="100%" stopColor="#8FAE3C" />
+              </linearGradient>
+              <radialGradient id="avoPit" cx="40%" cy="35%" r="70%">
+                <stop offset="0%" stopColor="#B98A5E" />
+                <stop offset="100%" stopColor="#7A5233" />
+              </radialGradient>
+            </defs>
+            <path d="M20 3c5 0 8 5 8 12 0 10-3 22-8 22S4 25 4 15C4 8 15 3 20 3z" fill="url(#avoSkin)" />
+            <path d="M20 6c4 0 6.3 4.3 6.3 10.3 0 8.7-2.6 18.7-6.3 18.7S6.7 25 6.7 16.3C6.7 10.3 16 6 20 6z" fill="url(#avoFlesh)" />
+            <circle cx="20" cy="23" r="6.3" fill="url(#avoPit)" />
+            <ellipse cx="18" cy="20.5" rx="2.1" ry="1.5" fill="rgba(255,255,255,0.35)" />
+            <path d="M17 4c0-2.4 1.6-4 3.6-4" stroke="#1C3320" strokeWidth="1.6" strokeLinecap="round" />
+            <ellipse cx="13.5" cy="10" rx="2.4" ry="4.2" fill="rgba(255,255,255,0.14)" transform="rotate(-18 13.5 10)" />
           </svg>
         </div>
-        <div className="fruit-strawberry absolute" style={{ bottom: -12, right: -20 }}>
-          <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
-            <path d="M16 30c-6 0-10-7-10-13 0-5 4-8 10-8s10 3 10 8c0 6-4 13-10 13z" fill="#E63946" />
-            <circle cx="12" cy="14" r="1" fill="#FFF3E0" /><circle cx="16" cy="18" r="1" fill="#FFF3E0" /><circle cx="20" cy="14" r="1" fill="#FFF3E0" />
-            <circle cx="14" cy="22" r="1" fill="#FFF3E0" /><circle cx="19" cy="22" r="1" fill="#FFF3E0" />
-            <path d="M16 9l-4-5 4 2 4-2-4 5z" fill="#3DBBA8" />
+        <div className="fruit-strawberry absolute" style={{ bottom: -14, right: -22 }}>
+          <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
+            <defs>
+              <linearGradient id="berrySkin" x1="8" y1="10" x2="26" y2="34" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stopColor="#FF6B6B" />
+                <stop offset="55%" stopColor="#E8384F" />
+                <stop offset="100%" stopColor="#B5182F" />
+              </linearGradient>
+            </defs>
+            <path d="M18 34c-6.5 0-12-8-12-15.5C6 11 11 7 18 7s12 4 12 11.5C30 26 24.5 34 18 34z" fill="url(#berrySkin)" />
+            <ellipse cx="13.5" cy="14" rx="3" ry="4.5" fill="rgba(255,255,255,0.22)" transform="rotate(-15 13.5 14)" />
+            {[[13,13.5],[19,12.5],[24,15],[11,20],[17,19],[23,21],[14,26],[20,26.5],[16,31]].map(([px,py],i) => (
+              <ellipse key={i} cx={px} cy={py} rx="1" ry="1.5" fill="#FFE8A3" transform={`rotate(${(i*23)%40-20} ${px} ${py})`} />
+            ))}
+            <path d="M18 8l-5-7 5 2.5 5-2.5-5 7z" fill="#3DBBA8" />
+            <path d="M18 8l-2.5-6.5M18 8l2.5-6.5" stroke="#2A9D8F" strokeWidth="0.8" strokeLinecap="round" />
           </svg>
         </div>
       </div>
