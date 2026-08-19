@@ -299,7 +299,7 @@ export default function App() {
   const [farms, setFarms] = useState({});
   const [loadingData, setLoadingData] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
-  const [commandesGlobal, setCommandesGlobal] = useState(initCommandesGlobal);
+  const [commandesGlobal, setCommandesGlobal] = useState([]);
   const [achatsGlobal, setAchatsGlobal] = useState(initAchatsGlobal);
   const [marketplaceGlobal, setMarketplaceGlobal] = useState(initMarketplace);
   const [incidentsGlobal, setIncidentsGlobal] = useState(initIncidents);
@@ -351,9 +351,10 @@ export default function App() {
   const data = farms[currentFarmId] || emptyFarmData;
 
   async function loadFarmDetails(farmId) {
-    const [{ data: parcellesData }, { data: workersData }] = await Promise.all([
+    const [{ data: parcellesData }, { data: workersData }, { data: stockData }] = await Promise.all([
       supabase.from("parcelles").select("*").eq("farm_id", farmId),
       supabase.from("workers_log").select("*").eq("farm_id", farmId).order("created_at", { ascending: false }).limit(200),
+      supabase.from("stock_items").select("*").eq("farm_id", farmId),
     ]);
     const parcelles = (parcellesData || []).map((p) => ({
       id: p.id, code: p.code, nom: p.nom, crop: p.crop, ha: Number(p.superficie_ha) || 0,
@@ -369,9 +370,29 @@ export default function App() {
     }));
     workers.forEach((w) => { sums[w.nom] = (sums[w.nom] || 0) + w.qte; });
     workers.forEach((w) => { w.moisQte = sums[w.nom]; });
+    const stock = (stockData || []).map((s) => ({
+      id: s.id, nom: s.nom, categorie: s.categorie, kammiya: Number(s.kammiya) || 0,
+      wehda: s.wehda, seuil: Number(s.seuil) || 10,
+    }));
 
-    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers } }));
+    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock } }));
     setSelected(parcelles[0] || null);
+  }
+
+  async function loadCommandes() {
+    const { data: cmdData, error } = await supabase
+      .from("commandes")
+      .select("*, farm:farm_id(nom), dest_farm:dest_farm_id(nom)")
+      .order("created_at", { ascending: false });
+    if (error) { console.error(error); return; }
+    const mapped = (cmdData || []).map((cmd) => ({
+      id: cmd.id, farmId: cmd.farm_id, farmNom: cmd.farm ? cmd.farm.nom : "—",
+      destFarmId: cmd.dest_farm_id, destFarmNom: cmd.dest_farm ? cmd.dest_farm.nom : null,
+      demandePar: cmd.demande_par, produit: cmd.produit, qte: Number(cmd.qte), wehda: cmd.wehda,
+      motif: cmd.motif, date: cmd.date_demande, statut: cmd.statut, fournisseur: cmd.fournisseur || "",
+      fournisseurEmail: cmd.fournisseur_email || "", prix: cmd.prix || "", poNumero: cmd.po_numero || "",
+    }));
+    setCommandesGlobal(mapped);
   }
 
   async function loginWithSession(session) {
@@ -406,6 +427,7 @@ export default function App() {
     const perms = MODULES.filter((m) => permMatrix[role][m] !== "بلا وصول");
     setTab(perms[0] || "لوحة");
     await loadFarmDetails(firstFarm);
+    await loadCommandes();
     setLoadingData(false);
     setCheckingSession(false);
   }
@@ -669,7 +691,7 @@ export default function App() {
     reader.readAsDataURL(file);
   }
 
-  function addStockMovement() {
+  async function addStockMovement() {
     if (!sForm.nom.trim() || !sForm.kammiya) return;
     const n = Number(sForm.kammiya);
     const existing = data.stock.find((s) => s.nom === sForm.nom);
@@ -678,16 +700,24 @@ export default function App() {
     if (existing) {
       nouvelleKammiya = sForm.mouvement === "دخول" ? existing.kammiya + n : Math.max(0, existing.kammiya - n);
       seuilItem = existing.seuil;
-      updateFarm({ stock: data.stock.map((s) => s.nom === sForm.nom ? { ...s, kammiya: nouvelleKammiya } : s) });
+      const { error } = await supabase.from("stock_items").update({ kammiya: nouvelleKammiya }).eq("id", existing.id);
+      if (error) { alert("وقع مشكل فالمخزون: " + error.message); return; }
     } else {
-      updateFarm({ stock: [...data.stock, { id: Date.now(), nom: sForm.nom, categorie: sForm.categorie, kammiya: n, wehda: sForm.wehda, seuil: seuilItem }] });
+      const { error } = await supabase.from("stock_items").insert({
+        farm_id: currentFarmId, nom: sForm.nom, categorie: sForm.categorie, kammiya: n, wehda: sForm.wehda, seuil: seuilItem,
+      });
+      if (error) { alert("وقع مشكل فالمخزون: " + error.message); return; }
     }
 
     // طلب أوطوماتيكي ملي المخزون يوصل لحد التنبيه — بلا تكرار إذا كان عندو طلب مفتوح ديجا
     if (nouvelleKammiya <= seuilItem) {
       const dejaTalab = commandesGlobal.some((cmd) => cmd.farmId === currentFarmId && cmd.produit === sForm.nom && (cmd.statut === "جديد" || cmd.statut === "تم الطلب"));
       if (!dejaTalab) {
-        setCommandesGlobal((prev) => [{ id: Date.now() + 1, farmId: currentFarmId, farmNom: data.nom, demandePar: "النظام (أوطوماتيكي)", produit: sForm.nom, qte: seuilItem * 2, wehda: sForm.wehda || "كيلو", motif: `المخزون وصل ${nouvelleKammiya} (حد التنبيه ${seuilItem}) — طلب تلقائي`, date: "20 يوليوز", statut: "جديد", fournisseur: "", fournisseurEmail: "", prix: "", poNumero: "" }, ...prev]);
+        await supabase.from("commandes").insert({
+          farm_id: currentFarmId, demande_par: "النظام (أوطوماتيكي)", produit: sForm.nom,
+          qte: seuilItem * 2, wehda: sForm.wehda || "كيلو",
+          motif: `المخزون وصل ${nouvelleKammiya} (حد التنبيه ${seuilItem}) — طلب تلقائي`, statut: "جديد",
+        });
       }
     }
 
@@ -704,6 +734,8 @@ export default function App() {
     }
     setSForm({ nom: "", categorie: "دواء", wehda: "كيلو", mouvement: "دخول", kammiya: "", seuil: "", prix: "", fournisseur: "", factureFile: "", factureNom: "", poNumero: "" });
     setShowAddStock(false);
+    await loadFarmDetails(currentFarmId);
+    await loadCommandes();
   }
 
   function addInvoice() {
@@ -760,12 +792,18 @@ export default function App() {
     XLSX.writeFile(wb, `tva-summary-${data.nom.replace(/\s/g, "-")}.xlsx`);
   }
 
-  function addCommande() {
+  async function addCommande() {
     if (!cmdForm.produit.trim() || !cmdForm.qte) return;
     const destId = cmdForm.destFarmId || currentFarmId;
-    setCommandesGlobal([{ id: Date.now(), farmId: currentFarmId, farmNom: data.nom, destFarmId: destId, destFarmNom: farms[destId].nom, demandePar: currentUser.nom, produit: cmdForm.produit, qte: Number(cmdForm.qte), wehda: cmdForm.wehda, motif: cmdForm.motif || "—", date: "20 يوليوز", statut: "جديد", fournisseur: "", fournisseurEmail: "", prix: "", poNumero: "" }, ...commandesGlobal]);
+    const { error } = await supabase.from("commandes").insert({
+      farm_id: currentFarmId, dest_farm_id: destId, demande_par: currentUser.nom,
+      produit: cmdForm.produit, qte: Number(cmdForm.qte), wehda: cmdForm.wehda,
+      motif: cmdForm.motif || "—", statut: "جديد",
+    });
+    if (error) { alert("وقع مشكل: " + error.message); return; }
     setCmdForm({ produit: "", qte: "", wehda: "كيلو", motif: "", destFarmId: "" });
     setShowAddCommande(false);
+    await loadCommandes();
   }
 
   function exportBonCommande(cmd) {
@@ -791,20 +829,20 @@ export default function App() {
     XLSX.writeFile(wb, `bon-commande-${cmd.poNumero}.xlsx`);
   }
 
-  function processCommande(id) {
+  async function processCommande(id) {
     if (!poForm.fournisseur.trim() || !poForm.prix) return;
     const poNumero = `PO-${Math.floor(Math.random() * 9000 + 1000)}`;
-    let updated = null;
-    setCommandesGlobal(commandesGlobal.map((cmd) => {
-      if (cmd.id === id) {
-        updated = { ...cmd, statut: "تم الطلب", fournisseur: poForm.fournisseur, fournisseurEmail: poForm.fournisseurEmail, prix: poForm.prix, poNumero };
-        return updated;
-      }
-      return cmd;
-    }));
+    const { error } = await supabase.from("commandes").update({
+      statut: "تم الطلب", fournisseur: poForm.fournisseur, fournisseur_email: poForm.fournisseurEmail,
+      prix: poForm.prix, po_numero: poNumero,
+    }).eq("id", id);
+    if (error) { alert("وقع مشكل: " + error.message); return; }
+    const cmd = commandesGlobal.find((x) => x.id === id);
+    const updated = { ...cmd, statut: "تم الطلب", fournisseur: poForm.fournisseur, fournisseurEmail: poForm.fournisseurEmail, prix: poForm.prix, poNumero };
     setPoForm({ fournisseur: "", fournisseurEmail: "", prix: "" });
     setProcessingId(null);
-    if (updated) setTimeout(() => exportBonCommande(updated), 100);
+    await loadCommandes();
+    setTimeout(() => exportBonCommande(updated), 100);
   }
 
   function mailtoLink(cmd) {
