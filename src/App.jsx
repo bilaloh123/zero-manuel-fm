@@ -360,18 +360,25 @@ export default function App() {
       supabase.from("workers_log").select("*").eq("farm_id", farmId).order("created_at", { ascending: false }).limit(200),
       supabase.from("stock_items").select("*").eq("farm_id", farmId),
     ]);
+    const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng").eq("id", farmId).single();
+    const farmGps = farmRow ? { lat: Number(farmRow.gps_lat) || 34.92, lng: Number(farmRow.gps_lng) || -6.10 } : { lat: 34.92, lng: -6.10 };
     const parcelles = (parcellesData || []).map((p) => ({
       id: p.id, code: p.code, nom: p.nom, crop: p.crop, ha: Number(p.superficie_ha) || 0,
       statut: p.statut || "ok", irrigation: "—", recolte: 0, dernierTraitement: "—", secu: 0,
     }));
     const codeById = {}; parcelles.forEach((p) => { codeById[p.id] = p.code; });
     const sums = {};
-    const workers = (workersData || []).map((w) => ({
-      id: w.id, nom: w.nom_ouvrier, parcelle: codeById[w.parcelle_id] || "—", parcelleId: w.parcelle_id,
-      tache: w.tache, type: w.type_paie, dukhul: w.heure_entree || "-", khuruj: w.heure_sortie || "-",
-      qte: Number(w.quantite) || 0, taux: Number(w.taux) || 0, dawra: w.dawra || "شهر",
-      statut: w.statut_paiement || "غير مؤدى", audioNote: w.audio_note_url || "",
-    }));
+    const workers = (workersData || []).map((w) => {
+      const hasGps = w.gps_lat != null && w.gps_lng != null;
+      const distKm = hasGps ? distanceKm(farmGps, { lat: Number(w.gps_lat), lng: Number(w.gps_lng) }) : null;
+      return {
+        id: w.id, nom: w.nom_ouvrier, parcelle: codeById[w.parcelle_id] || "—", parcelleId: w.parcelle_id,
+        tache: w.tache, type: w.type_paie, dukhul: w.heure_entree || "-", khuruj: w.heure_sortie || "-",
+        qte: Number(w.quantite) || 0, taux: Number(w.taux) || 0, dawra: w.dawra || "شهر",
+        statut: w.statut_paiement || "غير مؤدى", audioNote: w.audio_note_url || "",
+        distKm, confirme: w.confirme || false,
+      };
+    });
     workers.forEach((w) => { sums[w.nom] = (sums[w.nom] || 0) + w.qte; });
     workers.forEach((w) => { w.moisQte = sums[w.nom]; });
     const stock = (stockData || []).map((s) => ({
@@ -611,10 +618,22 @@ export default function App() {
   function getEmployee(nom) { return data.employees.find((e) => e.nom === nom) || { prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "", affilieCNSS: false }; }
   function updateEmployee(id, patch) { updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, ...patch } : e) }); }
 
+  function getGPSPosition() {
+    return new Promise((resolve) => {
+      if (!navigator.geolocation) { resolve(null); return; }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => resolve(null),
+        { timeout: 8000 }
+      );
+    });
+  }
+
   async function insertPointage(nom) {
     const qte = wForm.type === "ساعات" ? hoursBetween(wForm.dukhul, wForm.khuruj) : Number(wForm.nahar) || 1;
     const parcelleCode = wForm.parcelle || (data.parcelles[0] && data.parcelles[0].code) || "";
     const parcelleObj = data.parcelles.find((p) => p.code === parcelleCode);
+    const gps = await getGPSPosition();
     const payload = {
       farm_id: currentFarmId,
       nom_ouvrier: nom,
@@ -628,6 +647,9 @@ export default function App() {
       dawra: wForm.dawra,
       statut_paiement: "غير مؤدى",
       audio_note_url: wForm.audioNote || null,
+      gps_lat: gps ? gps.lat : null,
+      gps_lng: gps ? gps.lng : null,
+      confirme: false,
     };
 
     if (!navigator.onLine) {
@@ -680,6 +702,13 @@ export default function App() {
     const { error } = await supabase.from("workers_log").update({ statut_paiement: newStatut }).eq("id", id);
     if (error) { alert("وقع مشكل: " + error.message); return; }
     updateFarm({ workers: data.workers.map((x) => x.id === id ? { ...x, statut: newStatut } : x) });
+  }
+  async function toggleConfirme(id) {
+    const w = data.workers.find((x) => x.id === id);
+    const newConfirme = !w.confirme;
+    const { error } = await supabase.from("workers_log").update({ confirme: newConfirme }).eq("id", id);
+    if (error) { alert("وقع مشكل: " + error.message); return; }
+    updateFarm({ workers: data.workers.map((x) => x.id === id ? { ...x, confirme: newConfirme } : x) });
   }
   function exportJournalPaie() {
     const headers = ["#", "الاسم", "المهمة", "القطعة", "نوع الخلاص", "الكمية اليوم", "الأجرة", "مجموع اليوم (DH)", "مجموع الدورة (DH)", "الدورة", "الحالة"];
@@ -1390,6 +1419,53 @@ export default function App() {
               );
             })()}
 
+            {!isWorker && (() => {
+              const parTache = {};
+              data.workers.forEach((w) => { parTache[w.tache] = (parTache[w.tache] || 0) + w.qte; });
+              const tacheEntries = Object.entries(parTache);
+              if (tacheEntries.length === 0) return null;
+              return (
+                <div className="mb-4">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }} className="mb-2">مجموع اليوم حسب المهمة</h3>
+                  <div className="flex gap-2 flex-wrap">
+                    {tacheEntries.map(([tache, total]) => (
+                      <div key={tache} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="px-3 py-2">
+                        <span style={{ fontWeight: 700, fontSize: "0.82rem" }}>{tache}</span>
+                        <span className="font-mono" style={{ fontSize: "0.82rem", fontWeight: 800, color: c.cardGreenDeep }}> · {total}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {!isWorker && (() => {
+              const balances = {};
+              data.workers.forEach((w) => {
+                if (!balances[w.nom]) balances[w.nom] = { total: 0, confirmed: 0 };
+                balances[w.nom].total += w.qte * w.taux;
+                if (w.confirme) balances[w.nom].confirmed += w.qte * w.taux;
+              });
+              const names = Object.keys(balances);
+              if (names.length === 0) return null;
+              return (
+                <div className="mb-4">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }} className="mb-2">رصيد كل عامل (هاد الدورة)</h3>
+                  <div className="flex flex-col gap-2">
+                    {names.map((nom) => (
+                      <div key={nom} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="px-3 py-2 flex items-center justify-between">
+                        <span style={{ fontWeight: 700, fontSize: "0.82rem" }}>{nom}</span>
+                        <div className="text-left">
+                          <span className="font-mono" style={{ fontWeight: 800, fontSize: "0.85rem" }}>{balances[nom].total} DH</span>
+                          <div style={{ fontSize: "0.66rem", color: c.inkMuted2 }}>مؤكد: {balances[nom].confirmed} DH</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
             {showAddWorker && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 flex flex-col gap-3">
                 {isWorker && (
@@ -1498,12 +1574,12 @@ export default function App() {
               </div>
             )}
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)", overflow: "hidden" }}>
-              <div className="grid" style={{ gridTemplateColumns: isWorker ? "1.2fr 1.3fr 1.2fr 0.3fr" : "0.9fr 0.5fr 1fr 0.9fr 0.6fr 0.7fr 0.9fr 0.3fr", background: c.bg, fontSize: "0.66rem", color: c.inkMuted2, fontWeight: 700 }}>
-                {(isWorker ? ["القطعة", "المهمة", "الوقت / الكمية", ""] : ["العامل", "القطعة", "المهمة", "الوقت / الكمية", "الدورة", "الخلاص", "الحالة", ""]).map((h) => (<div key={h} className="px-2 py-2">{h}</div>))}
+              <div className="grid" style={{ gridTemplateColumns: isWorker ? "1.2fr 1.3fr 1.2fr 0.3fr" : "0.8fr 0.45fr 0.9fr 0.8fr 0.55fr 0.6fr 0.6fr 0.7fr 0.3fr", background: c.bg, fontSize: "0.64rem", color: c.inkMuted2, fontWeight: 700 }}>
+                {(isWorker ? ["القطعة", "المهمة", "الوقت / الكمية", ""] : ["العامل", "القطعة", "المهمة", "الوقت / الكمية", "الدورة", "الموقع", "الخلاص", "الحالة", ""]).map((h) => (<div key={h} className="px-2 py-2">{h}</div>))}
               </div>
               {visibleWorkers.map((w) => (
                 <React.Fragment key={w.id}>
-                <div className="grid items-center" style={{ gridTemplateColumns: isWorker ? "1.2fr 1.3fr 1.2fr 0.3fr" : "0.9fr 0.5fr 1fr 0.9fr 0.6fr 0.7fr 0.9fr 0.3fr", borderTop: `1px solid ${c.line}`, fontSize: "0.78rem" }}>
+                <div className="grid items-center" style={{ gridTemplateColumns: isWorker ? "1.2fr 1.3fr 1.2fr 0.3fr" : "0.8fr 0.45fr 0.9fr 0.8fr 0.55fr 0.6fr 0.6fr 0.7fr 0.3fr", borderTop: `1px solid ${c.line}`, fontSize: "0.76rem" }}>
                   {!isWorker && <div className="px-2 py-2" style={{ fontWeight: 600 }}>{w.nom}</div>}
                   <div className="px-2 py-2 font-mono" style={{ color: c.inkMuted2 }}>{w.parcelle}</div>
                   <div className="px-2 py-2 flex items-center gap-1.5">
@@ -1514,14 +1590,29 @@ export default function App() {
                       </button>
                     )}
                   </div>
-                  <div className="px-2 py-2" style={{ color: c.inkMuted2, fontSize: "0.72rem" }}>{w.type === "ساعات" ? `${w.dukhul}–${w.khuruj} (${w.qte}سا)` : `${w.qte} نهار`}</div>
-                  {!isWorker && <div className="px-2 py-2"><span style={{ background: c.bg, borderRadius: 999, padding: "2px 7px", fontSize: "0.65rem", fontWeight: 700, color: c.inkSoft }}>{w.dawra === "15" ? "15 يوم" : "الشهر"}</span></div>}
-                  {!isWorker && <div className="px-2 py-2 font-mono" style={{ color: c.cardGreenDeep, fontWeight: 700 }}>{w.qte * w.taux} DH</div>}
+                  <div className="px-2 py-2" style={{ color: c.inkMuted2, fontSize: "0.7rem" }}>{w.type === "ساعات" ? `${w.dukhul}–${w.khuruj} (${w.qte}سا)` : `${w.qte} نهار`}</div>
+                  {!isWorker && <div className="px-2 py-2"><span style={{ background: c.bg, borderRadius: 999, padding: "2px 7px", fontSize: "0.62rem", fontWeight: 700, color: c.inkSoft }}>{w.dawra === "15" ? "15 يوم" : "الشهر"}</span></div>}
                   {!isWorker && (
                     <div className="px-2 py-2">
-                      <button onClick={() => toggleStatut(w.id)} style={{ background: w.statut === "مؤدى" ? "rgba(18,167,104,0.12)" : "rgba(240,169,60,0.15)", borderRadius: 999, padding: "3px 8px" }} className="flex items-center gap-1">
-                        <CheckCircle2 size={12} color={w.statut === "مؤدى" ? c.cardGreenDeep : c.orange} />
-                        <span style={{ fontSize: "0.66rem", fontWeight: 700, color: w.statut === "مؤدى" ? c.cardGreenDeep : c.orange }}>{w.statut}</span>
+                      {w.distKm == null ? (
+                        <span style={{ fontSize: "0.62rem", color: c.inkMuted2 }}>—</span>
+                      ) : w.distKm <= 2 ? (
+                        <span title="قريب من الفيرمة" style={{ color: c.cardGreenDeep, fontSize: "0.62rem", fontWeight: 700 }}>✓ {w.distKm}كلم</span>
+                      ) : (
+                        <span title="بعيد من الفيرمة — تأكد منو" style={{ color: c.danger, fontSize: "0.62rem", fontWeight: 700 }}>⚠️ {w.distKm}كلم</span>
+                      )}
+                    </div>
+                  )}
+                  {!isWorker && <div className="px-2 py-2 font-mono" style={{ color: c.cardGreenDeep, fontWeight: 700 }}>{w.qte * w.taux} DH</div>}
+                  {!isWorker && (
+                    <div className="px-2 py-2 flex flex-col gap-1">
+                      <button onClick={() => toggleStatut(w.id)} style={{ background: w.statut === "مؤدى" ? "rgba(18,167,104,0.12)" : "rgba(240,169,60,0.15)", borderRadius: 999, padding: "2px 6px" }} className="flex items-center gap-1">
+                        <CheckCircle2 size={10} color={w.statut === "مؤدى" ? c.cardGreenDeep : c.orange} />
+                        <span style={{ fontSize: "0.6rem", fontWeight: 700, color: w.statut === "مؤدى" ? c.cardGreenDeep : c.orange }}>{w.statut}</span>
+                      </button>
+                      <button onClick={() => toggleConfirme(w.id)} style={{ background: w.confirme ? "rgba(59,130,196,0.12)" : "rgba(148,163,184,0.15)", borderRadius: 999, padding: "2px 6px" }} className="flex items-center gap-1">
+                        <ShieldCheck size={10} color={w.confirme ? c.blue : c.inkMuted2} />
+                        <span style={{ fontSize: "0.6rem", fontWeight: 700, color: w.confirme ? c.blue : c.inkMuted2 }}>{w.confirme ? "مؤكد" : "قيد المراجعة"}</span>
                       </button>
                     </div>
                   )}
