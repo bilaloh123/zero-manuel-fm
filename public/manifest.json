@@ -4,8 +4,8 @@
   "description": "لوجيسيال تسيير الفيرمات الفلاحية",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#F1F2F4",
-  "theme_color": "#0F7A52",
+  "background_color": "#FAF6EF",
+  "theme_color": "#33553F",
   "dir": "rtl",
   "lang": "ar",
   "icons": [
