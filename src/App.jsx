@@ -283,6 +283,11 @@ function LoginScreen({ onLogin }) {
         .logo-wrap { animation: logoPop 0.9s cubic-bezier(.34,1.56,.64,1) both, logoBreathe 3.2s ease-in-out 1.1s infinite; }
         .logo-ring { animation: ringPulse 2.6s ease-out infinite; }
         .logo-title { animation: titleRise 0.6s ease 0.5s both; }
+        @keyframes floatFruit1 { 0%,100% { transform: translate(0,0) rotate(-8deg); } 50% { transform: translate(-4px,-10px) rotate(4deg); } }
+        @keyframes floatFruit2 { 0%,100% { transform: translate(0,0) rotate(10deg); } 50% { transform: translate(5px,-8px) rotate(-6deg); } }
+        @keyframes fruitPop { 0% { opacity: 0; transform: scale(0); } 100% { opacity: 1; transform: scale(1); } }
+        .fruit-avocado { animation: fruitPop 0.5s ease 0.9s both, floatFruit1 3.4s ease-in-out 1.4s infinite; }
+        .fruit-strawberry { animation: fruitPop 0.5s ease 1.05s both, floatFruit2 2.9s ease-in-out 1.55s infinite; }
       `}</style>
       <div style={{ position: "absolute", top: -80, right: -80, width: 260, height: 260, borderRadius: "50%", background: "rgba(255,255,255,0.06)" }} />
       <div style={{ position: "absolute", bottom: -100, left: -60, width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
@@ -291,6 +296,22 @@ function LoginScreen({ onLogin }) {
         <div className="logo-ring absolute rounded-full" style={{ width: 90, height: 90, border: `1.5px solid ${c.orangeLight}`, animationDelay: "0.9s" }} />
         <div className="logo-wrap relative" style={{ boxShadow: "0 10px 28px rgba(0,0,0,0.25)", borderRadius: "50%" }}>
           <ZMLogo size={68} />
+        </div>
+        <div className="fruit-avocado absolute" style={{ top: -14, left: -18 }}>
+          <svg width="30" height="30" viewBox="0 0 32 32" fill="none">
+            <ellipse cx="16" cy="18" rx="10" ry="12" fill="#5C8A64" stroke="#3D5E43" strokeWidth="1.2" />
+            <ellipse cx="16" cy="19" rx="6" ry="7.5" fill="#E9C46A" />
+            <circle cx="16" cy="19" r="3.4" fill="#8B5E3C" />
+            <path d="M13 6c0-2 1.5-4 3.5-4" stroke="#3D5E43" strokeWidth="1.6" strokeLinecap="round" />
+          </svg>
+        </div>
+        <div className="fruit-strawberry absolute" style={{ bottom: -12, right: -20 }}>
+          <svg width="26" height="26" viewBox="0 0 32 32" fill="none">
+            <path d="M16 30c-6 0-10-7-10-13 0-5 4-8 10-8s10 3 10 8c0 6-4 13-10 13z" fill="#E63946" />
+            <circle cx="12" cy="14" r="1" fill="#FFF3E0" /><circle cx="16" cy="18" r="1" fill="#FFF3E0" /><circle cx="20" cy="14" r="1" fill="#FFF3E0" />
+            <circle cx="14" cy="22" r="1" fill="#FFF3E0" /><circle cx="19" cy="22" r="1" fill="#FFF3E0" />
+            <path d="M16 9l-4-5 4 2 4-2-4 5z" fill="#3DBBA8" />
+          </svg>
         </div>
       </div>
       <h1 className="font-display logo-title" style={{ color: "#fff", fontWeight: 800, fontSize: "1.55rem", position: "relative" }}>زيرو مانويل</h1>
