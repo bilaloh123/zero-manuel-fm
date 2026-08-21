@@ -222,6 +222,99 @@ function Field({ label, children }) {
 }
 const inputStyle = { background: c.bg, border: `1px solid ${c.line}`, borderRadius: 8, padding: "8px 10px", fontSize: "0.82rem", color: c.ink, width: "100%" };
 
+function FicheEmployeModal({ employe, equipes, onClose, onSave }) {
+  const [tab, setTab] = useState("perso");
+  const [form, setForm] = useState(employe);
+  const c2 = c;
+  const field = (label, key, type = "text", extra = {}) => (
+    <Field label={label}><input type={type} value={form[key] || ""} onChange={(e) => setForm({ ...form, [key]: e.target.value })} style={inputStyle} {...extra} /></Field>
+  );
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 50 }} className="flex items-center justify-center p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: c2.white, borderRadius: 20, width: "100%", maxWidth: 640, maxHeight: "88vh", overflowY: "auto" }} className="p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.1rem", color: c2.ink }}>Fiche employé — {employe.nom}</h2>
+          <button onClick={onClose}><X size={20} color={c2.inkMuted2} /></button>
+        </div>
+        <div className="flex gap-2 mb-4 flex-wrap">
+          {[["perso", "Infos personnelles"], ["pro", "Infos professionnelles"], ["salaire", "Infos salariales"], ["docs", "Documents"]].map(([k, l]) => (
+            <button key={k} onClick={() => setTab(k)} style={{ background: tab === k ? c2.cardGreen : c2.bg, color: tab === k ? "#fff" : c2.ink, borderRadius: 999, padding: "7px 14px", fontSize: "0.78rem", fontWeight: 700 }}>{l}</button>
+          ))}
+        </div>
+
+        {tab === "perso" && (
+          <div className="grid grid-cols-2 gap-3">
+            {field("Matricule", "matricule")}
+            {field("Nom", "nom")}
+            {field("Prénom", "prenom")}
+            {field("CIN", "cin")}
+            {field("Téléphone", "telephone")}
+            {field("Adresse", "adresse")}
+            {field("Date de naissance", "dateNaissance", "date")}
+            {field("URL Photo (اختياري)", "photoUrl")}
+          </div>
+        )}
+        {tab === "pro" && (
+          <div className="grid grid-cols-2 gap-3">
+            {field("Poste", "poste")}
+            <Field label="Type de contrat">
+              <select value={form.typeContrat || ""} onChange={(e) => setForm({ ...form, typeContrat: e.target.value })} style={inputStyle}>
+                <option value="">—</option><option value="CDI">CDI</option><option value="CDD">CDD</option><option value="Saisonnier">Saisonnier</option><option value="Journalier">Journalier</option>
+              </select>
+            </Field>
+            {field("Date d'entrée", "dateEntree", "date")}
+            {field("Date de sortie", "dateSortie", "date")}
+            <Field label="Équipe">
+              <select value={form.equipeId || ""} onChange={(e) => setForm({ ...form, equipeId: e.target.value })} style={inputStyle}>
+                <option value="">—</option>
+                {equipes.map((eq) => (<option key={eq.id} value={eq.id}>{eq.nom}</option>))}
+              </select>
+            </Field>
+            {field("Responsable", "responsable")}
+            <Field label="Statut">
+              <select value={form.statut || "actif"} onChange={(e) => setForm({ ...form, statut: e.target.value })} style={inputStyle}>
+                <option value="actif">Actif</option><option value="inactif">Inactif</option><option value="suspendu">Suspendu</option>
+              </select>
+            </Field>
+            {field("Situation familiale", "situationFamiliale")}
+            {field("Nombre d'enfants", "nombreEnfants", "number")}
+          </div>
+        )}
+        {tab === "salaire" && (
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Type de salaire">
+              <select value={form.typeSalaire || "journalier"} onChange={(e) => setForm({ ...form, typeSalaire: e.target.value })} style={inputStyle}>
+                <option value="journalier">Journalier</option><option value="horaire">Horaire</option><option value="mensuel">Mensuel</option>
+                <option value="tache">À la tâche</option><option value="production">À la production</option><option value="mixte">Mixte</option>
+              </select>
+            </Field>
+            {field("Salaire journalier (DH)", "salaireJournalier", "number")}
+            {field("Salaire horaire (DH)", "salaireHoraire", "number")}
+            {field("Salaire mensuel (DH)", "salaireMensuel", "number")}
+            {field("N° CNSS", "cnssNumero")}
+            <Field label="Affilié CNSS">
+              <select value={form.affilieCNSS ? "oui" : "non"} onChange={(e) => setForm({ ...form, affilieCNSS: e.target.value === "oui" })} style={inputStyle}>
+                <option value="non">Non</option><option value="oui">Oui</option>
+              </select>
+            </Field>
+            {field("RIB", "rib")}
+          </div>
+        )}
+        {tab === "docs" && (
+          <div className="grid grid-cols-1 gap-3">
+            {field("URL document CIN", "docCinUrl")}
+            {field("URL contrat de travail", "docContratUrl")}
+            {field("URL attestation CNSS", "docCnssUrl")}
+            <p style={{ fontSize: "0.7rem", color: c2.inkMuted2 }}>ملصق روابط الملفات دابا (رفع الملفات مباشرة غادي يتزاد فمرحلة قادمة مع Supabase Storage)</p>
+          </div>
+        )}
+
+        <button onClick={() => onSave(form)} style={{ background: c2.cardGreen, color: "#fff", borderRadius: 11, padding: "11px 0", fontWeight: 700, width: "100%", marginTop: 20, boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>Enregistrer la fiche</button>
+      </div>
+    </div>
+  );
+}
+
 function LockedFeature({ nom }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
@@ -380,7 +473,7 @@ const emptyFarmData = {
   nom: "", gps: { lat: 34.92, lng: -6.10 },
   parcelles: [], workers: [], wazin: [], costs: [], plan: [], depenses: [], stock: [], invoices: [],
   cnss: { echeanceJour: 10, moisLabel: "Juillet 2026", declare: false, dateDeclare: "" },
-  employees: [], moduleAccess: {},
+  employees: [], moduleAccess: {}, taches: [], equipes: [],
 };
 
 export default function App() {
@@ -445,16 +538,23 @@ export default function App() {
   const [showAddAccident, setShowAddAccident] = useState(false);
   const [accForm, setAccForm] = useState({ nomEmploye: "", gravite: "leger", description: "", actionPrise: "" });
   const [accidents, setAccidents] = useState([]);
+  const [ficheEmployeOuverte, setFicheEmployeOuverte] = useState(null);
+  const [showAddTache, setShowAddTache] = useState(false);
+  const [tacheForm, setTacheForm] = useState({ nom: "", uniteDefaut: "kg", tarifDefaut: "" });
+  const [showManageTaches, setShowManageTaches] = useState(false);
   const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "" });
 
   const data = farms[currentFarmId] || emptyFarmData;
 
   async function loadFarmDetails(farmId) {
-    const [{ data: parcellesData }, { data: workersData }, { data: stockData }, { data: accessData }] = await Promise.all([
+    const [{ data: parcellesData }, { data: workersData }, { data: stockData }, { data: accessData }, { data: employeesData }, { data: tachesData }, { data: equipesData }] = await Promise.all([
       supabase.from("parcelles").select("*").eq("farm_id", farmId),
       supabase.from("workers_log").select("*").eq("farm_id", farmId).order("created_at", { ascending: false }).limit(200),
       supabase.from("stock_items").select("*").eq("farm_id", farmId),
       supabase.from("module_access").select("module, enabled").eq("farm_id", farmId),
+      supabase.from("employees").select("*").eq("farm_id", farmId),
+      supabase.from("taches_config").select("*").eq("farm_id", farmId).eq("active", true),
+      supabase.from("equipes").select("*").eq("farm_id", farmId),
     ]);
     const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng").eq("id", farmId).single();
     const farmGps = farmRow ? { lat: Number(farmRow.gps_lat) || 34.92, lng: Number(farmRow.gps_lng) || -6.10 } : { lat: 34.92, lng: -6.10 };
@@ -489,8 +589,11 @@ export default function App() {
       expiryDate: s.expiry_date || null, lotNumber: s.lot_number || null,
       uniteAchat: s.unite_achat || null, ratioConversion: Number(s.ratio_conversion) || 1,
     }));
+    const employees = (employeesData || []).map(mapEmployeeRow);
+    const taches = (tachesData || []).map((t) => ({ id: t.id, nom: t.nom, uniteDefaut: t.unite_defaut, tarifDefaut: Number(t.tarif_defaut) || 0 }));
+    const equipes = (equipesData || []).map((eq) => ({ id: eq.id, nom: eq.nom, chefNom: eq.chef_nom, parcelleId: eq.parcelle_id }));
 
-    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess } }));
+    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess, employees, taches, equipes } }));
     setSelected(parcelles[0] || null);
   }
 
@@ -717,12 +820,51 @@ export default function App() {
     setIsRecording(false);
   }
 
-  function ensureEmployee(nom) {
+  async function ensureEmployee(nom) {
     if (data.employees.some((e) => e.nom === nom)) return;
-    updateFarm({ employees: [...data.employees, { id: Date.now(), nom, prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "", affilieCNSS: false }] });
+    const { data: row, error } = await supabase.from("employees").insert({ farm_id: currentFarmId, nom, statut: "actif", type_salaire: "journalier" }).select().single();
+    if (error) { console.error(error); return; }
+    updateFarm({ employees: [...data.employees, mapEmployeeRow(row)] });
   }
-  function getEmployee(nom) { return data.employees.find((e) => e.nom === nom) || { prenom: "", cin: "", dateEntree: "", situationFamiliale: "", nombreEnfants: "", cnssNumero: "", affilieCNSS: false }; }
-  function updateEmployee(id, patch) { updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, ...patch } : e) }); }
+  function getEmployee(nom) { return data.employees.find((e) => e.nom === nom) || mapEmployeeRow({}); }
+  async function updateEmployee(id, patch) {
+    updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, ...patch } : e) });
+    const dbPatch = {};
+    const map = {
+      prenom: "prenom", cin: "cin", dateEntree: "date_entree", situationFamiliale: "situation_familiale",
+      nombreEnfants: "nombre_enfants", cnssNumero: "cnss_numero", affilieCNSS: "affilie_cnss",
+      matricule: "matricule", telephone: "telephone", adresse: "adresse", photoUrl: "photo_url",
+      poste: "poste", typeContrat: "type_contrat", dateSortie: "date_sortie", statut: "statut",
+      equipeId: "equipe_id", responsable: "responsable", salaireJournalier: "salaire_journalier",
+      salaireHoraire: "salaire_horaire", salaireMensuel: "salaire_mensuel", typeSalaire: "type_salaire",
+      rib: "rib", docCinUrl: "doc_cin_url", docContratUrl: "doc_contrat_url", docCnssUrl: "doc_cnss_url",
+    };
+    Object.keys(patch).forEach((k) => { if (map[k]) dbPatch[map[k]] = patch[k]; });
+    if (Object.keys(dbPatch).length) await supabase.from("employees").update(dbPatch).eq("id", id);
+  }
+  function mapEmployeeRow(e) {
+    return {
+      id: e.id, nom: e.nom || "", prenom: e.prenom || "", cin: e.cin || "", dateEntree: e.date_entree || "",
+      situationFamiliale: e.situation_familiale || "", nombreEnfants: e.nombre_enfants || "", cnssNumero: e.cnss_numero || "",
+      affilieCNSS: e.affilie_cnss || false, matricule: e.matricule || "", telephone: e.telephone || "", adresse: e.adresse || "",
+      photoUrl: e.photo_url || "", poste: e.poste || "", typeContrat: e.type_contrat || "", dateSortie: e.date_sortie || "",
+      statut: e.statut || "actif", equipeId: e.equipe_id || "", responsable: e.responsable || "",
+      salaireJournalier: e.salaire_journalier || "", salaireHoraire: e.salaire_horaire || "", salaireMensuel: e.salaire_mensuel || "",
+      typeSalaire: e.type_salaire || "journalier", rib: e.rib || "", docCinUrl: e.doc_cin_url || "",
+      docContratUrl: e.doc_contrat_url || "", docCnssUrl: e.doc_cnss_url || "",
+    };
+  }
+
+  async function addTache() {
+    if (!tacheForm.nom.trim()) return;
+    const { error } = await supabase.from("taches_config").insert({
+      farm_id: currentFarmId, nom: tacheForm.nom, unite_defaut: tacheForm.uniteDefaut, tarif_defaut: Number(tacheForm.tarifDefaut) || 0,
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setTacheForm({ nom: "", uniteDefaut: "kg", tarifDefaut: "" });
+    setShowAddTache(false);
+    await loadFarmDetails(currentFarmId);
+  }
 
   function getGPSPosition() {
     return new Promise((resolve) => {
@@ -1768,7 +1910,7 @@ export default function App() {
               {visibleWorkers.map((w) => (
                 <React.Fragment key={w.id}>
                 <div className="grid items-center" style={{ gridTemplateColumns: isWorker ? "1.2fr 1.3fr 1.2fr 0.3fr" : "0.8fr 0.45fr 0.9fr 0.8fr 0.55fr 0.6fr 0.6fr 0.7fr 0.3fr", borderTop: `1px solid ${c.line}`, fontSize: "0.76rem" }}>
-                  {!isWorker && <div className="px-2 py-2" style={{ fontWeight: 600 }}>{w.nom}</div>}
+                  {!isWorker && <button onClick={() => setFicheEmployeOuverte(getEmployee(w.nom))} className="px-2 py-2 text-right" style={{ fontWeight: 600, textDecoration: "underline", textDecorationColor: c.line }}>{w.nom}</button>}
                   <div className="px-2 py-2 font-mono" style={{ color: c.inkMuted2 }}>{w.parcelle}</div>
                   <div className="px-2 py-2 flex items-center gap-1.5">
                     <span>{w.tache}</span>
@@ -1840,6 +1982,32 @@ export default function App() {
                     </div>
                   ))}
                   {accidents.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucun accident enregistré</p>}
+                </div>
+              </div>
+            )}
+
+            {!isWorker && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Gestion des tâches</h3>
+                  <AddButton label="Nouvelle tâche" open={showAddTache} onClick={() => setShowAddTache(!showAddTache)} />
+                </div>
+                {showAddTache && (
+                  <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
+                    <Field label="اسم المهمة"><input value={tacheForm.nom} onChange={(e) => setTacheForm({ ...tacheForm, nom: e.target.value })} placeholder="ex. Taille, Tri, Chargement" style={inputStyle} /></Field>
+                    <Field label="الوحدة الافتراضية"><select value={tacheForm.uniteDefaut} onChange={(e) => setTacheForm({ ...tacheForm, uniteDefaut: e.target.value })} style={inputStyle}><option value="kg">kg</option><option value="caisse">صندوق</option><option value="unité">وحدة</option><option value="jour">نهار</option></select></Field>
+                    <Field label="التعريفة الافتراضية (DH)"><input type="number" value={tacheForm.tarifDefaut} onChange={(e) => setTacheForm({ ...tacheForm, tarifDefaut: e.target.value })} style={inputStyle} /></Field>
+                    <div className="col-span-3"><button onClick={addTache} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%" }}>Ajouter la tâche</button></div>
+                  </div>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {data.taches.map((t) => (
+                    <div key={t.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 999 }} className="px-3 py-1.5 flex items-center gap-2">
+                      <span style={{ fontSize: "0.78rem", fontWeight: 700 }}>{t.nom}</span>
+                      <span className="font-mono" style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{t.tarifDefaut} DH/{t.uniteDefaut}</span>
+                    </div>
+                  ))}
+                  {data.taches.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucune tâche configurée — les tâches par défaut (Récolte, Irrigation...) restent utilisables en texte libre</p>}
                 </div>
               </div>
             )}
@@ -2533,6 +2701,15 @@ export default function App() {
           </button>
         );})}
       </nav>
+
+      {ficheEmployeOuverte && (
+        <FicheEmployeModal
+          employe={ficheEmployeOuverte}
+          equipes={data.equipes}
+          onClose={() => setFicheEmployeOuverte(null)}
+          onSave={async (form) => { await updateEmployee(ficheEmployeOuverte.id, form); setFicheEmployeOuverte(null); }}
+        />
+      )}
     </div>
   );
 }
