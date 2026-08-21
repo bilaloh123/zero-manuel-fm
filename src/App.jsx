@@ -473,7 +473,7 @@ const emptyFarmData = {
   nom: "", gps: { lat: 34.92, lng: -6.10 },
   parcelles: [], workers: [], wazin: [], costs: [], plan: [], depenses: [], stock: [], invoices: [],
   cnss: { echeanceJour: 10, moisLabel: "Juillet 2026", declare: false, dateDeclare: "" },
-  employees: [], moduleAccess: {}, taches: [], equipes: [],
+  employees: [], moduleAccess: {}, taches: [], equipes: [], heureDebutStandard: "06:00", heuresStandardJour: 8,
 };
 
 export default function App() {
@@ -508,7 +508,7 @@ export default function App() {
   const [showAddWazin, setShowAddWazin] = useState(false);
   const [showAddCost, setShowAddCost] = useState(false);
   const [showAddPlan, setShowAddPlan] = useState(false);
-  const [wForm, setWForm] = useState({ nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "", modePaie: "temps", quantiteRecoltee: "", prixUnitaireRendement: "", chefEquipe: "", indemniteTransport: "0", indemniteRepas: "0", typeJour: "normal" });
+  const [wForm, setWForm] = useState({ nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "", modePaie: "temps", quantiteRecoltee: "", prixUnitaireRendement: "", chefEquipe: "", indemniteTransport: "0", indemniteRepas: "0", typeJour: "normal", pauseMinutes: "0" });
   const [isRecording, setIsRecording] = useState(false);
   const [playingAudioId, setPlayingAudioId] = useState(null);
   const mediaRecorderRef = useRef(null);
@@ -556,8 +556,10 @@ export default function App() {
       supabase.from("taches_config").select("*").eq("farm_id", farmId).eq("active", true),
       supabase.from("equipes").select("*").eq("farm_id", farmId),
     ]);
-    const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng").eq("id", farmId).single();
+    const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng, heure_debut_standard, heures_standard_jour").eq("id", farmId).single();
     const farmGps = farmRow ? { lat: Number(farmRow.gps_lat) || 34.92, lng: Number(farmRow.gps_lng) || -6.10 } : { lat: 34.92, lng: -6.10 };
+    const heureDebutStandard = (farmRow && farmRow.heure_debut_standard) ? farmRow.heure_debut_standard.slice(0, 5) : "06:00";
+    const heuresStandardJour = farmRow ? Number(farmRow.heures_standard_jour) || 8 : 8;
     const moduleAccess = {};
     (accessData || []).forEach((r) => { moduleAccess[r.module] = !!r.enabled; });
     const parcelles = (parcellesData || []).map((p) => ({
@@ -579,6 +581,8 @@ export default function App() {
         modePaie: w.mode_paie || "temps", chefEquipe: w.chef_equipe || null,
         indemniteTransport: Number(w.indemnite_transport) || 0, indemniteRepas: Number(w.indemnite_repas) || 0,
         indemnites, typeJour: w.type_jour || "normal",
+        pauseMinutes: Number(w.pause_minutes) || 0, retardMinutes: Number(w.retard_minutes) || 0,
+        heuresSup: Number(w.heures_sup) || 0, methode: w.methode || "manuel",
       };
     });
     workers.forEach((w) => { sums[w.nom] = (sums[w.nom] || 0) + w.qte; });
@@ -593,7 +597,7 @@ export default function App() {
     const taches = (tachesData || []).map((t) => ({ id: t.id, nom: t.nom, uniteDefaut: t.unite_defaut, tarifDefaut: Number(t.tarif_defaut) || 0 }));
     const equipes = (equipesData || []).map((eq) => ({ id: eq.id, nom: eq.nom, chefNom: eq.chef_nom, parcelleId: eq.parcelle_id }));
 
-    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess, employees, taches, equipes } }));
+    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess, employees, taches, equipes, heureDebutStandard, heuresStandardJour } }));
     setSelected(parcelles[0] || null);
   }
 
@@ -879,11 +883,24 @@ export default function App() {
 
   async function insertPointage(nom) {
     const isRendement = wForm.modePaie === "rendement";
-    const qte = isRendement ? Number(wForm.quantiteRecoltee) || 0 : (wForm.type === "Heures" ? hoursBetween(wForm.dukhul, wForm.khuruj) : Number(wForm.nahar) || 1);
+    const pauseMin = Number(wForm.pauseMinutes) || 0;
+    const heuresBrutes = wForm.type === "Heures" ? hoursBetween(wForm.dukhul, wForm.khuruj) : 0;
+    const heuresNettes = Math.max(0, heuresBrutes - pauseMin / 60);
+    const qte = isRendement ? Number(wForm.quantiteRecoltee) || 0 : (wForm.type === "Heures" ? Math.round(heuresNettes * 10) / 10 : Number(wForm.nahar) || 1);
     const tauxEffectif = isRendement ? Number(wForm.prixUnitaireRendement) || 0 : Number(wForm.taux) || 0;
     const parcelleCode = wForm.parcelle || (data.parcelles[0] && data.parcelles[0].code) || "";
     const parcelleObj = data.parcelles.find((p) => p.code === parcelleCode);
     const gps = await getGPSPosition();
+
+    // حساب التأخر (بالنسبة لوقت البداية القياسي) والساعات الإضافية
+    let retardMinutes = 0, heuresSup = 0;
+    if (!isRendement && wForm.type === "Heures") {
+      const [hStd, mStd] = data.heureDebutStandard.split(":").map(Number);
+      const [hReel, mReel] = wForm.dukhul.split(":").map(Number);
+      retardMinutes = Math.max(0, (hReel * 60 + mReel) - (hStd * 60 + mStd));
+      heuresSup = Math.max(0, Math.round((heuresNettes - data.heuresStandardJour) * 10) / 10);
+    }
+
     const payload = {
       farm_id: currentFarmId,
       nom_ouvrier: nom,
@@ -907,8 +924,12 @@ export default function App() {
       indemnite_transport: Number(wForm.indemniteTransport) || 0,
       indemnite_repas: Number(wForm.indemniteRepas) || 0,
       type_jour: wForm.typeJour,
+      pause_minutes: pauseMin,
+      retard_minutes: retardMinutes,
+      heures_sup: heuresSup,
+      methode: gps ? "mobile" : "manuel",
     };
-    const resetForm = { nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "", modePaie: "temps", quantiteRecoltee: "", prixUnitaireRendement: "", chefEquipe: "", indemniteTransport: "0", indemniteRepas: "0", typeJour: "normal" };
+    const resetForm = { nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "", modePaie: "temps", quantiteRecoltee: "", prixUnitaireRendement: "", chefEquipe: "", indemniteTransport: "0", indemniteRepas: "0", typeJour: "normal", pauseMinutes: "0" };
 
     if (!navigator.onLine) {
       queueOffline("workers_log", payload);
@@ -1037,6 +1058,15 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = () => setSForm((prev) => ({ ...prev, factureFile: reader.result, factureNom: file.name }));
     reader.readAsDataURL(file);
+  }
+
+  async function marquerAbsent(nomEmploye) {
+    const { error } = await supabase.from("absences").insert({
+      farm_id: currentFarmId, employee_id: (data.employees.find((e) => e.nom === nomEmploye) || {}).id,
+      type: "absence_non_justifiee",
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    alert(`تم تسجيل غياب ${nomEmploye}`);
   }
 
   async function loadAccidents(farmId) {
@@ -1736,6 +1766,27 @@ export default function App() {
             })()}
 
             {!isWorker && (() => {
+              const nomsPointes = new Set(data.workers.map((w) => w.nom));
+              const employesActifs = data.employees.filter((e) => e.statut === "actif" || !e.statut);
+              const absents = employesActifs.filter((e) => !nomsPointes.has(e.nom));
+              if (absents.length === 0) return null;
+              return (
+                <div className="mb-4">
+                  <div style={{ background: "rgba(217,161,92,0.1)", border: `1px solid ${c.orange}`, borderRadius: 14 }} className="p-3">
+                    <div className="flex items-center gap-2 mb-2"><AlertTriangle size={15} color={c.orange} /><span style={{ fontWeight: 700, fontSize: "0.8rem" }}>{absents.length} عامل بلا بونطاج اليوم</span></div>
+                    <div className="flex flex-wrap gap-2">
+                      {absents.map((e) => (
+                        <button key={e.id} onClick={() => marquerAbsent(e.nom)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 999, padding: "4px 10px" }}>
+                          <span style={{ fontSize: "0.74rem", fontWeight: 600 }}>{e.nom}</span> <span style={{ fontSize: "0.66rem", color: c.inkMuted2 }}>— Marquer absent</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
+            {!isWorker && (() => {
               const parTache = {};
               data.workers.forEach((w) => { parTache[w.tache] = (parTache[w.tache] || 0) + w.qte; });
               const tacheEntries = Object.entries(parTache);
@@ -1870,6 +1921,7 @@ export default function App() {
                         <>
                           <Field label="Heure d'entrée"><input type="time" value={wForm.dukhul} onChange={(e) => setWForm({ ...wForm, dukhul: e.target.value })} style={inputStyle} /></Field>
                           <Field label="Heure de sortie"><input type="time" value={wForm.khuruj} onChange={(e) => setWForm({ ...wForm, khuruj: e.target.value })} style={inputStyle} /></Field>
+                          <Field label="Pause (minutes)"><input type="number" value={wForm.pauseMinutes} onChange={(e) => setWForm({ ...wForm, pauseMinutes: e.target.value })} style={inputStyle} /></Field>
                         </>
                       ) : (<Field label="Nombre de jours"><input type="number" min="0.5" step="0.5" value={wForm.nahar} onChange={(e) => setWForm({ ...wForm, nahar: e.target.value })} style={inputStyle} /></Field>)}
                       {!isWorker && (<Field label={wForm.type === "Heures" ? "Taux/heure (DH)" : "Taux/jour (DH)"}><input type="number" value={wForm.taux} onChange={(e) => setWForm({ ...wForm, taux: e.target.value })} style={inputStyle} /></Field>)}
@@ -1882,7 +1934,7 @@ export default function App() {
                   {!isWorker && (<Field label="نوع اليوم"><select value={wForm.typeJour} onChange={(e) => setWForm({ ...wForm, typeJour: e.target.value })} style={inputStyle}><option value="normal">عادي</option><option value="arret_meteo">توقف بسبب الطقس</option></select></Field>)}
                 </div>
                 )}
-                {wForm.modePaie === "temps" && wForm.type === "Heures" && (<div className="flex items-center gap-2" style={{ color: c.inkMuted2, fontSize: "0.78rem" }}><Clock size={14} /><span>Total heures : {hoursBetween(wForm.dukhul, wForm.khuruj)} h</span></div>)}
+                {wForm.modePaie === "temps" && wForm.type === "Heures" && (<div className="flex items-center gap-2" style={{ color: c.inkMuted2, fontSize: "0.78rem" }}><Clock size={14} /><span>Heures nettes (بعد الباش) : {Math.max(0, Math.round((hoursBetween(wForm.dukhul, wForm.khuruj) - (Number(wForm.pauseMinutes) || 0) / 60) * 10) / 10)} h — الدوام القياسي: {data.heureDebutStandard} ({data.heuresStandardJour}h)</span></div>)}
 
                 <div style={{ background: c.bg, borderRadius: 12 }} className="p-3 flex items-center gap-3">
                   {!isRecording ? (
@@ -1920,7 +1972,11 @@ export default function App() {
                       </button>
                     )}
                   </div>
-                  <div className="px-2 py-2" style={{ color: c.inkMuted2, fontSize: "0.7rem" }}>{w.type === "Heures" ? `${w.dukhul}–${w.khuruj} (${w.qte}h)` : `${w.qte} Jour`}</div>
+                  <div className="px-2 py-2" style={{ color: c.inkMuted2, fontSize: "0.7rem" }}>
+                    {w.type === "Heures" ? `${w.dukhul}–${w.khuruj} (${w.qte}h)` : `${w.qte} Jour`}
+                    {w.retardMinutes > 0 && <span style={{ color: c.orange, fontWeight: 700 }}> · ⏱ {w.retardMinutes}mn تأخر</span>}
+                    {w.heuresSup > 0 && <span style={{ color: c.blue, fontWeight: 700 }}> · +{w.heuresSup}h إضافية</span>}
+                  </div>
                   {!isWorker && <div className="px-2 py-2"><span style={{ background: c.bg, borderRadius: 999, padding: "2px 7px", fontSize: "0.62rem", fontWeight: 700, color: c.inkSoft }}>{w.dawra === "15" ? "15 jours" : "le mois"}</span></div>}
                   {!isWorker && (
                     <div className="px-2 py-2">
