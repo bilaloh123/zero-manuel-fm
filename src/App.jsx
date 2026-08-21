@@ -542,6 +542,11 @@ export default function App() {
   const [showAddTache, setShowAddTache] = useState(false);
   const [tacheForm, setTacheForm] = useState({ nom: "", uniteDefaut: "kg", tarifDefaut: "" });
   const [showManageTaches, setShowManageTaches] = useState(false);
+  const [showAddEquipe, setShowAddEquipe] = useState(false);
+  const [equipeForm, setEquipeForm] = useState({ nom: "", chefNom: "", parcelleId: "" });
+  const [showAddProdEquipe, setShowAddProdEquipe] = useState(false);
+  const [prodEquipeForm, setProdEquipeForm] = useState({ equipeId: "", tache: "", quantiteTotale: "", tarifUnitaire: "", methode: "egale" });
+  const [repartitionPreview, setRepartitionPreview] = useState([]);
   const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "" });
 
   const data = farms[currentFarmId] || emptyFarmData;
@@ -867,6 +872,89 @@ export default function App() {
     if (error) { alert("مشكل: " + error.message); return; }
     setTacheForm({ nom: "", uniteDefaut: "kg", tarifDefaut: "" });
     setShowAddTache(false);
+    await loadFarmDetails(currentFarmId);
+  }
+
+  async function addEquipe() {
+    if (!equipeForm.nom.trim()) return;
+    const { error } = await supabase.from("equipes").insert({
+      farm_id: currentFarmId, nom: equipeForm.nom, chef_nom: equipeForm.chefNom || null, parcelle_id: equipeForm.parcelleId || null,
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setEquipeForm({ nom: "", chefNom: "", parcelleId: "" });
+    setShowAddEquipe(false);
+    await loadFarmDetails(currentFarmId);
+  }
+
+  function calculerRepartition() {
+    const equipe = data.equipes.find((eq) => eq.id === prodEquipeForm.equipeId);
+    if (!equipe) { alert("اختار الفرقة أول"); return; }
+    const membres = data.employees.filter((e) => e.equipeId === equipe.id);
+    if (membres.length === 0) { alert("هاد الفرقة ماعندهاش أعضاء — زيدهم من Fiche Employé"); return; }
+    const quantiteTotale = Number(prodEquipeForm.quantiteTotale) || 0;
+    const tarifUnitaire = Number(prodEquipeForm.tarifUnitaire) || 0;
+    const montantTotal = quantiteTotale * tarifUnitaire;
+
+    let preview = [];
+    if (prodEquipeForm.methode === "egale") {
+      const partChacun = quantiteTotale / membres.length;
+      const montantChacun = montantTotal / membres.length;
+      preview = membres.map((m) => ({ nom: m.nom, employeeId: m.id, part: partChacun, montant: montantChacun }));
+    } else if (prodEquipeForm.methode === "heures" || prodEquipeForm.methode === "jours") {
+      const poids = membres.map((m) => {
+        const entreesMembre = data.workers.filter((w) => w.nom === m.nom);
+        const total = prodEquipeForm.methode === "heures"
+          ? entreesMembre.filter((w) => w.type === "Heures").reduce((s, w) => s + w.qte, 0)
+          : entreesMembre.filter((w) => w.type === "Jour").reduce((s, w) => s + w.qte, 0);
+        return total || 1; // على الأقل وحدة وحدة باش ماتبقاش القسمة على صفر
+      });
+      const sommePoids = poids.reduce((s, p) => s + p, 0);
+      preview = membres.map((m, i) => ({
+        nom: m.nom, employeeId: m.id,
+        part: (poids[i] / sommePoids) * quantiteTotale,
+        montant: (poids[i] / sommePoids) * montantTotal,
+      }));
+    } else if (prodEquipeForm.methode === "custom") {
+      preview = membres.map((m) => ({ nom: m.nom, employeeId: m.id, pourcentage: Math.round(100 / membres.length), part: 0, montant: 0 }));
+    }
+    setRepartitionPreview(preview);
+  }
+
+  function updateRepartitionCustom(index, pourcentage) {
+    const quantiteTotale = Number(prodEquipeForm.quantiteTotale) || 0;
+    const montantTotal = quantiteTotale * (Number(prodEquipeForm.tarifUnitaire) || 0);
+    setRepartitionPreview((prev) => prev.map((r, i) => i === index ? {
+      ...r, pourcentage: Number(pourcentage),
+      part: (Number(pourcentage) / 100) * quantiteTotale,
+      montant: (Number(pourcentage) / 100) * montantTotal,
+    } : r));
+  }
+
+  async function validerProductionEquipe() {
+    const equipe = data.equipes.find((eq) => eq.id === prodEquipeForm.equipeId);
+    if (!equipe || repartitionPreview.length === 0) return;
+    const parcelleObj = data.parcelles.find((p) => p.id === equipe.parcelleId);
+
+    await supabase.from("production").insert({
+      farm_id: currentFarmId, equipe_id: equipe.id, parcelle_id: equipe.parcelleId || null,
+      quantite: Number(prodEquipeForm.quantiteTotale) || 0, unite: "kg",
+      tarif_unitaire: Number(prodEquipeForm.tarifUnitaire) || 0, methode_repartition: prodEquipeForm.methode,
+    });
+
+    for (const r of repartitionPreview) {
+      await supabase.from("workers_log").insert({
+        farm_id: currentFarmId, nom_ouvrier: r.nom, employee_id: r.employeeId,
+        parcelle_id: equipe.parcelleId || null, equipe_id: equipe.id,
+        tache: prodEquipeForm.tache || "Production d'équipe",
+        type_paie: "Heures", quantite: r.part, taux: r.montant / (r.part || 1),
+        dawra: "15", statut_paiement: "Non payé", mode_paie: "production",
+        quantite_recoltee: r.part, prix_unitaire_rendement: Number(prodEquipeForm.tarifUnitaire) || 0,
+        chef_equipe: equipe.chefNom || null, confirme: false,
+      });
+    }
+    setProdEquipeForm({ equipeId: "", tache: "", quantiteTotale: "", tarifUnitaire: "", methode: "egale" });
+    setRepartitionPreview([]);
+    setShowAddProdEquipe(false);
     await loadFarmDetails(currentFarmId);
   }
 
@@ -2065,6 +2153,86 @@ export default function App() {
                   ))}
                   {data.taches.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucune tâche configurée — les tâches par défaut (Récolte, Irrigation...) restent utilisables en texte libre</p>}
                 </div>
+              </div>
+            )}
+
+            {!isWorker && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Équipes</h3>
+                  <AddButton label="Nouvelle équipe" open={showAddEquipe} onClick={() => setShowAddEquipe(!showAddEquipe)} />
+                </div>
+                {showAddEquipe && (
+                  <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
+                    <Field label="اسم الفرقة"><input value={equipeForm.nom} onChange={(e) => setEquipeForm({ ...equipeForm, nom: e.target.value })} placeholder="ex. Équipe Récolte 1" style={inputStyle} /></Field>
+                    <Field label="شيف الإكيب"><input value={equipeForm.chefNom} onChange={(e) => setEquipeForm({ ...equipeForm, chefNom: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="القطعة"><select value={equipeForm.parcelleId} onChange={(e) => setEquipeForm({ ...equipeForm, parcelleId: e.target.value })} style={inputStyle}><option value="">—</option>{data.parcelles.map((p) => (<option key={p.id} value={p.id}>{p.code} — {p.nom}</option>))}</select></Field>
+                    <div className="col-span-3"><button onClick={addEquipe} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%" }}>Créer l'équipe</button></div>
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  {data.equipes.map((eq) => {
+                    const membres = data.employees.filter((e) => e.equipeId === eq.id);
+                    return (
+                      <div key={eq.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="p-3">
+                        <div className="flex items-center justify-between">
+                          <span style={{ fontWeight: 700, fontSize: "0.84rem" }}>{eq.nom}</span>
+                          <span style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{membres.length} membre(s)</span>
+                        </div>
+                        <div style={{ fontSize: "0.72rem", color: c.inkMuted2 }} className="mt-1">
+                          {eq.chefNom ? `Chef: ${eq.chefNom}` : "Sans chef"} · {membres.map((m) => m.nom).join(", ") || "aucun membre (assignez via la Fiche Employé)"}
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {data.equipes.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucune équipe créée</p>}
+                </div>
+              </div>
+            )}
+
+            {!isWorker && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Production d'équipe (répartition automatique)</h3>
+                  <AddButton label="Enregistrer production" open={showAddProdEquipe} onClick={() => setShowAddProdEquipe(!showAddProdEquipe)} />
+                </div>
+                <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-2">سجل الكمية الجماعية اللي جمعتها الفرقة، والنظام يوزع الخلاص أوطوماتيكيا حسب الطريقة اللي تختار</p>
+                {showAddProdEquipe && (
+                  <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
+                    <Field label="الفرقة"><select value={prodEquipeForm.equipeId} onChange={(e) => setProdEquipeForm({ ...prodEquipeForm, equipeId: e.target.value })} style={inputStyle}><option value="">اختار</option>{data.equipes.map((eq) => (<option key={eq.id} value={eq.id}>{eq.nom}</option>))}</select></Field>
+                    <Field label="المهمة"><input value={prodEquipeForm.tache} onChange={(e) => setProdEquipeForm({ ...prodEquipeForm, tache: e.target.value })} placeholder="ex. Récolte avocat" style={inputStyle} /></Field>
+                    <Field label="الكمية الإجمالية (kg)"><input type="number" value={prodEquipeForm.quantiteTotale} onChange={(e) => setProdEquipeForm({ ...prodEquipeForm, quantiteTotale: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="السعر للوحدة (DH)"><input type="number" step="0.1" value={prodEquipeForm.tarifUnitaire} onChange={(e) => setProdEquipeForm({ ...prodEquipeForm, tarifUnitaire: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="طريقة التوزيع">
+                      <select value={prodEquipeForm.methode} onChange={(e) => setProdEquipeForm({ ...prodEquipeForm, methode: e.target.value })} style={inputStyle}>
+                        <option value="egale">بالتساوي بين الحاضرين</option>
+                        <option value="heures">حسب الساعات المسجلة (هاد الشهر)</option>
+                        <option value="jours">حسب الأيام المسجلة (هاد الشهر)</option>
+                        <option value="custom">مخصص (نسب يدوية)</option>
+                      </select>
+                    </Field>
+                    <div className="flex items-end"><button onClick={calculerRepartition} style={{ background: c.blue, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%" }}>حساب التوزيع</button></div>
+
+                    {repartitionPreview.length > 0 && (
+                      <div className="col-span-3">
+                        <div style={{ background: c.bg, borderRadius: 12 }} className="p-3">
+                          <span style={{ fontWeight: 700, fontSize: "0.8rem" }} className="mb-2 block">معاينة التوزيع</span>
+                          {repartitionPreview.map((r, i) => (
+                            <div key={i} className="flex items-center justify-between mb-1.5">
+                              <span style={{ fontSize: "0.78rem" }}>{r.nom}</span>
+                              {prodEquipeForm.methode === "custom" ? (
+                                <input type="number" value={r.pourcentage} onChange={(e) => updateRepartitionCustom(i, e.target.value)} style={{ ...inputStyle, width: 80, padding: "5px 8px" }} />
+                              ) : (
+                                <span className="font-mono" style={{ fontSize: "0.78rem", fontWeight: 700 }}>{r.part.toFixed(1)} kg · {r.montant.toFixed(0)} DH</span>
+                              )}
+                            </div>
+                          ))}
+                          <button onClick={validerProductionEquipe} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "9px 0", fontWeight: 700, width: "100%", marginTop: 10 }}>تأكيد وتسجيل البونطاج لكل عضو</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
