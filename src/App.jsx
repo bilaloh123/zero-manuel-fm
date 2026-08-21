@@ -415,21 +415,21 @@ export default function App() {
   const [showAddWazin, setShowAddWazin] = useState(false);
   const [showAddCost, setShowAddCost] = useState(false);
   const [showAddPlan, setShowAddPlan] = useState(false);
-  const [wForm, setWForm] = useState({ nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
+  const [wForm, setWForm] = useState({ nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "", modePaie: "temps", quantiteRecoltee: "", prixUnitaireRendement: "", chefEquipe: "", indemniteTransport: "0", indemniteRepas: "0", typeJour: "normal" });
   const [isRecording, setIsRecording] = useState(false);
   const [playingAudioId, setPlayingAudioId] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioChunksRef = useRef([]);
   const [zForm, setZForm] = useState({ parcelle: "", wazan: "", patron: "", kg: "", prixKg: "", statut: "En attente" });
   const [cForm, setCForm] = useState({ parcelle: "", naw3: "Produit phyto", mablagh: "" });
-  const [pForm, setPForm] = useState({ parcelle: "", produit: "", dozParHa: "", wehda: "litre", tarikh: "" });
+  const [pForm, setPForm] = useState({ parcelle: "", produit: "", dozParHa: "", wehda: "litre", tarikh: "", stockItemId: "" });
   const [showAddFarm, setShowAddFarm] = useState(false);
   const [showAddListing, setShowAddListing] = useState(false);
   const [mForm, setMForm] = useState({ type: "J'offre", produit: "", kammiya: "", wehda: "kilo", prix: "", description: "", contactTel: "" });
   const [mFilter, setMFilter] = useState("Tout");
   const [fForm, setFForm] = useState({ nom: "", lat: "", lng: "" });
   const [showAddStock, setShowAddStock] = useState(false);
-  const [sForm, setSForm] = useState({ nom: "", categorie: "Produit phyto", wehda: "kilo", mouvement: "Entrée", kammiya: "", seuil: "", prix: "", fournisseur: "", factureFile: "", factureNom: "", poNumero: "" });
+  const [sForm, setSForm] = useState({ nom: "", categorie: "Produit phyto", wehda: "kilo", mouvement: "Entrée", kammiya: "", seuil: "", prix: "", fournisseur: "", factureFile: "", factureNom: "", poNumero: "", expiryDate: "", lotNumber: "", uniteAchat: "", ratioConversion: "1" });
   const [showAddCommande, setShowAddCommande] = useState(false);
   const [cmdForm, setCmdForm] = useState({ produit: "", qte: "", wehda: "kilo", motif: "", destFarmId: "" });
   const [processingId, setProcessingId] = useState(null);
@@ -440,6 +440,11 @@ export default function App() {
   const [showAddDepense, setShowAddDepense] = useState(false);
   const [dForm, setDForm] = useState({ type: "Main-d'œuvre", detail: "", montant: "" });
   const [showAddParcelle, setShowAddParcelle] = useState(false);
+  const [showInventaire, setShowInventaire] = useState(false);
+  const [jerdForm, setJerdForm] = useState({});
+  const [showAddAccident, setShowAddAccident] = useState(false);
+  const [accForm, setAccForm] = useState({ nomEmploye: "", gravite: "leger", description: "", actionPrise: "" });
+  const [accidents, setAccidents] = useState([]);
   const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "" });
 
   const data = farms[currentFarmId] || emptyFarmData;
@@ -464,12 +469,16 @@ export default function App() {
     const workers = (workersData || []).map((w) => {
       const hasGps = w.gps_lat != null && w.gps_lng != null;
       const distKm = hasGps ? distanceKm(farmGps, { lat: Number(w.gps_lat), lng: Number(w.gps_lng) }) : null;
+      const indemnites = (Number(w.indemnite_transport) || 0) + (Number(w.indemnite_repas) || 0);
       return {
         id: w.id, nom: w.nom_ouvrier, parcelle: codeById[w.parcelle_id] || "—", parcelleId: w.parcelle_id,
         tache: w.tache, type: w.type_paie, dukhul: w.heure_entree || "-", khuruj: w.heure_sortie || "-",
         qte: Number(w.quantite) || 0, taux: Number(w.taux) || 0, dawra: w.dawra || "Mois",
         statut: w.statut_paiement || "Non payé", audioNote: w.audio_note_url || "",
         distKm, confirme: w.confirme || false,
+        modePaie: w.mode_paie || "temps", chefEquipe: w.chef_equipe || null,
+        indemniteTransport: Number(w.indemnite_transport) || 0, indemniteRepas: Number(w.indemnite_repas) || 0,
+        indemnites, typeJour: w.type_jour || "normal",
       };
     });
     workers.forEach((w) => { sums[w.nom] = (sums[w.nom] || 0) + w.qte; });
@@ -477,6 +486,8 @@ export default function App() {
     const stock = (stockData || []).map((s) => ({
       id: s.id, nom: s.nom, categorie: s.categorie, kammiya: Number(s.kammiya) || 0,
       wehda: s.wehda, seuil: Number(s.seuil) || 10,
+      expiryDate: s.expiry_date || null, lotNumber: s.lot_number || null,
+      uniteAchat: s.unite_achat || null, ratioConversion: Number(s.ratio_conversion) || 1,
     }));
 
     setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess } }));
@@ -531,6 +542,7 @@ export default function App() {
     const perms = MODULES.filter((m) => permMatrix[role][m] !== "Sans accès");
     setTab(perms[0] || "Tableau de bord");
     await loadFarmDetails(firstFarm);
+    await loadAccidents(firstFarm);
     await loadCommandes();
     setLoadingData(false);
     setCheckingSession(false);
@@ -627,7 +639,7 @@ export default function App() {
   const tabs = allTabs.filter((t) => permTabs.includes(t.key));
   if (currentUser.role === "Owner") tabs.push({ key: "Permissions", icon: Lock });
 
-  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); }
+  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); }
 
   function toggleAffiliation(id) {
     updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, affilieCNSS: !e.affilieCNSS } : e) });
@@ -724,7 +736,9 @@ export default function App() {
   }
 
   async function insertPointage(nom) {
-    const qte = wForm.type === "Heures" ? hoursBetween(wForm.dukhul, wForm.khuruj) : Number(wForm.nahar) || 1;
+    const isRendement = wForm.modePaie === "rendement";
+    const qte = isRendement ? Number(wForm.quantiteRecoltee) || 0 : (wForm.type === "Heures" ? hoursBetween(wForm.dukhul, wForm.khuruj) : Number(wForm.nahar) || 1);
+    const tauxEffectif = isRendement ? Number(wForm.prixUnitaireRendement) || 0 : Number(wForm.taux) || 0;
     const parcelleCode = wForm.parcelle || (data.parcelles[0] && data.parcelles[0].code) || "";
     const parcelleObj = data.parcelles.find((p) => p.code === parcelleCode);
     const gps = await getGPSPosition();
@@ -734,23 +748,31 @@ export default function App() {
       parcelle_id: parcelleObj ? parcelleObj.id : null,
       tache: wForm.tache || "—",
       type_paie: wForm.type,
-      heure_entree: wForm.type === "Heures" ? wForm.dukhul : null,
-      heure_sortie: wForm.type === "Heures" ? wForm.khuruj : null,
+      heure_entree: (!isRendement && wForm.type === "Heures") ? wForm.dukhul : null,
+      heure_sortie: (!isRendement && wForm.type === "Heures") ? wForm.khuruj : null,
       quantite: qte,
-      taux: Number(wForm.taux) || 0,
+      taux: tauxEffectif,
       dawra: wForm.dawra,
       statut_paiement: "Non payé",
       audio_note_url: wForm.audioNote || null,
       gps_lat: gps ? gps.lat : null,
       gps_lng: gps ? gps.lng : null,
       confirme: false,
+      mode_paie: wForm.modePaie,
+      quantite_recoltee: isRendement ? qte : null,
+      prix_unitaire_rendement: isRendement ? tauxEffectif : null,
+      chef_equipe: wForm.chefEquipe || null,
+      indemnite_transport: Number(wForm.indemniteTransport) || 0,
+      indemnite_repas: Number(wForm.indemniteRepas) || 0,
+      type_jour: wForm.typeJour,
     };
+    const resetForm = { nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "", modePaie: "temps", quantiteRecoltee: "", prixUnitaireRendement: "", chefEquipe: "", indemniteTransport: "0", indemniteRepas: "0", typeJour: "normal" };
 
     if (!navigator.onLine) {
       queueOffline("workers_log", payload);
       alert("Pas de connexion — le pointage est enregistré localement et sera synchronisé automatiquement au retour du réseau");
       ensureEmployee(nom);
-      setWForm({ nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
+      setWForm(resetForm);
       setShowAddWorker(false);
       return;
     }
@@ -761,7 +783,7 @@ export default function App() {
       alert("Impossible de joindre le serveur — enregistré localement, sera synchronisé dès que la connexion revient");
     }
     ensureEmployee(nom);
-    setWForm({ nom: "", parcelle: "", tache: "", type: "Heures", dukhul: "06:00", khuruj: "14:00", nahar: 1, taux: 15, dawra: "15", audioNote: "" });
+    setWForm(resetForm);
     setShowAddWorker(false);
     loadFarmDetails(currentFarmId);
   }
@@ -840,10 +862,23 @@ export default function App() {
     setCForm({ parcelle: "", naw3: "Produit phyto", mablagh: "" });
     setShowAddCost(false);
   }
-  function addPlan() {
+  async function addPlan() {
     if (!pForm.produit.trim() || !pForm.dozParHa) return;
-    updateFarm({ plan: [...data.plan, { code: pForm.parcelle || data.parcelles[0].code, produit: pForm.produit, dozParHa: Number(pForm.dozParHa), wehda: pForm.wehda, tarikh: pForm.tarikh || "—" }] });
-    setPForm({ parcelle: "", produit: "", dozParHa: "", wehda: "litre", tarikh: "" });
+    const parcelleCode = pForm.parcelle || data.parcelles[0].code;
+    const parcelleObj = data.parcelles.find((p) => p.code === parcelleCode);
+    const ha = parcelleObj ? parcelleObj.ha : 1;
+    const kammiyaTotale = Number(pForm.dozParHa) * ha;
+    updateFarm({ plan: [...data.plan, { code: parcelleCode, produit: pForm.produit, dozParHa: Number(pForm.dozParHa), wehda: pForm.wehda, tarikh: pForm.tarikh || "—" }] });
+    if (pForm.stockItemId) {
+      const stockItem = data.stock.find((s) => s.id === pForm.stockItemId);
+      if (stockItem) {
+        const nouvelleKammiya = Math.max(0, stockItem.kammiya - kammiyaTotale);
+        await supabase.from("stock_items").update({ kammiya: nouvelleKammiya }).eq("id", stockItem.id);
+        await supabase.from("plan_traitement").insert({ farm_id: currentFarmId, stock_item_id: stockItem.id, deduit: true });
+        await loadFarmDetails(currentFarmId);
+      }
+    }
+    setPForm({ parcelle: "", produit: "", dozParHa: "", wehda: "litre", tarikh: "", stockItemId: "" });
     setShowAddPlan(false);
   }
 
@@ -862,6 +897,40 @@ export default function App() {
     reader.readAsDataURL(file);
   }
 
+  async function loadAccidents(farmId) {
+    const { data: rows } = await supabase.from("accidents_travail").select("*").eq("farm_id", farmId).order("created_at", { ascending: false });
+    setAccidents((rows || []).map((a) => ({ id: a.id, nomEmploye: a.nom_employe, dateAccident: a.date_accident, description: a.description, gravite: a.gravite, actionPrise: a.action_prise })));
+  }
+  async function addAccident() {
+    if (!accForm.nomEmploye.trim() || !accForm.description.trim()) return;
+    const { error } = await supabase.from("accidents_travail").insert({
+      farm_id: currentFarmId, nom_employe: accForm.nomEmploye, gravite: accForm.gravite,
+      description: accForm.description, action_prise: accForm.actionPrise || null,
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setAccForm({ nomEmploye: "", gravite: "leger", description: "", actionPrise: "" });
+    setShowAddAccident(false);
+    await loadAccidents(currentFarmId);
+  }
+
+  async function saveInventaire(stockItem) {
+    const compte = jerdForm[stockItem.id];
+    if (compte === undefined || compte === "") return;
+    const quantiteComptee = Number(compte);
+    const ecart = quantiteComptee - stockItem.kammiya;
+    const { error } = await supabase.from("inventaire_physique").insert({
+      farm_id: currentFarmId, stock_item_id: stockItem.id,
+      quantite_theorique: stockItem.kammiya, quantite_comptee: quantiteComptee, ecart,
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    await supabase.from("stock_items").update({ kammiya: quantiteComptee }).eq("id", stockItem.id);
+    if (Math.abs(ecart) > 0) {
+      alert(`تم تسجيل الجرد. الفرق: ${ecart > 0 ? "+" : ""}${ecart} ${stockItem.wehda}`);
+    }
+    setJerdForm({ ...jerdForm, [stockItem.id]: "" });
+    await loadFarmDetails(currentFarmId);
+  }
+
   async function addStockMovement() {
     if (!sForm.nom.trim() || !sForm.kammiya) return;
     const n = Number(sForm.kammiya);
@@ -871,11 +940,18 @@ export default function App() {
     if (existing) {
       nouvelleKammiya = sForm.mouvement === "Entrée" ? existing.kammiya + n : Math.max(0, existing.kammiya - n);
       seuilItem = existing.seuil;
-      const { error } = await supabase.from("stock_items").update({ kammiya: nouvelleKammiya }).eq("id", existing.id);
+      const updatePatch = { kammiya: nouvelleKammiya };
+      if (sForm.mouvement === "Entrée") {
+        if (sForm.expiryDate) updatePatch.expiry_date = sForm.expiryDate;
+        if (sForm.lotNumber) updatePatch.lot_number = sForm.lotNumber;
+      }
+      const { error } = await supabase.from("stock_items").update(updatePatch).eq("id", existing.id);
       if (error) { alert("Problème de stock : " + error.message); return; }
     } else {
       const { error } = await supabase.from("stock_items").insert({
         farm_id: currentFarmId, nom: sForm.nom, categorie: sForm.categorie, kammiya: n, wehda: sForm.wehda, seuil: seuilItem,
+        expiry_date: sForm.expiryDate || null, lot_number: sForm.lotNumber || null,
+        unite_achat: sForm.uniteAchat || null, ratio_conversion: Number(sForm.ratioConversion) || 1,
       });
       if (error) { alert("Problème de stock : " + error.message); return; }
     }
@@ -903,7 +979,7 @@ export default function App() {
         setAlertesIncompletes([{ id: Date.now(), farmNom: data.nom, personne: currentUser.nom, produit: sForm.nom, manque, date: "20 juillet" }, ...alertesIncompletes]);
       }
     }
-    setSForm({ nom: "", categorie: "Produit phyto", wehda: "kilo", mouvement: "Entrée", kammiya: "", seuil: "", prix: "", fournisseur: "", factureFile: "", factureNom: "", poNumero: "" });
+    setSForm({ nom: "", categorie: "Produit phyto", wehda: "kilo", mouvement: "Entrée", kammiya: "", seuil: "", prix: "", fournisseur: "", factureFile: "", factureNom: "", poNumero: "", expiryDate: "", lotNumber: "", uniteAchat: "", ratioConversion: "1" });
     setShowAddStock(false);
     await loadFarmDetails(currentFarmId);
     await loadCommandes();
@@ -1639,18 +1715,32 @@ export default function App() {
                   {!isWorker && (<Field label="Nom de l'employé"><input value={wForm.nom} onChange={(e) => setWForm({ ...wForm, nom: e.target.value })} placeholder="Nom de l'employé" style={inputStyle} /></Field>)}
                   <Field label="parcelle"><select value={wForm.parcelle} onChange={(e) => setWForm({ ...wForm, parcelle: e.target.value })} style={inputStyle}><option value="">Choisir</option>{data.parcelles.map((p) => <option key={p.code} value={p.code}>{p.code} — {p.nom}</option>)}</select></Field>
                   <Field label="المهمة"><input value={wForm.tache} onChange={(e) => setWForm({ ...wForm, tache: e.target.value })} placeholder="Récolte, irrigation, emballage..." style={inputStyle} /></Field>
-                  <Field label="Mode de paiement"><select value={wForm.type} onChange={(e) => setWForm({ ...wForm, type: e.target.value })} style={inputStyle}><option value="Heures">À l'heure</option><option value="Jour">À la journée</option></select></Field>
-                  {wForm.type === "Heures" ? (
+                  {!isWorker && (<Field label="نظام الخلاص"><select value={wForm.modePaie} onChange={(e) => setWForm({ ...wForm, modePaie: e.target.value })} style={inputStyle}><option value="temps">بالوقت (ساعة/نهار)</option><option value="rendement">بالمردود (كلغ/صندوق)</option></select></Field>)}
+                  {wForm.modePaie === "rendement" ? (
                     <>
-                      <Field label="Heure d'entrée"><input type="time" value={wForm.dukhul} onChange={(e) => setWForm({ ...wForm, dukhul: e.target.value })} style={inputStyle} /></Field>
-                      <Field label="Heure de sortie"><input type="time" value={wForm.khuruj} onChange={(e) => setWForm({ ...wForm, khuruj: e.target.value })} style={inputStyle} /></Field>
+                      <Field label="الكمية (كلغ/صندوق)"><input type="number" value={wForm.quantiteRecoltee} onChange={(e) => setWForm({ ...wForm, quantiteRecoltee: e.target.value })} style={inputStyle} /></Field>
+                      <Field label="السعر للوحدة (DH)"><input type="number" step="0.1" value={wForm.prixUnitaireRendement} onChange={(e) => setWForm({ ...wForm, prixUnitaireRendement: e.target.value })} style={inputStyle} /></Field>
                     </>
-                  ) : (<Field label="Nombre de jours"><input type="number" min="0.5" step="0.5" value={wForm.nahar} onChange={(e) => setWForm({ ...wForm, nahar: e.target.value })} style={inputStyle} /></Field>)}
-                  {!isWorker && (<Field label={wForm.type === "Heures" ? "Taux/heure (DH)" : "Taux/jour (DH)"}><input type="number" value={wForm.taux} onChange={(e) => setWForm({ ...wForm, taux: e.target.value })} style={inputStyle} /></Field>)}
+                  ) : (
+                    <>
+                      <Field label="Mode de paiement"><select value={wForm.type} onChange={(e) => setWForm({ ...wForm, type: e.target.value })} style={inputStyle}><option value="Heures">À l'heure</option><option value="Jour">À la journée</option></select></Field>
+                      {wForm.type === "Heures" ? (
+                        <>
+                          <Field label="Heure d'entrée"><input type="time" value={wForm.dukhul} onChange={(e) => setWForm({ ...wForm, dukhul: e.target.value })} style={inputStyle} /></Field>
+                          <Field label="Heure de sortie"><input type="time" value={wForm.khuruj} onChange={(e) => setWForm({ ...wForm, khuruj: e.target.value })} style={inputStyle} /></Field>
+                        </>
+                      ) : (<Field label="Nombre de jours"><input type="number" min="0.5" step="0.5" value={wForm.nahar} onChange={(e) => setWForm({ ...wForm, nahar: e.target.value })} style={inputStyle} /></Field>)}
+                      {!isWorker && (<Field label={wForm.type === "Heures" ? "Taux/heure (DH)" : "Taux/jour (DH)"}><input type="number" value={wForm.taux} onChange={(e) => setWForm({ ...wForm, taux: e.target.value })} style={inputStyle} /></Field>)}
+                    </>
+                  )}
                   {!isWorker && (<Field label="Cycle de paie"><select value={wForm.dawra} onChange={(e) => setWForm({ ...wForm, dawra: e.target.value })} style={inputStyle}><option value="15">Tous les 15 jours</option><option value="Mois">Au mois</option></select></Field>)}
+                  {!isWorker && (<Field label="شيف الإكيب (اختياري)"><input value={wForm.chefEquipe} onChange={(e) => setWForm({ ...wForm, chefEquipe: e.target.value })} placeholder="اسم مقدم المجموعة" style={inputStyle} /></Field>)}
+                  {!isWorker && (<Field label="تعويض النقل (DH)"><input type="number" value={wForm.indemniteTransport} onChange={(e) => setWForm({ ...wForm, indemniteTransport: e.target.value })} style={inputStyle} /></Field>)}
+                  {!isWorker && (<Field label="تعويض الماكلة (DH)"><input type="number" value={wForm.indemniteRepas} onChange={(e) => setWForm({ ...wForm, indemniteRepas: e.target.value })} style={inputStyle} /></Field>)}
+                  {!isWorker && (<Field label="نوع اليوم"><select value={wForm.typeJour} onChange={(e) => setWForm({ ...wForm, typeJour: e.target.value })} style={inputStyle}><option value="normal">عادي</option><option value="arret_meteo">توقف بسبب الطقس</option></select></Field>)}
                 </div>
                 )}
-                {wForm.type === "Heures" && (<div className="flex items-center gap-2" style={{ color: c.inkMuted2, fontSize: "0.78rem" }}><Clock size={14} /><span>Total heures : {hoursBetween(wForm.dukhul, wForm.khuruj)} h</span></div>)}
+                {wForm.modePaie === "temps" && wForm.type === "Heures" && (<div className="flex items-center gap-2" style={{ color: c.inkMuted2, fontSize: "0.78rem" }}><Clock size={14} /><span>Total heures : {hoursBetween(wForm.dukhul, wForm.khuruj)} h</span></div>)}
 
                 <div style={{ background: c.bg, borderRadius: 12 }} className="p-3 flex items-center gap-3">
                   {!isRecording ? (
@@ -1725,6 +1815,34 @@ export default function App() {
               ))}
             </div>
             {!isWorker && <div className="flex justify-end mt-2"><span style={{ fontWeight: 800, fontSize: "0.85rem" }}>Total paie du jour: {kpis.totalKhlas} DH</span></div>}
+
+            {!isWorker && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>سجل حوادث الشغل</h3>
+                  <AddButton label="بلّغ عن حادث" open={showAddAccident} onClick={() => setShowAddAccident(!showAddAccident)} />
+                </div>
+                {showAddAccident && (
+                  <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-2 gap-3">
+                    <Field label="اسم العامل"><input value={accForm.nomEmploye} onChange={(e) => setAccForm({ ...accForm, nomEmploye: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="الشدة"><select value={accForm.gravite} onChange={(e) => setAccForm({ ...accForm, gravite: e.target.value })} style={inputStyle}><option value="leger">خفيف</option><option value="moyen">متوسط</option><option value="grave">خطير</option></select></Field>
+                    <div className="col-span-2"><Field label="وصف الحادث"><input value={accForm.description} onChange={(e) => setAccForm({ ...accForm, description: e.target.value })} style={inputStyle} /></Field></div>
+                    <div className="col-span-2"><Field label="الإجراء المتخذ"><input value={accForm.actionPrise} onChange={(e) => setAccForm({ ...accForm, actionPrise: e.target.value })} style={inputStyle} /></Field></div>
+                    <div className="col-span-2"><button onClick={addAccident} style={{ background: c.danger, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%" }}>تسجيل الحادث</button></div>
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  {accidents.map((a) => (
+                    <div key={a.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRight: `4px solid ${a.gravite === "grave" ? c.danger : c.orange}`, borderRadius: 12 }} className="p-3">
+                      <div className="flex items-center justify-between"><span style={{ fontWeight: 700, fontSize: "0.82rem" }}>{a.nomEmploye}</span><span style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>{a.dateAccident}</span></div>
+                      <p style={{ fontSize: "0.78rem", color: c.inkSoft }} className="mt-1">{a.description}</p>
+                      {a.actionPrise && <p style={{ fontSize: "0.72rem", color: c.inkMuted2 }} className="mt-1">Action : {a.actionPrise}</p>}
+                    </div>
+                  ))}
+                  {accidents.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucun accident enregistré</p>}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -1735,6 +1853,20 @@ export default function App() {
               <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Stock des intrants</h2>
               {canEdit("Stock") && <AddButton label="Mouvement de stock" open={showAddStock} onClick={() => setShowAddStock(!showAddStock)} />}
             </div>
+
+            {data.stock.filter((s) => s.expiryDate && new Date(s.expiryDate) <= new Date(Date.now() + 30 * 86400000)).length > 0 && (
+              <div className="flex flex-col gap-2 mb-4">
+                {data.stock.filter((s) => s.expiryDate && new Date(s.expiryDate) <= new Date(Date.now() + 30 * 86400000)).map((s) => {
+                  const expired = new Date(s.expiryDate) < new Date();
+                  return (
+                    <div key={"exp-" + s.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRight: `4px solid ${expired ? c.danger : c.orange}`, borderRadius: 12, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-3 flex items-center gap-3">
+                      <AlertTriangle size={17} color={expired ? c.danger : c.orange} />
+                      <span style={{ fontSize: "0.82rem", color: c.inkSoft }}>{s.nom}{s.lotNumber ? ` (lot ${s.lotNumber})` : ""} — {expired ? "منتهي الصلاحية" : "Expire bientôt"} : {s.expiryDate}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
 
             {data.stock.filter((s) => s.kammiya <= s.seuil).length > 0 && (
               <div className="flex flex-col gap-2 mb-4">
@@ -1759,6 +1891,14 @@ export default function App() {
                 <Field label="Seuil d'alerte (nouveau produit)"><input type="number" value={sForm.seuil} onChange={(e) => setSForm({ ...sForm, seuil: e.target.value })} style={inputStyle} /></Field>
                 {sForm.mouvement === "Entrée" && (
                   <>
+                    <Field label="Date de péremption"><input type="date" value={sForm.expiryDate} onChange={(e) => setSForm({ ...sForm, expiryDate: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="Numéro de lot"><input value={sForm.lotNumber} onChange={(e) => setSForm({ ...sForm, lotNumber: e.target.value })} placeholder="ex. L2026-047" style={inputStyle} /></Field>
+                    <Field label="Unité d'achat (اختياري)"><input value={sForm.uniteAchat} onChange={(e) => setSForm({ ...sForm, uniteAchat: e.target.value })} placeholder="ex. جركان 20L" style={inputStyle} /></Field>
+                    <Field label="Ratio conversion (1 وحدة شراء = كم وحدة استعمال)"><input type="number" value={sForm.ratioConversion} onChange={(e) => setSForm({ ...sForm, ratioConversion: e.target.value })} style={inputStyle} /></Field>
+                  </>
+                )}
+                {sForm.mouvement === "Entrée" && (
+                  <>
                     <Field label="Prix d'achat total (DH)"><input type="number" value={sForm.prix} onChange={(e) => setSForm({ ...sForm, prix: e.target.value })} placeholder="اختياري — envoie une facture au comptable" style={inputStyle} /></Field>
                     <Field label="Fournisseur"><input value={sForm.fournisseur} onChange={(e) => setSForm({ ...sForm, fournisseur: e.target.value })} style={inputStyle} /></Field>
                     <Field label="Bon de commande lié">
@@ -1780,17 +1920,39 @@ export default function App() {
               </div>
             )}
 
+            <div className="flex items-center justify-between mb-2">
+              <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Liste du stock</h3>
+              {canEdit("Stock") && <AddButton label="Inventaire physique" open={showInventaire} onClick={() => setShowInventaire(!showInventaire)} />}
+            </div>
+
+            {showInventaire && (
+              <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4">
+                <p style={{ fontSize: "0.72rem", color: c.inkMuted2 }} className="mb-3">قارن الكمية المسجلة بالكمية الحقيقية اللي عديتيها فالمخزن</p>
+                <div className="flex flex-col gap-2">
+                  {data.stock.map((s) => (
+                    <div key={"inv-" + s.id} className="grid items-center gap-2" style={{ gridTemplateColumns: "1.3fr 0.8fr 0.8fr 0.8fr" }}>
+                      <span style={{ fontSize: "0.8rem", fontWeight: 600 }}>{s.nom}</span>
+                      <span className="font-mono" style={{ fontSize: "0.76rem", color: c.inkMuted2 }}>{s.kammiya} {s.wehda}</span>
+                      <input type="number" placeholder="الكمية الحقيقية" value={jerdForm[s.id] || ""} onChange={(e) => setJerdForm({ ...jerdForm, [s.id]: e.target.value })} style={{ ...inputStyle, padding: "6px 8px", fontSize: "0.76rem" }} />
+                      <button onClick={() => saveInventaire(s)} style={{ background: c.cardGreen, color: "#fff", borderRadius: 8, padding: "6px 0", fontSize: "0.72rem", fontWeight: 700 }}>Enregistrer</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "hidden", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
-              <div className="grid" style={{ gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1fr", background: c.bg, fontSize: "0.68rem", color: c.inkMuted2, fontWeight: 700 }}>
-                {["المنتج", "Catégorie", "Quantité disponible", "Seuil d'alerte", "الحالة"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
+              <div className="grid" style={{ gridTemplateColumns: "1.4fr 0.9fr 1fr 0.9fr 0.9fr 0.9fr", background: c.bg, fontSize: "0.66rem", color: c.inkMuted2, fontWeight: 700 }}>
+                {["المنتج", "Catégorie", "Quantité disponible", "Lot / Péremption", "Seuil d'alerte", "الحالة"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
               </div>
               {data.stock.map((s) => {
                 const low = s.kammiya <= s.seuil;
                 return (
-                  <div key={s.id} className="grid items-center" style={{ gridTemplateColumns: "1.6fr 1fr 1fr 1fr 1fr", borderTop: `1px solid ${c.line}`, fontSize: "0.8rem" }}>
+                  <div key={s.id} className="grid items-center" style={{ gridTemplateColumns: "1.4fr 0.9fr 1fr 0.9fr 0.9fr 0.9fr", borderTop: `1px solid ${c.line}`, fontSize: "0.8rem" }}>
                     <div className="px-3 py-2" style={{ fontWeight: 700 }}>{s.nom}</div>
                     <div className="px-3 py-2" style={{ color: c.inkMuted2 }}>{s.categorie}</div>
                     <div className="px-3 py-2 font-mono" style={{ fontWeight: 700, color: low ? c.danger : c.ink }}>{s.kammiya} {s.wehda}</div>
+                    <div className="px-3 py-2" style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{s.lotNumber || "—"}{s.expiryDate ? ` · ${s.expiryDate}` : ""}</div>
                     <div className="px-3 py-2 font-mono" style={{ color: c.inkMuted2 }}>{s.seuil} {s.wehda}</div>
                     <div className="px-3 py-2">
                       <span style={{ background: low ? "rgba(193,89,79,0.12)" : "rgba(42,157,143,0.12)", color: low ? c.danger : c.cardGreenDeep, borderRadius: 999, padding: "3px 9px", fontSize: "0.68rem", fontWeight: 700 }}>{low ? "Faible" : "Suffisant"}</span>
@@ -2300,6 +2462,12 @@ export default function App() {
                 <Field label="Dose/hectare"><input type="number" step="0.1" value={pForm.dozParHa} onChange={(e) => setPForm({ ...pForm, dozParHa: e.target.value })} style={inputStyle} /></Field>
                 <Field label="Unité"><select value={pForm.wehda} onChange={(e) => setPForm({ ...pForm, wehda: e.target.value })} style={inputStyle}><option>litre</option><option>kilo</option></select></Field>
                 <Field label="التاريخ"><input value={pForm.tarikh} onChange={(e) => setPForm({ ...pForm, tarikh: e.target.value })} placeholder="ex. 25 يوليوز" style={inputStyle} /></Field>
+                <Field label="اخصم من المخزون (اختياري)">
+                  <select value={pForm.stockItemId} onChange={(e) => setPForm({ ...pForm, stockItemId: e.target.value })} style={inputStyle}>
+                    <option value="">— بلا خصم —</option>
+                    {data.stock.map((s) => (<option key={s.id} value={s.id}>{s.nom} ({s.kammiya} {s.wehda})</option>))}
+                  </select>
+                </Field>
                 <div className="flex items-end"><button onClick={addPlan} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, fontSize: "0.85rem", width: "100%" }}>Ajouter au plan</button></div>
               </div>
             )}
