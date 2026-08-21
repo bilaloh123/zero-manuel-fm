@@ -547,6 +547,11 @@ export default function App() {
   const [showAddProdEquipe, setShowAddProdEquipe] = useState(false);
   const [prodEquipeForm, setProdEquipeForm] = useState({ equipeId: "", tache: "", quantiteTotale: "", tarifUnitaire: "", methode: "egale" });
   const [repartitionPreview, setRepartitionPreview] = useState([]);
+  const [showCreateCycle, setShowCreateCycle] = useState(false);
+  const [cycleForm, setCycleForm] = useState({ periodeDebut: "", periodeFin: "", datePaiement: "" });
+  const [cyclesPaie, setCyclesPaie] = useState([]);
+  const [selectedCycleId, setSelectedCycleId] = useState(null);
+  const [bulletinsActifs, setBulletinsActifs] = useState([]);
   const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "" });
 
   const data = farms[currentFarmId] || emptyFarmData;
@@ -655,6 +660,7 @@ export default function App() {
     setTab(perms[0] || "Tableau de bord");
     await loadFarmDetails(firstFarm);
     await loadAccidents(firstFarm);
+    await loadCycles(firstFarm);
     await loadCommandes();
     setLoadingData(false);
     setCheckingSession(false);
@@ -751,7 +757,7 @@ export default function App() {
   const tabs = allTabs.filter((t) => permTabs.includes(t.key));
   if (currentUser.role === "Owner") tabs.push({ key: "Permissions", icon: Lock });
 
-  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); }
+  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); loadCycles(fid); }
 
   function toggleAffiliation(id) {
     updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, affilieCNSS: !e.affilieCNSS } : e) });
@@ -1155,6 +1161,135 @@ export default function App() {
     });
     if (error) { alert("مشكل: " + error.message); return; }
     alert(`تم تسجيل غياب ${nomEmploye}`);
+  }
+
+  async function loadCycles(farmId) {
+    const { data: rows } = await supabase.from("cycles_paie").select("*").eq("farm_id", farmId).order("periode_debut", { ascending: false });
+    setCyclesPaie((rows || []).map((cy) => ({
+      id: cy.id, periodeDebut: cy.periode_debut, periodeFin: cy.periode_fin, datePaiement: cy.date_paiement,
+      statut: cy.statut, totalBrut: Number(cy.total_brut) || 0, totalDeductions: Number(cy.total_deductions) || 0, totalNet: Number(cy.total_net) || 0,
+    })));
+  }
+
+  async function createCycle() {
+    if (!cycleForm.periodeDebut || !cycleForm.periodeFin) return;
+    const { error } = await supabase.from("cycles_paie").insert({
+      farm_id: currentFarmId, periode_debut: cycleForm.periodeDebut, periode_fin: cycleForm.periodeFin,
+      date_paiement: cycleForm.datePaiement || null, statut: "brouillon",
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setCycleForm({ periodeDebut: "", periodeFin: "", datePaiement: "" });
+    setShowCreateCycle(false);
+    await loadCycles(currentFarmId);
+  }
+
+  // ===== Payroll Engine — محرك حساب الأجر بناء على الرُبريكات =====
+  async function calculerCycle(cycleId) {
+    const cycle = cyclesPaie.find((c) => c.id === cycleId);
+    if (!cycle) return;
+
+    const [{ data: logsData }, { data: absencesData }, { data: avancesData }] = await Promise.all([
+      supabase.from("workers_log").select("*").eq("farm_id", currentFarmId).gte("date_travail", cycle.periodeDebut).lte("date_travail", cycle.periodeFin),
+      supabase.from("absences").select("*").eq("farm_id", currentFarmId).gte("date_absence", cycle.periodeDebut).lte("date_absence", cycle.periodeFin),
+      supabase.from("avances_salaire").select("*").eq("farm_id", currentFarmId).is("cycle_id", null),
+    ]);
+
+    const parEmploye = {};
+    (logsData || []).forEach((w) => {
+      if (!parEmploye[w.nom_ouvrier]) parEmploye[w.nom_ouvrier] = { logs: [] };
+      parEmploye[w.nom_ouvrier].logs.push(w);
+    });
+    (absencesData || []).forEach((a) => {
+      const emp = data.employees.find((e) => e.id === a.employee_id);
+      const nom = emp ? emp.nom : null;
+      if (nom) { if (!parEmploye[nom]) parEmploye[nom] = { logs: [] }; if (!parEmploye[nom].absences) parEmploye[nom].absences = []; parEmploye[nom].absences.push(a); }
+    });
+    (avancesData || []).forEach((av) => {
+      const emp = data.employees.find((e) => e.id === av.employee_id);
+      const nom = emp ? emp.nom : null;
+      if (nom) { if (!parEmploye[nom]) parEmploye[nom] = { logs: [] }; if (!parEmploye[nom].avances) parEmploye[nom].avances = []; parEmploye[nom].avances.push(av); }
+    });
+
+    let totalBrutCycle = 0, totalDeductionsCycle = 0;
+    const bulletinsAInserer = [];
+
+    for (const nom of Object.keys(parEmploye)) {
+      const infos = parEmploye[nom];
+      const empRow = data.employees.find((e) => e.nom === nom);
+      const logs = infos.logs || [];
+
+      const gains = [];
+      const salJour = logs.filter((w) => w.type_paie === "Jour" && w.mode_paie !== "rendement" && w.mode_paie !== "production").reduce((s, w) => s + Number(w.quantite) * Number(w.taux), 0);
+      if (salJour > 0) gains.push({ rubrique: "SAL_JOUR", montant: salJour, explication: "Salaire journalier" });
+
+      const salHeure = logs.filter((w) => w.type_paie === "Heures" && w.mode_paie !== "rendement" && w.mode_paie !== "production").reduce((s, w) => s + Number(w.quantite) * Number(w.taux), 0);
+      if (salHeure > 0) gains.push({ rubrique: "SAL_HEURE", montant: salHeure, explication: "Salaire horaire" });
+
+      const prod = logs.filter((w) => w.mode_paie === "rendement" || w.mode_paie === "production").reduce((s, w) => s + Number(w.quantite_recoltee || w.quantite) * Number(w.prix_unitaire_rendement || w.taux), 0);
+      if (prod > 0) gains.push({ rubrique: "PROD", montant: prod, explication: "Production / rendement" });
+
+      const heuresSup = logs.reduce((s, w) => s + Number(w.heures_sup || 0) * Number(w.taux) * 1.25, 0);
+      if (heuresSup > 0) gains.push({ rubrique: "HEURES_SUP", montant: heuresSup, explication: "Heures supplémentaires (+25%)" });
+
+      const indemnites = logs.reduce((s, w) => s + Number(w.indemnite_transport || 0) + Number(w.indemnite_repas || 0), 0);
+      if (indemnites > 0) gains.push({ rubrique: "INDEMNITES", montant: indemnites, explication: "Transport + repas" });
+
+      const deductions = [];
+      const avancesEmp = (infos.avances || []).reduce((s, a) => s + Number(a.montant), 0);
+      if (avancesEmp > 0) deductions.push({ rubrique: "AVANCE", montant: avancesEmp, explication: "Avances non remboursées" });
+
+      const absencesEmp = (infos.absences || []).filter((a) => a.type === "absence_non_justifiee").length;
+      const tarifJour = (empRow && Number(empRow.salaireJournalier)) || 0;
+      const deductionAbsence = absencesEmp * tarifJour;
+      if (deductionAbsence > 0) deductions.push({ rubrique: "ABSENCE", montant: deductionAbsence, explication: `${absencesEmp} jour(s) d'absence non justifiée` });
+
+      const totalBrut = gains.reduce((s, g) => s + g.montant, 0);
+      const totalDeductions = deductions.reduce((s, d) => s + d.montant, 0);
+      const netAPayer = totalBrut - totalDeductions;
+
+      const anomalies = [];
+      if (logs.length === 0) anomalies.push("Aucun pointage sur la période");
+      if (netAPayer < 0) anomalies.push("Net négatif — à vérifier");
+      const nonConfirmes = logs.filter((w) => !w.confirme).length;
+      if (nonConfirmes > 0) anomalies.push(`${nonConfirmes} pointage(s) non confirmé(s)`);
+
+      totalBrutCycle += totalBrut;
+      totalDeductionsCycle += totalDeductions;
+
+      bulletinsAInserer.push({
+        cycle_id: cycleId, employee_id: empRow ? empRow.id : null, nom_ouvrier: nom,
+        jours: logs.filter((w) => w.type_paie === "Jour").reduce((s, w) => s + Number(w.quantite), 0),
+        heures: logs.filter((w) => w.type_paie === "Heures").reduce((s, w) => s + Number(w.quantite), 0),
+        gains_detail: gains, deductions_detail: deductions,
+        total_brut: totalBrut, total_deductions: totalDeductions, net_a_payer: netAPayer,
+        statut_validation: anomalies.length > 0 ? "probleme" : "valide", anomalies,
+      });
+    }
+
+    await supabase.from("bulletins_paie").delete().eq("cycle_id", cycleId);
+    if (bulletinsAInserer.length > 0) await supabase.from("bulletins_paie").insert(bulletinsAInserer);
+
+    await supabase.from("cycles_paie").update({
+      statut: "calcule", total_brut: totalBrutCycle, total_deductions: totalDeductionsCycle, total_net: totalBrutCycle - totalDeductionsCycle,
+    }).eq("id", cycleId);
+
+    await loadCycles(currentFarmId);
+    setSelectedCycleId(cycleId);
+    await loadBulletins(cycleId);
+  }
+
+  async function loadBulletins(cycleId) {
+    const { data: rows } = await supabase.from("bulletins_paie").select("*").eq("cycle_id", cycleId);
+    setBulletinsActifs((rows || []).map((b) => ({
+      id: b.id, nomEmploye: b.nom_ouvrier, totalBrut: Number(b.total_brut) || 0,
+      totalDeductions: Number(b.total_deductions) || 0, netAPayer: Number(b.net_a_payer) || 0,
+      anomalies: b.anomalies || [], gainsDetail: b.gains_detail || [], deductionsDetail: b.deductions_detail || [],
+    })));
+  }
+
+  async function changerStatutCycle(cycleId, nouveauStatut) {
+    await supabase.from("cycles_paie").update({ statut: nouveauStatut }).eq("id", cycleId);
+    await loadCycles(currentFarmId);
   }
 
   async function loadAccidents(farmId) {
@@ -2231,6 +2366,65 @@ export default function App() {
                         </div>
                       </div>
                     )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {!isWorker && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Cycles de paie</h3>
+                  <AddButton label="Nouveau cycle" open={showCreateCycle} onClick={() => setShowCreateCycle(!showCreateCycle)} />
+                </div>
+                {showCreateCycle && (
+                  <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
+                    <Field label="Période début"><input type="date" value={cycleForm.periodeDebut} onChange={(e) => setCycleForm({ ...cycleForm, periodeDebut: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="Période fin"><input type="date" value={cycleForm.periodeFin} onChange={(e) => setCycleForm({ ...cycleForm, periodeFin: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="Date de paiement"><input type="date" value={cycleForm.datePaiement} onChange={(e) => setCycleForm({ ...cycleForm, datePaiement: e.target.value })} style={inputStyle} /></Field>
+                    <div className="col-span-3"><button onClick={createCycle} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%" }}>Créer le cycle</button></div>
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-2 mb-4">
+                  {cyclesPaie.map((cy) => {
+                    const statutColorMap = { brouillon: c.inkMuted2, calcule: c.blue, valide: c.cardGreenDeep, verrouille: c.orange, paye: c.cardGreenDeep, cloture: c.inkMuted2 };
+                    return (
+                      <div key={cy.id} style={{ background: c.white, border: `1px solid ${selectedCycleId === cy.id ? c.cardGreen : c.line}`, borderRadius: 12 }} className="p-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <button onClick={() => { setSelectedCycleId(cy.id); loadBulletins(cy.id); }} style={{ fontWeight: 700, fontSize: "0.82rem", textDecoration: "underline" }}>{cy.periodeDebut} → {cy.periodeFin}</button>
+                          <span style={{ background: `${statutColorMap[cy.statut]}18`, color: statutColorMap[cy.statut], borderRadius: 999, padding: "3px 9px", fontSize: "0.66rem", fontWeight: 700 }}>{cy.statut}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span style={{ fontSize: "0.72rem", color: c.inkMuted2 }}>Net total : {cy.totalNet.toFixed(0)} DH · Paiement : {cy.datePaiement || "—"}</span>
+                          <div className="flex gap-1.5">
+                            {(cy.statut === "brouillon" || cy.statut === "calcule") && <button onClick={() => calculerCycle(cy.id)} style={{ background: c.blue, color: "#fff", borderRadius: 8, padding: "4px 10px", fontSize: "0.68rem", fontWeight: 700 }}>Calculer</button>}
+                            {cy.statut === "calcule" && <button onClick={() => changerStatutCycle(cy.id, "valide")} style={{ background: c.cardGreen, color: "#fff", borderRadius: 8, padding: "4px 10px", fontSize: "0.68rem", fontWeight: 700 }}>Valider</button>}
+                            {cy.statut === "valide" && <button onClick={() => changerStatutCycle(cy.id, "verrouille")} style={{ background: c.orange, color: "#fff", borderRadius: 8, padding: "4px 10px", fontSize: "0.68rem", fontWeight: 700 }}>Verrouiller</button>}
+                            {cy.statut === "verrouille" && <button onClick={() => changerStatutCycle(cy.id, "paye")} style={{ background: c.cardGreenDeep, color: "#fff", borderRadius: 8, padding: "4px 10px", fontSize: "0.68rem", fontWeight: 700 }}>Marquer payé</button>}
+                            {cy.statut === "paye" && <button onClick={() => changerStatutCycle(cy.id, "cloture")} style={{ background: c.inkMuted2, color: "#fff", borderRadius: 8, padding: "4px 10px", fontSize: "0.68rem", fontWeight: 700 }}>Clôturer</button>}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {cyclesPaie.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucun cycle de paie créé</p>}
+                </div>
+
+                {selectedCycleId && bulletinsActifs.length > 0 && (
+                  <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "hidden" }}>
+                    <div className="grid" style={{ gridTemplateColumns: "1.3fr 0.9fr 0.9fr 0.9fr 0.9fr", background: c.bg, fontSize: "0.64rem", color: c.inkMuted2, fontWeight: 700 }}>
+                      {["Employé", "Brut", "Déductions", "Net à payer", "Anomalies"].map((h) => (<div key={h} className="px-2 py-2">{h}</div>))}
+                    </div>
+                    {bulletinsActifs.map((b) => (
+                      <div key={b.id} className="grid items-center" style={{ gridTemplateColumns: "1.3fr 0.9fr 0.9fr 0.9fr 0.9fr", borderTop: `1px solid ${c.line}`, fontSize: "0.78rem" }}>
+                        <div className="px-2 py-2" style={{ fontWeight: 700 }}>{b.nomEmploye}</div>
+                        <div className="px-2 py-2 font-mono">{b.totalBrut.toFixed(0)} DH</div>
+                        <div className="px-2 py-2 font-mono" style={{ color: c.danger }}>-{b.totalDeductions.toFixed(0)} DH</div>
+                        <div className="px-2 py-2 font-mono" style={{ fontWeight: 800, color: c.cardGreenDeep }}>{b.netAPayer.toFixed(0)} DH</div>
+                        <div className="px-2 py-2">{b.anomalies.length > 0 ? <span style={{ color: c.danger, fontSize: "0.68rem" }}>⚠️ {b.anomalies.length}</span> : <span style={{ color: c.cardGreenDeep, fontSize: "0.68rem" }}>✓</span>}</div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
