@@ -225,7 +225,14 @@ const inputStyle = { background: c.bg, border: `1px solid ${c.line}`, borderRadi
 function FicheEmployeModal({ employe, equipes, onClose, onSave }) {
   const [tab, setTab] = useState("perso");
   const [form, setForm] = useState(employe);
+  const [historique, setHistorique] = useState([]);
   const c2 = c;
+  useEffect(() => {
+    if (tab === "historique" && employe.id) {
+      supabase.from("bulletins_paie").select("*, cycle:cycle_id(periode_debut, periode_fin, statut)").eq("employee_id", employe.id).order("created_at", { ascending: false })
+        .then(({ data: rows }) => setHistorique(rows || []));
+    }
+  }, [tab, employe.id]);
   const field = (label, key, type = "text", extra = {}) => (
     <Field label={label}><input type={type} value={form[key] || ""} onChange={(e) => setForm({ ...form, [key]: e.target.value })} style={inputStyle} {...extra} /></Field>
   );
@@ -237,7 +244,7 @@ function FicheEmployeModal({ employe, equipes, onClose, onSave }) {
           <button onClick={onClose}><X size={20} color={c2.inkMuted2} /></button>
         </div>
         <div className="flex gap-2 mb-4 flex-wrap">
-          {[["perso", "Infos personnelles"], ["pro", "Infos professionnelles"], ["salaire", "Infos salariales"], ["docs", "Documents"]].map(([k, l]) => (
+          {[["perso", "Infos personnelles"], ["pro", "Infos professionnelles"], ["salaire", "Infos salariales"], ["docs", "Documents"], ["historique", "Historique"]].map(([k, l]) => (
             <button key={k} onClick={() => setTab(k)} style={{ background: tab === k ? c2.cardGreen : c2.bg, color: tab === k ? "#fff" : c2.ink, borderRadius: 999, padding: "7px 14px", fontSize: "0.78rem", fontWeight: 700 }}>{l}</button>
           ))}
         </div>
@@ -308,8 +315,62 @@ function FicheEmployeModal({ employe, equipes, onClose, onSave }) {
             <p style={{ fontSize: "0.7rem", color: c2.inkMuted2 }}>ملصق روابط الملفات دابا (رفع الملفات مباشرة غادي يتزاد فمرحلة قادمة مع Supabase Storage)</p>
           </div>
         )}
+        {tab === "historique" && (
+          <div className="flex flex-col gap-2">
+            {historique.map((h) => (
+              <div key={h.id} style={{ background: c2.bg, borderRadius: 12 }} className="p-3">
+                <div className="flex items-center justify-between">
+                  <span style={{ fontWeight: 700, fontSize: "0.82rem" }}>{h.cycle ? `${h.cycle.periode_debut} → ${h.cycle.periode_fin}` : "—"}</span>
+                  <span style={{ fontSize: "0.68rem", color: c2.inkMuted2 }}>{h.cycle ? h.cycle.statut : ""}</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2 mt-1.5" style={{ fontSize: "0.74rem" }}>
+                  <span>Brut : {Number(h.total_brut).toFixed(0)} DH</span>
+                  <span style={{ color: c2.danger }}>Déd. : -{Number(h.total_deductions).toFixed(0)} DH</span>
+                  <span style={{ fontWeight: 800, color: c2.cardGreenDeep }}>Net : {Number(h.net_a_payer).toFixed(0)} DH</span>
+                </div>
+              </div>
+            ))}
+            {historique.length === 0 && <p style={{ color: c2.inkMuted2, fontSize: "0.8rem" }}>Aucun historique de paie pour cet employé</p>}
+          </div>
+        )}
 
         <button onClick={() => onSave(form)} style={{ background: c2.cardGreen, color: "#fff", borderRadius: 11, padding: "11px 0", fontWeight: 700, width: "100%", marginTop: 20, boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>Enregistrer la fiche</button>
+      </div>
+    </div>
+  );
+}
+
+function BulletinPDF({ bulletin, farmNom, cycle, onClose }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 50 }} className="flex items-center justify-center p-4">
+      <style>{`@media print { body * { visibility: hidden; } #bulletin-print, #bulletin-print * { visibility: visible; } #bulletin-print { position: fixed; inset: 0; } .no-print { display: none !important; } }`}</style>
+      <div style={{ background: "#fff", borderRadius: 16, width: "100%", maxWidth: 520, maxHeight: "90vh", overflowY: "auto" }} className="p-6">
+        <div id="bulletin-print">
+          <div className="flex items-center justify-between mb-5" style={{ borderBottom: "2px solid #2A9D8F", paddingBottom: 12 }}>
+            <div><div style={{ fontWeight: 800, fontSize: "1.1rem" }}>{farmNom}</div><div style={{ fontSize: "0.72rem", color: "#888" }}>Bulletin de paie</div></div>
+            <div style={{ textAlign: "left", fontSize: "0.74rem", color: "#666" }}>Période : {cycle ? `${cycle.periodeDebut} → ${cycle.periodeFin}` : "—"}</div>
+          </div>
+          <div className="grid grid-cols-2 gap-3 mb-4" style={{ fontSize: "0.82rem" }}>
+            <div><b>Employé :</b> {bulletin.nomEmploye}</div>
+            <div><b>Jours travaillés :</b> {bulletin.jours || 0}</div>
+            <div><b>Heures travaillées :</b> {bulletin.heures || 0}</div>
+            <div><b>Date de paiement :</b> {cycle ? (cycle.datePaiement || "—") : "—"}</div>
+          </div>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem" }}>
+            <thead><tr style={{ background: "#F5F5F5" }}><th style={{ textAlign: "right", padding: 6 }}>Rubrique</th><th style={{ textAlign: "left", padding: 6 }}>Montant</th></tr></thead>
+            <tbody>
+              {bulletin.gainsDetail.map((g, i) => (<tr key={"g" + i} style={{ borderBottom: "1px solid #eee" }}><td style={{ padding: 6 }}>{g.explication}</td><td style={{ padding: 6, fontFamily: "monospace" }}>{g.montant.toFixed(2)} DH</td></tr>))}
+              {bulletin.deductionsDetail.map((d, i) => (<tr key={"d" + i} style={{ borderBottom: "1px solid #eee", color: "#C1594F" }}><td style={{ padding: 6 }}>{d.explication}</td><td style={{ padding: 6, fontFamily: "monospace" }}>-{d.montant.toFixed(2)} DH</td></tr>))}
+            </tbody>
+          </table>
+          <div className="flex justify-between mt-4" style={{ fontSize: "0.85rem" }}><span>Total brut</span><span style={{ fontFamily: "monospace" }}>{bulletin.totalBrut.toFixed(2)} DH</span></div>
+          <div className="flex justify-between" style={{ fontSize: "0.85rem", color: "#C1594F" }}><span>Total déductions</span><span style={{ fontFamily: "monospace" }}>-{bulletin.totalDeductions.toFixed(2)} DH</span></div>
+          <div className="flex justify-between mt-2 pt-2" style={{ borderTop: "2px solid #2A9D8F", fontWeight: 800, fontSize: "1rem" }}><span>Net à payer</span><span style={{ fontFamily: "monospace", color: "#1F7A6C" }}>{bulletin.netAPayer.toFixed(2)} DH</span></div>
+        </div>
+        <div className="no-print flex gap-2 mt-5">
+          <button onClick={() => window.print()} style={{ background: "#2A9D8F", color: "#fff", borderRadius: 10, padding: "10px 0", fontWeight: 700, flex: 1 }}>Imprimer / Enregistrer PDF</button>
+          <button onClick={onClose} style={{ background: "#eee", color: "#333", borderRadius: 10, padding: "10px 16px", fontWeight: 700 }}>Fermer</button>
+        </div>
       </div>
     </div>
   );
@@ -552,6 +613,8 @@ export default function App() {
   const [cyclesPaie, setCyclesPaie] = useState([]);
   const [selectedCycleId, setSelectedCycleId] = useState(null);
   const [bulletinsActifs, setBulletinsActifs] = useState([]);
+  const [detailBulletinId, setDetailBulletinId] = useState(null);
+  const [bulletinPourPdf, setBulletinPourPdf] = useState(null);
   const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "" });
 
   const data = farms[currentFarmId] || emptyFarmData;
@@ -1252,6 +1315,10 @@ export default function App() {
       if (netAPayer < 0) anomalies.push("Net négatif — à vérifier");
       const nonConfirmes = logs.filter((w) => !w.confirme).length;
       if (nonConfirmes > 0) anomalies.push(`${nonConfirmes} pointage(s) non confirmé(s)`);
+      const sansTarif = logs.filter((w) => Number(w.taux) === 0 && w.mode_paie === "temps").length;
+      if (sansTarif > 0) anomalies.push(`${sansTarif} pointage(s) sans tarif défini`);
+      const prodSansParcelle = logs.filter((w) => (w.mode_paie === "production" || w.mode_paie === "rendement") && !w.parcelle_id).length;
+      if (prodSansParcelle > 0) anomalies.push(`${prodSansParcelle} production(s) sans parcelle liée`);
 
       totalBrutCycle += totalBrut;
       totalDeductionsCycle += totalDeductions;
@@ -2413,17 +2480,40 @@ export default function App() {
 
                 {selectedCycleId && bulletinsActifs.length > 0 && (
                   <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "hidden" }}>
-                    <div className="grid" style={{ gridTemplateColumns: "1.3fr 0.9fr 0.9fr 0.9fr 0.9fr", background: c.bg, fontSize: "0.64rem", color: c.inkMuted2, fontWeight: 700 }}>
-                      {["Employé", "Brut", "Déductions", "Net à payer", "Anomalies"].map((h) => (<div key={h} className="px-2 py-2">{h}</div>))}
+                    <div className="grid" style={{ gridTemplateColumns: "1.1fr 0.8fr 0.8fr 0.8fr 0.6fr 0.8fr", background: c.bg, fontSize: "0.64rem", color: c.inkMuted2, fontWeight: 700 }}>
+                      {["Employé", "Brut", "Déductions", "Net à payer", "Anomalies", ""].map((h) => (<div key={h} className="px-2 py-2">{h}</div>))}
                     </div>
                     {bulletinsActifs.map((b) => (
-                      <div key={b.id} className="grid items-center" style={{ gridTemplateColumns: "1.3fr 0.9fr 0.9fr 0.9fr 0.9fr", borderTop: `1px solid ${c.line}`, fontSize: "0.78rem" }}>
-                        <div className="px-2 py-2" style={{ fontWeight: 700 }}>{b.nomEmploye}</div>
+                      <React.Fragment key={b.id}>
+                      <div className="grid items-center" style={{ gridTemplateColumns: "1.1fr 0.8fr 0.8fr 0.8fr 0.6fr 0.8fr", borderTop: `1px solid ${c.line}`, fontSize: "0.78rem" }}>
+                        <button onClick={() => setDetailBulletinId(detailBulletinId === b.id ? null : b.id)} className="px-2 py-2 text-right" style={{ fontWeight: 700, textDecoration: "underline" }}>{b.nomEmploye}</button>
                         <div className="px-2 py-2 font-mono">{b.totalBrut.toFixed(0)} DH</div>
                         <div className="px-2 py-2 font-mono" style={{ color: c.danger }}>-{b.totalDeductions.toFixed(0)} DH</div>
                         <div className="px-2 py-2 font-mono" style={{ fontWeight: 800, color: c.cardGreenDeep }}>{b.netAPayer.toFixed(0)} DH</div>
                         <div className="px-2 py-2">{b.anomalies.length > 0 ? <span style={{ color: c.danger, fontSize: "0.68rem" }}>⚠️ {b.anomalies.length}</span> : <span style={{ color: c.cardGreenDeep, fontSize: "0.68rem" }}>✓</span>}</div>
+                        <div className="px-2 py-2"><button onClick={() => setBulletinPourPdf(b)} style={{ background: c.blue, color: "#fff", borderRadius: 8, padding: "4px 8px", fontSize: "0.66rem", fontWeight: 700 }}>Bulletin</button></div>
                       </div>
+                      {detailBulletinId === b.id && (
+                        <div style={{ borderTop: `1px solid ${c.line}`, background: c.bg }} className="p-3">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <span style={{ fontSize: "0.7rem", fontWeight: 700, color: c.cardGreenDeep }} className="mb-1 block">Gains</span>
+                              {b.gainsDetail.map((g, i) => (<div key={i} className="flex justify-between" style={{ fontSize: "0.74rem" }}><span>{g.explication}</span><span className="font-mono">{g.montant.toFixed(0)} DH</span></div>))}
+                            </div>
+                            <div>
+                              <span style={{ fontSize: "0.7rem", fontWeight: 700, color: c.danger }} className="mb-1 block">Déductions</span>
+                              {b.deductionsDetail.map((d, i) => (<div key={i} className="flex justify-between" style={{ fontSize: "0.74rem" }}><span>{d.explication}</span><span className="font-mono">-{d.montant.toFixed(0)} DH</span></div>))}
+                              {b.deductionsDetail.length === 0 && <span style={{ fontSize: "0.72rem", color: c.inkMuted2 }}>Aucune</span>}
+                            </div>
+                          </div>
+                          {b.anomalies.length > 0 && (
+                            <div className="mt-2">
+                              {b.anomalies.map((a, i) => (<div key={i} style={{ fontSize: "0.72rem", color: c.danger }}>⚠️ {a}</div>))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      </React.Fragment>
                     ))}
                   </div>
                 )}
@@ -3126,6 +3216,14 @@ export default function App() {
           equipes={data.equipes}
           onClose={() => setFicheEmployeOuverte(null)}
           onSave={async (form) => { await updateEmployee(ficheEmployeOuverte.id, form); setFicheEmployeOuverte(null); }}
+        />
+      )}
+      {bulletinPourPdf && (
+        <BulletinPDF
+          bulletin={bulletinPourPdf}
+          farmNom={data.nom}
+          cycle={cyclesPaie.find((cy) => cy.id === selectedCycleId)}
+          onClose={() => setBulletinPourPdf(null)}
         />
       )}
     </div>
