@@ -534,7 +534,7 @@ const emptyFarmData = {
   nom: "", gps: { lat: 34.92, lng: -6.10 },
   parcelles: [], workers: [], wazin: [], costs: [], plan: [], depenses: [], stock: [], invoices: [],
   cnss: { echeanceJour: 10, moisLabel: "Juillet 2026", declare: false, dateDeclare: "" },
-  employees: [], moduleAccess: {}, taches: [], equipes: [], heureDebutStandard: "06:00", heuresStandardJour: 8,
+  employees: [], moduleAccess: {}, taches: [], equipes: [], heureDebutStandard: "06:00", heuresStandardJour: 8, majorationHeuresSup: 1.25,
 };
 
 export default function App() {
@@ -615,6 +615,9 @@ export default function App() {
   const [bulletinsActifs, setBulletinsActifs] = useState([]);
   const [detailBulletinId, setDetailBulletinId] = useState(null);
   const [bulletinPourPdf, setBulletinPourPdf] = useState(null);
+  const [showParametres, setShowParametres] = useState(false);
+  const [paramForm, setParamForm] = useState({ heureDebutStandard: "06:00", heuresStandardJour: "8", majorationHeuresSup: "1.25" });
+  const [coutParFerme, setCoutParFerme] = useState([]);
   const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "" });
 
   const data = farms[currentFarmId] || emptyFarmData;
@@ -629,10 +632,11 @@ export default function App() {
       supabase.from("taches_config").select("*").eq("farm_id", farmId).eq("active", true),
       supabase.from("equipes").select("*").eq("farm_id", farmId),
     ]);
-    const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng, heure_debut_standard, heures_standard_jour").eq("id", farmId).single();
+    const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng, heure_debut_standard, heures_standard_jour, majoration_heures_sup").eq("id", farmId).single();
     const farmGps = farmRow ? { lat: Number(farmRow.gps_lat) || 34.92, lng: Number(farmRow.gps_lng) || -6.10 } : { lat: 34.92, lng: -6.10 };
     const heureDebutStandard = (farmRow && farmRow.heure_debut_standard) ? farmRow.heure_debut_standard.slice(0, 5) : "06:00";
     const heuresStandardJour = farmRow ? Number(farmRow.heures_standard_jour) || 8 : 8;
+    const majorationHeuresSup = farmRow ? Number(farmRow.majoration_heures_sup) || 1.25 : 1.25;
     const moduleAccess = {};
     (accessData || []).forEach((r) => { moduleAccess[r.module] = !!r.enabled; });
     const parcelles = (parcellesData || []).map((p) => ({
@@ -670,7 +674,7 @@ export default function App() {
     const taches = (tachesData || []).map((t) => ({ id: t.id, nom: t.nom, uniteDefaut: t.unite_defaut, tarifDefaut: Number(t.tarif_defaut) || 0 }));
     const equipes = (equipesData || []).map((eq) => ({ id: eq.id, nom: eq.nom, chefNom: eq.chef_nom, parcelleId: eq.parcelle_id }));
 
-    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess, employees, taches, equipes, heureDebutStandard, heuresStandardJour } }));
+    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess, employees, taches, equipes, heureDebutStandard, heuresStandardJour, majorationHeuresSup } }));
     setSelected(parcelles[0] || null);
   }
 
@@ -1234,6 +1238,24 @@ export default function App() {
     })));
   }
 
+  async function calculerCoutParFerme() {
+    const { data: rows } = await supabase.from("workers_log").select("farm_id, quantite, taux").in("farm_id", myFarmIds);
+    const parFerme = {};
+    (rows || []).forEach((w) => { parFerme[w.farm_id] = (parFerme[w.farm_id] || 0) + Number(w.quantite) * Number(w.taux); });
+    setCoutParFerme(myFarmIds.map((fid) => ({ farmId: fid, nom: farms[fid] ? farms[fid].nom : fid, cout: parFerme[fid] || 0 })));
+  }
+
+  async function saveParametres() {
+    const { error } = await supabase.from("farms").update({
+      heure_debut_standard: paramForm.heureDebutStandard,
+      heures_standard_jour: Number(paramForm.heuresStandardJour) || 8,
+      majoration_heures_sup: Number(paramForm.majorationHeuresSup) || 1.25,
+    }).eq("id", currentFarmId);
+    if (error) { alert("مشكل: " + error.message); return; }
+    setShowParametres(false);
+    await loadFarmDetails(currentFarmId);
+  }
+
   async function createCycle() {
     if (!cycleForm.periodeDebut || !cycleForm.periodeFin) return;
     const { error } = await supabase.from("cycles_paie").insert({
@@ -1291,8 +1313,8 @@ export default function App() {
       const prod = logs.filter((w) => w.mode_paie === "rendement" || w.mode_paie === "production").reduce((s, w) => s + Number(w.quantite_recoltee || w.quantite) * Number(w.prix_unitaire_rendement || w.taux), 0);
       if (prod > 0) gains.push({ rubrique: "PROD", montant: prod, explication: "Production / rendement" });
 
-      const heuresSup = logs.reduce((s, w) => s + Number(w.heures_sup || 0) * Number(w.taux) * 1.25, 0);
-      if (heuresSup > 0) gains.push({ rubrique: "HEURES_SUP", montant: heuresSup, explication: "Heures supplémentaires (+25%)" });
+      const heuresSup = logs.reduce((s, w) => s + Number(w.heures_sup || 0) * Number(w.taux) * data.majorationHeuresSup, 0);
+      if (heuresSup > 0) gains.push({ rubrique: "HEURES_SUP", montant: heuresSup, explication: `Heures supplémentaires (×${data.majorationHeuresSup})` });
 
       const indemnites = logs.reduce((s, w) => s + Number(w.indemnite_transport || 0) + Number(w.indemnite_repas || 0), 0);
       if (indemnites > 0) gains.push({ rubrique: "INDEMNITES", montant: indemnites, explication: "Transport + repas" });
@@ -1750,7 +1772,7 @@ export default function App() {
                 <div className="col-span-3"><button onClick={addFarm} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)", fontWeight: 700, width: "100%" }}>Créer la ferme</button></div>
               </div>
             )}
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-2 mb-4">
               {myFarmIds.map((fid) => {
                 const f = farms[fid]; const active = fid === currentFarmId;
                 return (
@@ -1767,6 +1789,25 @@ export default function App() {
                 );
               })}
             </div>
+
+            {canManageFarms && myFarmIds.length > 1 && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Coût main-d'œuvre par ferme</h3>
+                  <button onClick={calculerCoutParFerme} style={{ background: c.blue, color: "#fff", borderRadius: 10, padding: "6px 12px", fontSize: "0.72rem", fontWeight: 700 }}>Calculer</button>
+                </div>
+                {coutParFerme.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    {coutParFerme.map((cf) => (
+                      <div key={cf.farmId} className="flex items-center justify-between" style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }}>
+                        <span className="px-3 py-2" style={{ fontSize: "0.8rem", fontWeight: 600 }}>{cf.nom}</span>
+                        <span className="px-3 py-2 font-mono" style={{ fontWeight: 700 }}>{cf.cout.toFixed(0)} DH</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -2438,6 +2479,23 @@ export default function App() {
               </div>
             )}
 
+            {!isWorker && currentUser.role === "Owner" && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Paramètres de paie</h3>
+                  <AddButton label="Modifier" open={showParametres} onClick={() => { setParamForm({ heureDebutStandard: data.heureDebutStandard, heuresStandardJour: String(data.heuresStandardJour), majorationHeuresSup: String(data.majorationHeuresSup) }); setShowParametres(!showParametres); }} />
+                </div>
+                {showParametres && (
+                  <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
+                    <Field label="Heure de début standard"><input type="time" value={paramForm.heureDebutStandard} onChange={(e) => setParamForm({ ...paramForm, heureDebutStandard: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="Heures standard/jour"><input type="number" value={paramForm.heuresStandardJour} onChange={(e) => setParamForm({ ...paramForm, heuresStandardJour: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="Majoration heures sup (×)"><input type="number" step="0.05" value={paramForm.majorationHeuresSup} onChange={(e) => setParamForm({ ...paramForm, majorationHeuresSup: e.target.value })} style={inputStyle} /></Field>
+                    <div className="col-span-3"><button onClick={saveParametres} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%" }}>Enregistrer les paramètres</button></div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {!isWorker && (
               <div className="mt-6">
                 <div className="flex items-center justify-between mb-2">
@@ -2477,6 +2535,31 @@ export default function App() {
                   })}
                   {cyclesPaie.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucun cycle de paie créé</p>}
                 </div>
+
+                {selectedCycleId && bulletinsActifs.length > 0 && (() => {
+                  const totalBrut = bulletinsActifs.reduce((s, b) => s + b.totalBrut, 0);
+                  const totalDeductions = bulletinsActifs.reduce((s, b) => s + b.totalDeductions, 0);
+                  const totalNet = bulletinsActifs.reduce((s, b) => s + b.netAPayer, 0);
+                  const totalAvances = bulletinsActifs.reduce((s, b) => s + b.deductionsDetail.filter((d) => d.rubrique === "AVANCE").reduce((s2, d) => s2 + d.montant, 0), 0);
+                  const totalJours = bulletinsActifs.length;
+                  return (
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      {[
+                        ["Employés", totalJours, ""],
+                        ["Total brut", totalBrut.toFixed(0), "DH"],
+                        ["Total net", totalNet.toFixed(0), "DH"],
+                        ["Retenues", totalDeductions.toFixed(0), "DH"],
+                        ["Avances", totalAvances.toFixed(0), "DH"],
+                        ["Coût employeur", totalBrut.toFixed(0), "DH"],
+                      ].map(([label, val, unit]) => (
+                        <div key={label} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="p-3">
+                          <div style={{ fontSize: "0.66rem", color: c.inkMuted2 }}>{label}</div>
+                          <div className="font-mono" style={{ fontWeight: 800, fontSize: "1rem" }}>{val} {unit}</div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
 
                 {selectedCycleId && bulletinsActifs.length > 0 && (
                   <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "hidden" }}>
@@ -3055,6 +3138,56 @@ export default function App() {
                 </div>
               ))}
             </div>
+
+            {(() => {
+              const parParcelle = {};
+              data.workers.forEach((w) => {
+                const key = w.parcelle || "—";
+                if (!parParcelle[key]) parParcelle[key] = { cout: 0, production: 0 };
+                parParcelle[key].cout += w.qte * w.taux;
+                if (w.modePaie === "rendement" || w.modePaie === "production") parParcelle[key].production += w.qte;
+              });
+              const entries = Object.entries(parParcelle);
+              if (entries.length === 0) return null;
+              return (
+                <div className="mb-5">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }} className="mb-2">Coût main-d'œuvre par parcelle</h3>
+                  <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, overflow: "hidden" }}>
+                    <div className="grid" style={{ gridTemplateColumns: "1fr 1fr 1fr 1fr", background: c.bg, fontSize: "0.66rem", color: c.inkMuted2, fontWeight: 700 }}>
+                      {["Parcelle", "Production (kg)", "Coût main-d'œuvre", "Coût/kg"].map((h) => (<div key={h} className="px-3 py-2">{h}</div>))}
+                    </div>
+                    {entries.map(([code, v]) => (
+                      <div key={code} className="grid items-center" style={{ gridTemplateColumns: "1fr 1fr 1fr 1fr", borderTop: `1px solid ${c.line}`, fontSize: "0.78rem" }}>
+                        <div className="px-3 py-2 font-mono">{code}</div>
+                        <div className="px-3 py-2 font-mono">{v.production.toFixed(0)}</div>
+                        <div className="px-3 py-2 font-mono">{v.cout.toFixed(0)} DH</div>
+                        <div className="px-3 py-2 font-mono" style={{ fontWeight: 700 }}>{v.production > 0 ? (v.cout / v.production).toFixed(2) : "—"} DH</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {(() => {
+              const parTache = {};
+              data.workers.forEach((w) => { parTache[w.tache] = (parTache[w.tache] || 0) + w.qte * w.taux; });
+              const entries = Object.entries(parTache).sort((a, b) => b[1] - a[1]);
+              if (entries.length === 0) return null;
+              return (
+                <div className="mb-5">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }} className="mb-2">Coût main-d'œuvre par tâche</h3>
+                  <div className="flex flex-col gap-2">
+                    {entries.map(([tache, cout]) => (
+                      <div key={tache} className="flex items-center justify-between" style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }}>
+                        <span className="px-3 py-2" style={{ fontSize: "0.8rem", fontWeight: 600 }}>{tache}</span>
+                        <span className="px-3 py-2 font-mono" style={{ fontWeight: 700 }}>{cout.toFixed(0)} DH</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
 
