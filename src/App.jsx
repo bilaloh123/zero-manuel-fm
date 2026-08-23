@@ -618,6 +618,7 @@ export default function App() {
   const [showParametres, setShowParametres] = useState(false);
   const [paramForm, setParamForm] = useState({ heureDebutStandard: "06:00", heuresStandardJour: "8", majorationHeuresSup: "1.25" });
   const [coutParFerme, setCoutParFerme] = useState([]);
+  const [showNotifPanel, setShowNotifPanel] = useState(false);
   const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "" });
 
   const data = farms[currentFarmId] || emptyFarmData;
@@ -763,6 +764,17 @@ export default function App() {
   }, [currentFarmId]);
 
   useEffect(() => {
+    if (!currentFarmId) return;
+    const channel = supabase
+      .channel(`farm-${currentFarmId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "workers_log", filter: `farm_id=eq.${currentFarmId}` }, () => loadFarmDetails(currentFarmId))
+      .on("postgres_changes", { event: "*", schema: "public", table: "stock_items", filter: `farm_id=eq.${currentFarmId}` }, () => loadFarmDetails(currentFarmId))
+      .on("postgres_changes", { event: "*", schema: "public", table: "commandes" }, () => loadCommandes())
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [currentFarmId]);
+
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) loginWithSession(session);
       else setCheckingSession(false);
@@ -810,6 +822,43 @@ export default function App() {
   const myFarmIds = canManageFarms ? Object.keys(farms) : currentUser.farms;
   function canEdit(moduleKey) { return permMatrix[currentUser.role][moduleKey] === "Modification"; }
   function isLocked(moduleKey) { return !(data.moduleAccess && data.moduleAccess[moduleKey]); }
+
+  const notifications = (() => {
+    const list = [];
+    if (canManageFarms) {
+      const nouvellesCmd = commandesGlobal.filter((cmd) => myFarmIds.includes(cmd.farmId) && cmd.statut === "Nouveau");
+      nouvellesCmd.forEach((cmd) => list.push({ severite: "orange", message: `Nouvelle commande : ${cmd.produit} (${cmd.farmNom})` }));
+    }
+    if (canManageFarms || currentUser.role === "Accountant") {
+      achatsGlobal.filter((a) => myFarmIds.includes(a.farmId) && !a.vu).forEach((a) => list.push({ severite: "orange", message: `Achat non vérifié : ${a.produit}` }));
+    }
+    if (currentUser.role === "Owner") {
+      alertesIncompletes.forEach((al) => list.push({ severite: "danger", message: `Réception incomplète : ${al.produit} (${al.personne})` }));
+    }
+    if (permTabs.includes("CNSS") && !data.cnss.declare && data.cnss.echeanceJour && (data.cnss.echeanceJour - 20) <= 3) {
+      list.push({ severite: "danger", message: "Déclaration CNSS approche de l'échéance" });
+    }
+    if (!isWorker) {
+      const nonSorties = data.workers.filter((w) => w.type === "Heures" && w.khuruj === "-");
+      if (nonSorties.length > 0) list.push({ severite: "orange", message: `${nonSorties.length} employé(s) sans heure de sortie enregistrée` });
+
+      const nomsPointes = new Set(data.workers.map((w) => w.nom));
+      const absentsCount = data.employees.filter((e) => (e.statut === "actif" || !e.statut) && !nomsPointes.has(e.nom)).length;
+      if (absentsCount > 0) list.push({ severite: "orange", message: `${absentsCount} employé(s) actif(s) sans pointage aujourd'hui` });
+
+      const cyclesEnAttente = cyclesPaie.filter((cy) => cy.statut === "brouillon" && cy.periodeFin && new Date(cy.periodeFin) < new Date());
+      cyclesEnAttente.forEach((cy) => list.push({ severite: "danger", message: `Cycle ${cy.periodeDebut} → ${cy.periodeFin} prêt à calculer` }));
+
+      if (selectedCycleId) {
+        const problemes = bulletinsActifs.filter((b) => b.anomalies.length > 0).length;
+        if (problemes > 0) list.push({ severite: "danger", message: `${problemes} bulletin(s) avec anomalie dans le cycle sélectionné` });
+      }
+
+      const stockFaible = data.stock.filter((s) => s.kammiya <= s.seuil).length;
+      if (stockFaible > 0) list.push({ severite: "orange", message: `${stockFaible} produit(s) en stock faible` });
+    }
+    return list;
+  })();
 
   function updateFarm(patch) { setFarms((prev) => ({ ...prev, [currentFarmId]: { ...prev[currentFarmId], ...patch } })); }
   function parcelleNom(code) { const p = data.parcelles.find((p) => p.code === code); return p ? p.nom : code; }
@@ -1712,8 +1761,21 @@ export default function App() {
             </select>
           )}
           <div style={{ position: "relative" }}>
-            <Bell size={19} color="#fff" />
-            <span style={{ position: "absolute", top: -5, left: -6, background: c.danger, color: "#fff", fontSize: "0.6rem", fontWeight: 700, borderRadius: 999, width: 15, height: 15 }} className="flex items-center justify-center">{alertes.length + (canManageFarms ? commandesGlobal.filter((cmd) => myFarmIds.includes(cmd.farmId) && cmd.statut === "Nouveau").length : 0) + ((canManageFarms || currentUser.role === "Accountant") ? achatsGlobal.filter((a) => myFarmIds.includes(a.farmId) && !a.vu).length : 0) + (currentUser.role === "Owner" ? alertesIncompletes.length : 0) + ((permTabs.includes("CNSS") && !data.cnss.declare && data.cnss.echeanceJour && (data.cnss.echeanceJour - 20) <= 3) ? 1 : 0)}</span>
+            <button onClick={() => setShowNotifPanel(!showNotifPanel)} style={{ position: "relative" }}>
+              <Bell size={19} color="#fff" />
+              <span style={{ position: "absolute", top: -5, left: -6, background: c.danger, color: "#fff", fontSize: "0.6rem", fontWeight: 700, borderRadius: 999, width: 15, height: 15 }} className="flex items-center justify-center">{notifications.length}</span>
+            </button>
+            {showNotifPanel && (
+              <div style={{ position: "absolute", top: 32, left: 0, width: 300, background: c.white, borderRadius: 14, boxShadow: "0 12px 30px rgba(0,0,0,0.18)", zIndex: 30, maxHeight: 380, overflowY: "auto" }} className="p-2">
+                {notifications.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem", padding: "10px" }}>Aucune notification</p>}
+                {notifications.map((n, i) => (
+                  <div key={i} style={{ borderBottom: i < notifications.length - 1 ? `1px solid ${c.line}` : "none" }} className="p-2.5 flex items-start gap-2">
+                    <AlertTriangle size={14} color={n.severite === "danger" ? c.danger : c.orange} style={{ marginTop: 2, flexShrink: 0 }} />
+                    <span style={{ fontSize: "0.76rem", color: c.inkSoft }}>{n.message}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
           <button onClick={async () => { await supabase.auth.signOut(); setCurrentUser(null); setFarms({}); setCurrentFarmId(null); }}><LogOut size={18} color="rgba(255,255,255,0.85)" /></button>
         </div>
