@@ -534,7 +534,7 @@ const emptyFarmData = {
   nom: "", gps: { lat: 34.92, lng: -6.10 },
   parcelles: [], workers: [], wazin: [], costs: [], plan: [], depenses: [], stock: [], invoices: [],
   cnss: { echeanceJour: 10, moisLabel: "Juillet 2026", declare: false, dateDeclare: "" },
-  employees: [], moduleAccess: {}, taches: [], equipes: [], heureDebutStandard: "06:00", heuresStandardJour: 8, majorationHeuresSup: 1.25,
+  employees: [], moduleAccess: {}, taches: [], equipes: [], heureDebutStandard: "06:00", heuresStandardJour: 8, majorationHeuresSup: 1.25, sites: [], cultures: [], seasons: [],
 };
 
 export default function App() {
@@ -619,12 +619,18 @@ export default function App() {
   const [paramForm, setParamForm] = useState({ heureDebutStandard: "06:00", heuresStandardJour: "8", majorationHeuresSup: "1.25" });
   const [coutParFerme, setCoutParFerme] = useState([]);
   const [showNotifPanel, setShowNotifPanel] = useState(false);
-  const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "" });
+  const [pcForm, setPcForm] = useState({ code: "", nom: "", crop: "avocat", ha: "", siteId: "", cultureId: "", seasonId: "", datePlantation: "", rendementPrevu: "" });
+  const [showAddSite, setShowAddSite] = useState(false);
+  const [siteForm, setSiteForm] = useState({ nom: "", code: "", type: "champ" });
+  const [showAddCulture, setShowAddCulture] = useState(false);
+  const [cultureForm, setCultureForm] = useState({ nom: "", variete: "", categorie: "Fruit" });
+  const [showAddSeason, setShowAddSeason] = useState(false);
+  const [seasonForm, setSeasonForm] = useState({ nom: "", dateDebut: "", dateFin: "" });
 
   const data = farms[currentFarmId] || emptyFarmData;
 
   async function loadFarmDetails(farmId) {
-    const [{ data: parcellesData }, { data: workersData }, { data: stockData }, { data: accessData }, { data: employeesData }, { data: tachesData }, { data: equipesData }] = await Promise.all([
+    const [{ data: parcellesData }, { data: workersData }, { data: stockData }, { data: accessData }, { data: employeesData }, { data: tachesData }, { data: equipesData }, { data: sitesData }, { data: culturesData }, { data: seasonsData }] = await Promise.all([
       supabase.from("parcelles").select("*").eq("farm_id", farmId),
       supabase.from("workers_log").select("*").eq("farm_id", farmId).order("created_at", { ascending: false }).limit(200),
       supabase.from("stock_items").select("*").eq("farm_id", farmId),
@@ -632,6 +638,9 @@ export default function App() {
       supabase.from("employees").select("*").eq("farm_id", farmId),
       supabase.from("taches_config").select("*").eq("farm_id", farmId).eq("active", true),
       supabase.from("equipes").select("*").eq("farm_id", farmId),
+      supabase.from("sites").select("*").eq("farm_id", farmId),
+      supabase.from("cultures").select("*").eq("farm_id", farmId),
+      supabase.from("seasons").select("*").eq("farm_id", farmId),
     ]);
     const { data: farmRow } = await supabase.from("farms").select("gps_lat, gps_lng, heure_debut_standard, heures_standard_jour, majoration_heures_sup").eq("id", farmId).single();
     const farmGps = farmRow ? { lat: Number(farmRow.gps_lat) || 34.92, lng: Number(farmRow.gps_lng) || -6.10 } : { lat: 34.92, lng: -6.10 };
@@ -640,9 +649,19 @@ export default function App() {
     const majorationHeuresSup = farmRow ? Number(farmRow.majoration_heures_sup) || 1.25 : 1.25;
     const moduleAccess = {};
     (accessData || []).forEach((r) => { moduleAccess[r.module] = !!r.enabled; });
+    const sites = (sitesData || []).map((s) => ({ id: s.id, nom: s.nom, code: s.code, type: s.type }));
+    const cultures = (culturesData || []).map((cu) => ({ id: cu.id, nom: cu.nom, variete: cu.variete, categorie: cu.categorie }));
+    const seasons = (seasonsData || []).map((se) => ({ id: se.id, nom: se.nom, dateDebut: se.date_debut, dateFin: se.date_fin, statut: se.statut }));
+    const siteById = {}; sites.forEach((s) => { siteById[s.id] = s.nom; });
+    const cultureById = {}; cultures.forEach((cu) => { cultureById[cu.id] = cu; });
+    const seasonById = {}; seasons.forEach((se) => { seasonById[se.id] = se.nom; });
     const parcelles = (parcellesData || []).map((p) => ({
       id: p.id, code: p.code, nom: p.nom, crop: p.crop, ha: Number(p.superficie_ha) || 0,
       statut: p.statut || "ok", irrigation: "—", recolte: 0, dernierTraitement: "—", secu: 0,
+      siteId: p.site_id, siteNom: siteById[p.site_id] || null,
+      cultureId: p.culture_id, culture: cultureById[p.culture_id] || null,
+      seasonId: p.season_id, seasonNom: seasonById[p.season_id] || null,
+      datePlantation: p.date_plantation, rendementPrevu: Number(p.rendement_prevu) || null,
     }));
     const codeById = {}; parcelles.forEach((p) => { codeById[p.id] = p.code; });
     const sums = {};
@@ -675,7 +694,7 @@ export default function App() {
     const taches = (tachesData || []).map((t) => ({ id: t.id, nom: t.nom, uniteDefaut: t.unite_defaut, tarifDefaut: Number(t.tarif_defaut) || 0 }));
     const equipes = (equipesData || []).map((eq) => ({ id: eq.id, nom: eq.nom, chefNom: eq.chef_nom, parcelleId: eq.parcelle_id }));
 
-    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess, employees, taches, equipes, heureDebutStandard, heuresStandardJour, majorationHeuresSup } }));
+    setFarms((prev) => ({ ...prev, [farmId]: { ...(prev[farmId] || emptyFarmData), parcelles, workers, stock, moduleAccess, employees, taches, equipes, heureDebutStandard, heuresStandardJour, majorationHeuresSup, sites, cultures, seasons } }));
     setSelected(parcelles[0] || null);
   }
 
@@ -1165,11 +1184,40 @@ export default function App() {
     const { error } = await supabase.from("parcelles").insert({
       farm_id: currentFarmId, code: pcForm.code, nom: pcForm.nom || pcForm.code,
       crop: pcForm.crop, superficie_ha: Number(pcForm.ha) || 0, statut: "ok",
+      site_id: pcForm.siteId || null, culture_id: pcForm.cultureId || null, season_id: pcForm.seasonId || null,
+      date_plantation: pcForm.datePlantation || null, rendement_prevu: Number(pcForm.rendementPrevu) || null,
     });
     if (error) { alert("وقع مشكل: " + error.message); return; }
-    setPcForm({ code: "", nom: "", crop: "avocat", ha: "" });
+    setPcForm({ code: "", nom: "", crop: "avocat", ha: "", siteId: "", cultureId: "", seasonId: "", datePlantation: "", rendementPrevu: "" });
     setShowAddParcelle(false);
     loadFarmDetails(currentFarmId);
+  }
+
+  async function addSite() {
+    if (!siteForm.nom.trim()) return;
+    const { error } = await supabase.from("sites").insert({ farm_id: currentFarmId, nom: siteForm.nom, code: siteForm.code, type: siteForm.type });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setSiteForm({ nom: "", code: "", type: "champ" });
+    setShowAddSite(false);
+    await loadFarmDetails(currentFarmId);
+  }
+
+  async function addCulture() {
+    if (!cultureForm.nom.trim()) return;
+    const { error } = await supabase.from("cultures").insert({ farm_id: currentFarmId, nom: cultureForm.nom, variete: cultureForm.variete, categorie: cultureForm.categorie });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setCultureForm({ nom: "", variete: "", categorie: "Fruit" });
+    setShowAddCulture(false);
+    await loadFarmDetails(currentFarmId);
+  }
+
+  async function addSeason() {
+    if (!seasonForm.nom.trim()) return;
+    const { error } = await supabase.from("seasons").insert({ farm_id: currentFarmId, nom: seasonForm.nom, date_debut: seasonForm.dateDebut || null, date_fin: seasonForm.dateFin || null, statut: "active" });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setSeasonForm({ nom: "", dateDebut: "", dateFin: "" });
+    setShowAddSeason(false);
+    await loadFarmDetails(currentFarmId);
   }
 
   function addWorker() {
@@ -2084,13 +2132,48 @@ export default function App() {
               </div>
             </div>
 
+            {canEdit("Parcelles") && (
+              <div className="flex gap-2 mb-3 flex-wrap">
+                <button onClick={() => setShowAddSite(!showAddSite)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 999, padding: "6px 12px", fontSize: "0.72rem", fontWeight: 700 }}>+ Site</button>
+                <button onClick={() => setShowAddCulture(!showAddCulture)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 999, padding: "6px 12px", fontSize: "0.72rem", fontWeight: 700 }}>+ Culture</button>
+                <button onClick={() => setShowAddSeason(!showAddSeason)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 999, padding: "6px 12px", fontSize: "0.72rem", fontWeight: 700 }}>+ Saison</button>
+              </div>
+            )}
+            {showAddSite && (
+              <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16 }} className="p-3 mb-3 grid grid-cols-3 gap-2">
+                <Field label="Nom du site"><input value={siteForm.nom} onChange={(e) => setSiteForm({ ...siteForm, nom: e.target.value })} placeholder="ex. Site Nord" style={inputStyle} /></Field>
+                <Field label="Type"><select value={siteForm.type} onChange={(e) => setSiteForm({ ...siteForm, type: e.target.value })} style={inputStyle}><option value="champ">Champ</option><option value="entrepot">Entrepôt</option><option value="cooler">Cooler</option><option value="packing">Packing</option></select></Field>
+                <div className="flex items-end"><button onClick={addSite} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "9px 0", fontWeight: 700, width: "100%" }}>Créer</button></div>
+              </div>
+            )}
+            {showAddCulture && (
+              <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16 }} className="p-3 mb-3 grid grid-cols-3 gap-2">
+                <Field label="Culture"><input value={cultureForm.nom} onChange={(e) => setCultureForm({ ...cultureForm, nom: e.target.value })} placeholder="ex. Myrtille" style={inputStyle} /></Field>
+                <Field label="Variété"><input value={cultureForm.variete} onChange={(e) => setCultureForm({ ...cultureForm, variete: e.target.value })} style={inputStyle} /></Field>
+                <div className="flex items-end"><button onClick={addCulture} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "9px 0", fontWeight: 700, width: "100%" }}>Créer</button></div>
+              </div>
+            )}
+            {showAddSeason && (
+              <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16 }} className="p-3 mb-3 grid grid-cols-3 gap-2">
+                <Field label="Nom"><input value={seasonForm.nom} onChange={(e) => setSeasonForm({ ...seasonForm, nom: e.target.value })} placeholder="ex. Saison 2027" style={inputStyle} /></Field>
+                <Field label="Début"><input type="date" value={seasonForm.dateDebut} onChange={(e) => setSeasonForm({ ...seasonForm, dateDebut: e.target.value })} style={inputStyle} /></Field>
+                <Field label="Fin"><input type="date" value={seasonForm.dateFin} onChange={(e) => setSeasonForm({ ...seasonForm, dateFin: e.target.value })} style={inputStyle} /></Field>
+                <div className="col-span-3 flex justify-end"><button onClick={addSeason} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "8px 20px", fontWeight: 700 }}>Créer la saison</button></div>
+              </div>
+            )}
+
             {showAddParcelle && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
                 <Field label="الرمز (ex. A1)"><input value={pcForm.code} onChange={(e) => setPcForm({ ...pcForm, code: e.target.value })} style={inputStyle} /></Field>
                 <Field label="Nom"><input value={pcForm.nom} onChange={(e) => setPcForm({ ...pcForm, nom: e.target.value })} style={inputStyle} /></Field>
                 <Field label="المحصول"><select value={pcForm.crop} onChange={(e) => setPcForm({ ...pcForm, crop: e.target.value })} style={inputStyle}><option value="avocat">Avocat</option><option value="fraise">Fraise</option></select></Field>
                 <Field label="Superficie (ha)"><input type="number" step="0.1" value={pcForm.ha} onChange={(e) => setPcForm({ ...pcForm, ha: e.target.value })} style={inputStyle} /></Field>
-                <div className="col-span-2 flex items-end"><button onClick={addParcelle} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>Ajouter parcelle</button></div>
+                <Field label="Site"><select value={pcForm.siteId} onChange={(e) => setPcForm({ ...pcForm, siteId: e.target.value })} style={inputStyle}><option value="">—</option>{data.sites.map((s) => (<option key={s.id} value={s.id}>{s.nom}</option>))}</select></Field>
+                <Field label="Culture"><select value={pcForm.cultureId} onChange={(e) => setPcForm({ ...pcForm, cultureId: e.target.value })} style={inputStyle}><option value="">—</option>{data.cultures.map((cu) => (<option key={cu.id} value={cu.id}>{cu.nom}{cu.variete ? ` (${cu.variete})` : ""}</option>))}</select></Field>
+                <Field label="Saison"><select value={pcForm.seasonId} onChange={(e) => setPcForm({ ...pcForm, seasonId: e.target.value })} style={inputStyle}><option value="">—</option>{data.seasons.map((se) => (<option key={se.id} value={se.id}>{se.nom}</option>))}</select></Field>
+                <Field label="Date de plantation"><input type="date" value={pcForm.datePlantation} onChange={(e) => setPcForm({ ...pcForm, datePlantation: e.target.value })} style={inputStyle} /></Field>
+                <Field label="Rendement prévu (kg/ha)"><input type="number" value={pcForm.rendementPrevu} onChange={(e) => setPcForm({ ...pcForm, rendementPrevu: e.target.value })} style={inputStyle} /></Field>
+                <div className="col-span-3 flex items-end"><button onClick={addParcelle} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%", boxShadow: "0 4px 14px -3px rgba(42,157,143,0.4)" }}>Ajouter parcelle</button></div>
               </div>
             )}
 
@@ -2115,6 +2198,11 @@ export default function App() {
                 <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Prochaine irrigation</span><span style={{ fontWeight: 700 }}>{selected.irrigation}</span></div>
                 <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Dernier traitement</span><span style={{ fontWeight: 700 }}>{selected.dernierTraitement}</span></div>
                 <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Délai de sécurité récolte</span><span style={{ fontWeight: 700, color: selected.secu > 0 ? c.danger : c.cardGreen }}>{selected.secu > 0 ? `${selected.secu} أيام` : "جاهز"}</span></div>
+                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Culture</span><span style={{ fontWeight: 700 }}>{selected.culture ? `${selected.culture.nom}${selected.culture.variete ? " (" + selected.culture.variete + ")" : ""}` : "—"}</span></div>
+                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Site</span><span style={{ fontWeight: 700 }}>{selected.siteNom || "—"}</span></div>
+                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Saison</span><span style={{ fontWeight: 700 }}>{selected.seasonNom || "—"}</span></div>
+                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Date plantation</span><span style={{ fontWeight: 700 }}>{selected.datePlantation || "—"}</span></div>
+                <div className="flex justify-between"><span style={{ color: c.inkMuted2 }}>Rendement prévu</span><span style={{ fontWeight: 700 }}>{selected.rendementPrevu ? `${selected.rendementPrevu} kg/ha` : "—"}</span></div>
               </div>
             </div>
             )}
