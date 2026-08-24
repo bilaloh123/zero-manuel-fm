@@ -376,6 +376,42 @@ function BulletinPDF({ bulletin, farmNom, cycle, onClose }) {
   );
 }
 
+function LotTraceModal({ lot, parcelle, culture, seasonNom, farmNom, onClose }) {
+  const etapes = [
+    { icon: "🌱", titre: "Culture", detail: culture ? `${culture.nom}${culture.variete ? " — " + culture.variete : ""}` : "—" },
+    { icon: "📍", titre: "Ferme / Parcelle", detail: `${farmNom} — ${parcelle ? parcelle.code + " (" + parcelle.nom + ")" : "—"}` },
+    { icon: "📅", titre: "Saison", detail: seasonNom || "—" },
+    { icon: "🌾", titre: "Récolte", detail: `${lot.dateRecolte} — ${lot.quantiteKg} kg` },
+    { icon: "🔬", titre: "Qualité", detail: `Grade ${lot.grade}${lot.note ? " — " + lot.note : ""}` },
+    { icon: "📦", titre: "Statut actuel", detail: lot.statut },
+  ];
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 50 }} className="flex items-center justify-center p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 480, maxHeight: "85vh", overflowY: "auto" }} className="p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div><div className="font-mono" style={{ fontWeight: 800, fontSize: "1rem" }}>{lot.code}</div><div style={{ fontSize: "0.72rem", color: "#888" }}>Traçabilité complète</div></div>
+          <button onClick={onClose}><X size={20} color="#888" /></button>
+        </div>
+        <div style={{ position: "relative", paddingRight: 24 }}>
+          <div style={{ position: "absolute", right: 11, top: 6, bottom: 6, width: 2, background: "linear-gradient(180deg, #2A9D8F, #F4A261)" }} />
+          {etapes.map((e, i) => (
+            <div key={i} style={{ position: "relative" }} className="pb-5">
+              <div style={{ position: "absolute", right: -1, top: 0, width: 24, height: 24, borderRadius: "50%", background: "#fff", border: "2px solid #2A9D8F" }} className="flex items-center justify-center">
+                <span style={{ fontSize: "11px" }}>{e.icon}</span>
+              </div>
+              <div style={{ marginRight: 34 }}>
+                <div style={{ fontWeight: 700, fontSize: "0.82rem" }}>{e.titre}</div>
+                <div style={{ fontSize: "0.76rem", color: "#666" }}>{e.detail}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+        <p style={{ fontSize: "0.68rem", color: "#999", marginTop: 10 }}>Étapes suivantes (Cooler, Palette, Expédition) seront ajoutées dans une phase future.</p>
+      </div>
+    </div>
+  );
+}
+
 function LockedFeature({ nom }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
@@ -564,6 +600,11 @@ export default function App() {
   const [permMatrix, setPermMatrix] = useState(buildPermMatrixInit());
   const [tab, setTab] = useState("Tableau de bord");
   const [selected, setSelected] = useState(farmsInit.zm.parcelles[0]);
+  const [lots, setLots] = useState([]);
+  const [showAddLot, setShowAddLot] = useState(false);
+  const [lotForm, setLotForm] = useState({ parcelleId: "", dateRecolte: "", quantiteKg: "", grade: "A", note: "" });
+  const [lotTraceOuvert, setLotTraceOuvert] = useState(null);
+  const [rechercheLot, setRechercheLot] = useState("");
 
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [showAddWazin, setShowAddWazin] = useState(false);
@@ -748,6 +789,7 @@ export default function App() {
     await loadFarmDetails(firstFarm);
     await loadAccidents(firstFarm);
     await loadCycles(firstFarm);
+    await loadLots(firstFarm);
     await loadCommandes();
     setLoadingData(false);
     setCheckingSession(false);
@@ -892,7 +934,7 @@ export default function App() {
   const tabs = allTabs.filter((t) => permTabs.includes(t.key));
   if (currentUser.role === "Owner") tabs.push({ key: "Permissions", icon: Lock });
 
-  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); loadCycles(fid); }
+  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); loadCycles(fid); loadLots(fid); }
 
   function toggleAffiliation(id) {
     updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, affilieCNSS: !e.affilieCNSS } : e) });
@@ -1218,6 +1260,36 @@ export default function App() {
     setSeasonForm({ nom: "", dateDebut: "", dateFin: "" });
     setShowAddSeason(false);
     await loadFarmDetails(currentFarmId);
+  }
+
+  async function loadLots(farmId) {
+    const { data: rows } = await supabase.from("lots").select("*").eq("farm_id", farmId).order("created_at", { ascending: false });
+    setLots((rows || []).map((l) => ({
+      id: l.id, code: l.code, parcelleId: l.parcelle_id, cultureId: l.culture_id, seasonId: l.season_id,
+      dateRecolte: l.date_recolte, quantiteKg: Number(l.quantite_kg) || 0, quantiteDisponible: Number(l.quantite_disponible) || 0,
+      grade: l.grade_qualite, statut: l.statut, note: l.note,
+    })));
+  }
+
+  async function addLot() {
+    if (!lotForm.parcelleId || !lotForm.quantiteKg) return;
+    const parcelle = data.parcelles.find((p) => p.id === lotForm.parcelleId);
+    if (!parcelle) return;
+    const culturePrefix = parcelle.culture ? parcelle.culture.nom.slice(0, 2).toUpperCase() : "XX";
+    const dateStr = (lotForm.dateRecolte || new Date().toISOString().slice(0, 10)).split("-").reverse().join("");
+    const seq = String(lots.filter((l) => l.parcelleId === parcelle.id).length + 1).padStart(3, "0");
+    const code = `${culturePrefix}-${parcelle.code}-${dateStr}-${seq}`;
+
+    const { error } = await supabase.from("lots").insert({
+      farm_id: currentFarmId, code, parcelle_id: parcelle.id, culture_id: parcelle.cultureId || null, season_id: parcelle.seasonId || null,
+      date_recolte: lotForm.dateRecolte || new Date().toISOString().slice(0, 10),
+      quantite_kg: Number(lotForm.quantiteKg), quantite_disponible: Number(lotForm.quantiteKg),
+      grade_qualite: lotForm.grade, statut: "recolte", note: lotForm.note || null,
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setLotForm({ parcelleId: "", dateRecolte: "", quantiteKg: "", grade: "A", note: "" });
+    setShowAddLot(false);
+    await loadLots(currentFarmId);
   }
 
   function addWorker() {
@@ -2206,6 +2278,43 @@ export default function App() {
               </div>
             </div>
             )}
+
+            <div className="mt-6">
+              <div className="flex items-center justify-between mb-2">
+                <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Lots &amp; Traçabilité</h3>
+                {canEdit("Parcelles") && <AddButton label="Créer un lot" open={showAddLot} onClick={() => setShowAddLot(!showAddLot)} />}
+              </div>
+              <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-2">كل كمية كتخرج من قطعة خاصها Lot — code وحدو كيتبع الطريق كاملة من القطعة للشحنة</p>
+
+              {showAddLot && (
+                <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
+                  <Field label="Parcelle"><select value={lotForm.parcelleId} onChange={(e) => setLotForm({ ...lotForm, parcelleId: e.target.value })} style={inputStyle}><option value="">اختار</option>{data.parcelles.map((p) => (<option key={p.id} value={p.id}>{p.code} — {p.nom}</option>))}</select></Field>
+                  <Field label="Date de récolte"><input type="date" value={lotForm.dateRecolte} onChange={(e) => setLotForm({ ...lotForm, dateRecolte: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Quantité (kg)"><input type="number" value={lotForm.quantiteKg} onChange={(e) => setLotForm({ ...lotForm, quantiteKg: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Grade qualité"><select value={lotForm.grade} onChange={(e) => setLotForm({ ...lotForm, grade: e.target.value })} style={inputStyle}><option value="A">A</option><option value="B">B</option><option value="C">C</option></select></Field>
+                  <div className="col-span-2"><Field label="Note (optionnel)"><input value={lotForm.note} onChange={(e) => setLotForm({ ...lotForm, note: e.target.value })} style={inputStyle} /></Field></div>
+                  <div className="col-span-3"><button onClick={addLot} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "10px 0", fontWeight: 700, width: "100%" }}>Créer le lot</button></div>
+                </div>
+              )}
+
+              <input value={rechercheLot} onChange={(e) => setRechercheLot(e.target.value)} placeholder="Rechercher un lot (code)..." style={{ ...inputStyle, marginBottom: 10 }} />
+
+              <div className="flex flex-col gap-2">
+                {lots.filter((l) => l.code.toLowerCase().includes(rechercheLot.toLowerCase())).map((l) => (
+                  <button key={l.id} onClick={() => setLotTraceOuvert(l)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12, textAlign: "right" }} className="p-3 flex items-center justify-between">
+                    <div>
+                      <div className="font-mono" style={{ fontWeight: 700, fontSize: "0.8rem" }}>{l.code}</div>
+                      <div style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{l.dateRecolte} · Grade {l.grade}</div>
+                    </div>
+                    <div className="text-left">
+                      <div className="font-mono" style={{ fontWeight: 800, fontSize: "0.85rem" }}>{l.quantiteKg} kg</div>
+                      <span style={{ background: c.bg, borderRadius: 999, padding: "2px 8px", fontSize: "0.64rem", fontWeight: 700 }}>{l.statut}</span>
+                    </div>
+                  </button>
+                ))}
+                {lots.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucun lot créé</p>}
+              </div>
+            </div>
           </div>
           );
         })()}
@@ -3507,6 +3616,16 @@ export default function App() {
           farmNom={data.nom}
           cycle={cyclesPaie.find((cy) => cy.id === selectedCycleId)}
           onClose={() => setBulletinPourPdf(null)}
+        />
+      )}
+      {lotTraceOuvert && (
+        <LotTraceModal
+          lot={lotTraceOuvert}
+          parcelle={data.parcelles.find((p) => p.id === lotTraceOuvert.parcelleId)}
+          culture={data.cultures.find((cu) => cu.id === lotTraceOuvert.cultureId)}
+          seasonNom={(data.seasons.find((se) => se.id === lotTraceOuvert.seasonId) || {}).nom}
+          farmNom={data.nom}
+          onClose={() => setLotTraceOuvert(null)}
         />
       )}
     </div>
