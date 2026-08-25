@@ -403,7 +403,7 @@ function QualiteModal({ lot, form, setForm, onSave, onClose }) {
   );
 }
 
-function LotTraceModal({ lot, parcelle, culture, seasonNom, farmNom, coolerNom, dernierControle, onClose }) {
+function LotTraceModal({ lot, parcelle, culture, seasonNom, farmNom, coolerNom, dernierControle, palette, expedition, onClose }) {
   const etapes = [
     { icon: "🌱", titre: "Culture", detail: culture ? `${culture.nom}${culture.variete ? " — " + culture.variete : ""}` : "—" },
     { icon: "📍", titre: "Ferme / Parcelle", detail: `${farmNom} — ${parcelle ? parcelle.code + " (" + parcelle.nom + ")" : "—"}` },
@@ -411,7 +411,9 @@ function LotTraceModal({ lot, parcelle, culture, seasonNom, farmNom, coolerNom, 
     { icon: "🌾", titre: "Récolte", detail: `${lot.dateRecolte}${lot.heureRecolte ? " " + lot.heureRecolte : ""} — ${lot.quantiteKg} kg` },
     { icon: "🔬", titre: "Qualité", detail: dernierControle ? `${dernierControle.statut} — Grade ${dernierControle.grade || lot.grade}` : `Grade ${lot.grade} (pas encore contrôlé)` },
     { icon: "❄️", titre: "Cooling", detail: coolerNom ? `${coolerNom}${lot.heureDebutRefroidissement ? " — depuis " + new Date(lot.heureDebutRefroidissement).toLocaleString("fr-FR") : ""}` : "Pas encore assigné" },
-    { icon: "📦", titre: "Statut actuel", detail: lot.statut },
+    { icon: "📦", titre: "Palette", detail: palette ? `${palette.code} — ${palette.poidsKg} kg` : "Pas encore mis en palette" },
+    { icon: "🚚", titre: "Expédition", detail: expedition ? `${expedition.code} — ${expedition.client} (${expedition.destination || "—"})` : "Pas encore expédié" },
+    { icon: "✅", titre: "Statut actuel", detail: lot.statut },
   ];
   return (
     <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 50 }} className="flex items-center justify-center p-4" onClick={onClose}>
@@ -434,7 +436,7 @@ function LotTraceModal({ lot, parcelle, culture, seasonNom, farmNom, coolerNom, 
             </div>
           ))}
         </div>
-        <p style={{ fontSize: "0.68rem", color: "#999", marginTop: 10 }}>Étape suivante (Palette, Expédition) sera ajoutée dans une phase future.</p>
+        <p style={{ fontSize: "0.68rem", color: "#999", marginTop: 10 }}>Traçabilité complète de la culture jusqu'à l'expédition.</p>
       </div>
     </div>
   );
@@ -639,6 +641,13 @@ export default function App() {
   const [controlesQualite, setControlesQualite] = useState([]);
   const [lotPourQualite, setLotPourQualite] = useState(null);
   const [qualiteForm, setQualiteForm] = useState({ brix: "", ph: "", taille: "", couleur: "", fermete: "", defautsPct: "0", moisissurePct: "0", dommagesPct: "0", temperature: "", grade: "A" });
+  const [palettes, setPalettes] = useState([]);
+  const [showAddPalette, setShowAddPalette] = useState(false);
+  const [paletteForm, setPaletteForm] = useState({ lotId: "", nombreCaisses: "", poidsKg: "", coolerId: "" });
+  const [expeditions, setExpeditions] = useState([]);
+  const [showAddExpedition, setShowAddExpedition] = useState(false);
+  const [expeditionForm, setExpeditionForm] = useState({ client: "", chauffeur: "", telephoneChauffeur: "", camionImmat: "", temperatureTransport: "", dateDepart: "", destination: "" });
+  const [paletteSelectionExpedition, setPaletteSelectionExpedition] = useState([]);
 
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [showAddWazin, setShowAddWazin] = useState(false);
@@ -826,6 +835,8 @@ export default function App() {
     await loadLots(firstFarm);
     await loadCoolers(firstFarm);
     await loadControlesQualite(firstFarm);
+    await loadPalettes(firstFarm);
+    await loadExpeditions(firstFarm);
     await loadCommandes();
     setLoadingData(false);
     setCheckingSession(false);
@@ -970,7 +981,7 @@ export default function App() {
   const tabs = allTabs.filter((t) => permTabs.includes(t.key));
   if (currentUser.role === "Owner") tabs.push({ key: "Permissions", icon: Lock });
 
-  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); loadCycles(fid); loadLots(fid); loadCoolers(fid); loadControlesQualite(fid); }
+  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); loadCycles(fid); loadLots(fid); loadCoolers(fid); loadControlesQualite(fid); loadPalettes(fid); loadExpeditions(fid); }
 
   function toggleAffiliation(id) {
     updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, affilieCNSS: !e.affilieCNSS } : e) });
@@ -1383,6 +1394,72 @@ export default function App() {
     setQualiteForm({ brix: "", ph: "", taille: "", couleur: "", fermete: "", defautsPct: "0", moisissurePct: "0", dommagesPct: "0", temperature: "", grade: "A" });
     setLotPourQualite(null);
     await Promise.all([loadLots(currentFarmId), loadControlesQualite(currentFarmId)]);
+  }
+
+  async function loadPalettes(farmId) {
+    const { data: rows } = await supabase.from("palettes").select("*").eq("farm_id", farmId).order("created_at", { ascending: false });
+    setPalettes((rows || []).map((p) => ({
+      id: p.id, code: p.code, lotId: p.lot_id, nombreCaisses: p.nombre_caisses, poidsKg: Number(p.poids_kg) || 0,
+      coolerId: p.cooler_id, statut: p.statut,
+    })));
+  }
+
+  async function addPalette() {
+    if (!paletteForm.lotId || !paletteForm.poidsKg) return;
+    const lot = lots.find((l) => l.id === paletteForm.lotId);
+    if (!lot) return;
+    const seq = String(palettes.length + 1).padStart(6, "0");
+    const code = `PAL-${seq}`;
+    const { error } = await supabase.from("palettes").insert({
+      farm_id: currentFarmId, code, lot_id: lot.id, nombre_caisses: Number(paletteForm.nombreCaisses) || null,
+      poids_kg: Number(paletteForm.poidsKg), cooler_id: paletteForm.coolerId || lot.coolerId || null, statut: "en_stock",
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    await supabase.from("mouvements_stock").insert({
+      farm_id: currentFarmId, type: "transfert", lot_id: lot.id, quantite_kg: Number(paletteForm.poidsKg),
+      raison: `Mise en palette ${code}`, utilisateur: currentUser.nom,
+    });
+    setPaletteForm({ lotId: "", nombreCaisses: "", poidsKg: "", coolerId: "" });
+    setShowAddPalette(false);
+    await loadPalettes(currentFarmId);
+  }
+
+  async function loadExpeditions(farmId) {
+    const { data: rows } = await supabase.from("expeditions").select("*, expedition_palettes(palette_id)").eq("farm_id", farmId).order("created_at", { ascending: false });
+    setExpeditions((rows || []).map((e) => ({
+      id: e.id, code: e.code, client: e.client, chauffeur: e.chauffeur, telephoneChauffeur: e.telephone_chauffeur,
+      camionImmat: e.camion_immatriculation, temperatureTransport: e.temperature_transport, dateDepart: e.date_depart,
+      destination: e.destination, statut: e.statut, paletteIds: (e.expedition_palettes || []).map((ep) => ep.palette_id),
+    })));
+  }
+
+  async function creerExpedition() {
+    if (!expeditionForm.client.trim() || paletteSelectionExpedition.length === 0) return;
+    const seq = String(expeditions.length + 1).padStart(4, "0");
+    const code = `EXP-2026-${seq}`;
+    const { data: exp, error } = await supabase.from("expeditions").insert({
+      farm_id: currentFarmId, code, client: expeditionForm.client, chauffeur: expeditionForm.chauffeur,
+      telephone_chauffeur: expeditionForm.telephoneChauffeur, camion_immatriculation: expeditionForm.camionImmat,
+      temperature_transport: Number(expeditionForm.temperatureTransport) || null,
+      date_depart: expeditionForm.dateDepart || null, destination: expeditionForm.destination, statut: "planifiee",
+    }).select().single();
+    if (error) { alert("مشكل: " + error.message); return; }
+
+    for (const paletteId of paletteSelectionExpedition) {
+      await supabase.from("expedition_palettes").insert({ expedition_id: exp.id, palette_id: paletteId });
+      await supabase.from("palettes").update({ statut: "expediee" }).eq("id", paletteId);
+      const palette = palettes.find((p) => p.id === paletteId);
+      if (palette) {
+        await supabase.from("mouvements_stock").insert({
+          farm_id: currentFarmId, type: "expedition", lot_id: palette.lotId, palette_id: paletteId,
+          quantite_kg: palette.poidsKg, raison: `Expédition ${code} — ${expeditionForm.client}`, utilisateur: currentUser.nom,
+        });
+      }
+    }
+    setExpeditionForm({ client: "", chauffeur: "", telephoneChauffeur: "", camionImmat: "", temperatureTransport: "", dateDepart: "", destination: "" });
+    setPaletteSelectionExpedition([]);
+    setShowAddExpedition(false);
+    await Promise.all([loadExpeditions(currentFarmId), loadPalettes(currentFarmId)]);
   }
 
   function addWorker() {
@@ -2464,6 +2541,78 @@ export default function App() {
                   </div>
                 ))}
                 {coolers.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucun cooler créé</p>}
+              </div>
+
+              <div className="flex items-center justify-between mb-2 mt-6">
+                <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Palettes</h3>
+                {canEdit("Parcelles") && <AddButton label="Nouvelle palette" open={showAddPalette} onClick={() => setShowAddPalette(!showAddPalette)} />}
+              </div>
+              {showAddPalette && (
+                <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16 }} className="p-3 mb-3 grid grid-cols-3 gap-2">
+                  <Field label="Lot"><select value={paletteForm.lotId} onChange={(e) => setPaletteForm({ ...paletteForm, lotId: e.target.value })} style={inputStyle}><option value="">اختار</option>{lots.map((l) => (<option key={l.id} value={l.id}>{l.code}</option>))}</select></Field>
+                  <Field label="Nombre de caisses"><input type="number" value={paletteForm.nombreCaisses} onChange={(e) => setPaletteForm({ ...paletteForm, nombreCaisses: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Poids (kg)"><input type="number" value={paletteForm.poidsKg} onChange={(e) => setPaletteForm({ ...paletteForm, poidsKg: e.target.value })} style={inputStyle} /></Field>
+                  <div className="col-span-3"><button onClick={addPalette} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "8px 0", fontWeight: 700, width: "100%" }}>Créer la palette</button></div>
+                </div>
+              )}
+              <div className="flex flex-col gap-2 mb-4">
+                {palettes.map((p) => {
+                  const lot = lots.find((l) => l.id === p.lotId);
+                  return (
+                    <div key={p.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="p-3 flex items-center justify-between">
+                      <div>
+                        <div className="font-mono" style={{ fontWeight: 700, fontSize: "0.8rem" }}>{p.code}</div>
+                        <div style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{lot ? lot.code : "—"} · {p.nombreCaisses || 0} caisses</div>
+                      </div>
+                      <div className="text-left">
+                        <div className="font-mono" style={{ fontWeight: 800, fontSize: "0.85rem" }}>{p.poidsKg} kg</div>
+                        <span style={{ background: c.bg, borderRadius: 999, padding: "2px 8px", fontSize: "0.64rem", fontWeight: 700 }}>{p.statut}</span>
+                      </div>
+                    </div>
+                  );
+                })}
+                {palettes.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucune palette créée</p>}
+              </div>
+
+              <div className="flex items-center justify-between mb-2">
+                <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Expéditions</h3>
+                {canManageFarms && <AddButton label="Nouvelle expédition" open={showAddExpedition} onClick={() => setShowAddExpedition(!showAddExpedition)} />}
+              </div>
+              {showAddExpedition && (
+                <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16 }} className="p-3 mb-3 grid grid-cols-3 gap-2">
+                  <Field label="Client"><input value={expeditionForm.client} onChange={(e) => setExpeditionForm({ ...expeditionForm, client: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Chauffeur"><input value={expeditionForm.chauffeur} onChange={(e) => setExpeditionForm({ ...expeditionForm, chauffeur: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Téléphone chauffeur"><input value={expeditionForm.telephoneChauffeur} onChange={(e) => setExpeditionForm({ ...expeditionForm, telephoneChauffeur: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Immatriculation camion"><input value={expeditionForm.camionImmat} onChange={(e) => setExpeditionForm({ ...expeditionForm, camionImmat: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Température transport (°C)"><input type="number" value={expeditionForm.temperatureTransport} onChange={(e) => setExpeditionForm({ ...expeditionForm, temperatureTransport: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Date départ"><input type="datetime-local" value={expeditionForm.dateDepart} onChange={(e) => setExpeditionForm({ ...expeditionForm, dateDepart: e.target.value })} style={inputStyle} /></Field>
+                  <div className="col-span-3"><Field label="Destination"><input value={expeditionForm.destination} onChange={(e) => setExpeditionForm({ ...expeditionForm, destination: e.target.value })} style={inputStyle} /></Field></div>
+                  <div className="col-span-3">
+                    <span style={{ fontSize: "0.72rem", fontWeight: 700 }} className="mb-1 block">Palettes à expédier</span>
+                    <div className="flex flex-wrap gap-2">
+                      {palettes.filter((p) => p.statut === "en_stock").map((p) => (
+                        <label key={p.id} style={{ background: paletteSelectionExpedition.includes(p.id) ? c.cardGreen : c.bg, color: paletteSelectionExpedition.includes(p.id) ? "#fff" : c.ink, borderRadius: 999, padding: "5px 11px", fontSize: "0.7rem", fontWeight: 700, cursor: "pointer" }}>
+                          <input type="checkbox" className="hidden" checked={paletteSelectionExpedition.includes(p.id)} onChange={(e) => setPaletteSelectionExpedition(e.target.checked ? [...paletteSelectionExpedition, p.id] : paletteSelectionExpedition.filter((id) => id !== p.id))} />
+                          {p.code} ({p.poidsKg}kg)
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="col-span-3"><button onClick={creerExpedition} style={{ background: c.blue, color: "#fff", borderRadius: 10, padding: "9px 0", fontWeight: 700, width: "100%" }}>Créer l'expédition</button></div>
+                </div>
+              )}
+              <div className="flex flex-col gap-2">
+                {expeditions.map((e) => (
+                  <div key={e.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="p-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <span className="font-mono" style={{ fontWeight: 700, fontSize: "0.8rem" }}>{e.code}</span>
+                      <span style={{ background: c.bg, borderRadius: 999, padding: "2px 8px", fontSize: "0.64rem", fontWeight: 700 }}>{e.statut}</span>
+                    </div>
+                    <div style={{ fontSize: "0.74rem", color: c.inkSoft }}>{e.client} · {e.destination || "—"}</div>
+                    <div style={{ fontSize: "0.68rem", color: c.inkMuted2 }} className="mt-1">{e.chauffeur ? `Chauffeur: ${e.chauffeur}` : ""}{e.camionImmat ? ` · ${e.camionImmat}` : ""} · {e.paletteIds.length} palette(s)</div>
+                  </div>
+                ))}
+                {expeditions.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucune expédition créée</p>}
               </div>
             </div>
           </div>
@@ -3778,6 +3927,8 @@ export default function App() {
           farmNom={data.nom}
           coolerNom={(coolers.find((co) => co.id === lotTraceOuvert.coolerId) || {}).nom}
           dernierControle={controlesQualite.find((q) => q.lotId === lotTraceOuvert.id)}
+          palette={palettes.find((p) => p.lotId === lotTraceOuvert.id)}
+          expedition={expeditions.find((e) => e.paletteIds.some((pid) => (palettes.find((p) => p.lotId === lotTraceOuvert.id) || {}).id === pid))}
           onClose={() => setLotTraceOuvert(null)}
         />
       )}
