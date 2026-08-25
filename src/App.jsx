@@ -648,6 +648,7 @@ export default function App() {
   const [showAddExpedition, setShowAddExpedition] = useState(false);
   const [expeditionForm, setExpeditionForm] = useState({ client: "", chauffeur: "", telephoneChauffeur: "", camionImmat: "", temperatureTransport: "", dateDepart: "", destination: "", coutTransport: "" });
   const [paletteSelectionExpedition, setPaletteSelectionExpedition] = useState([]);
+  const [auditLogs, setAuditLogs] = useState([]);
 
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [showAddWazin, setShowAddWazin] = useState(false);
@@ -1396,6 +1397,13 @@ export default function App() {
     await Promise.all([loadLots(currentFarmId), loadControlesQualite(currentFarmId)]);
   }
 
+  async function loadAuditLogs(farmId) {
+    const { data: rows } = await supabase.from("audit_logs").select("*").eq("farm_id", farmId).order("created_at", { ascending: false }).limit(100);
+    setAuditLogs((rows || []).map((a) => ({
+      id: a.id, tableName: a.table_name, action: a.action, champsModifies: a.champs_modifies, createdAt: a.created_at,
+    })));
+  }
+
   async function loadPalettes(farmId) {
     const { data: rows } = await supabase.from("palettes").select("*").eq("farm_id", farmId).order("created_at", { ascending: false });
     setPalettes((rows || []).map((p) => ({
@@ -1687,7 +1695,7 @@ export default function App() {
       totalDeductionsCycle += totalDeductions;
 
       bulletinsAInserer.push({
-        cycle_id: cycleId, employee_id: empRow ? empRow.id : null, nom_ouvrier: nom,
+        cycle_id: cycleId, farm_id: currentFarmId, employee_id: empRow ? empRow.id : null, nom_ouvrier: nom,
         jours: logs.filter((w) => w.type_paie === "Jour").reduce((s, w) => s + Number(w.quantite), 0),
         heures: logs.filter((w) => w.type_paie === "Heures").reduce((s, w) => s + Number(w.quantite), 0),
         gains_detail: gains, deductions_detail: deductions,
@@ -3162,6 +3170,30 @@ export default function App() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {currentUser.role === "Owner" && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Audit Trail</h3>
+                  <button onClick={() => loadAuditLogs(currentFarmId)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 999, padding: "5px 12px", fontSize: "0.7rem", fontWeight: 700 }}>Actualiser</button>
+                </div>
+                <p style={{ color: c.inkMuted2, fontSize: "0.7rem" }} className="mb-2">كل تغيير (بونطاج، أجور، مخزون، طلبات، لوتات، عمال) مسجل أوطوماتيكيا — من قاعدة البيانات نفسها، حتى إيلا تبدل من برا التطبيق</p>
+                <div className="flex flex-col gap-1.5 max-h-80 overflow-y-auto">
+                  {auditLogs.map((a) => (
+                    <div key={a.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 10 }} className="p-2.5">
+                      <div className="flex items-center justify-between">
+                        <span style={{ fontSize: "0.72rem", fontWeight: 700 }}>{a.tableName} · <span style={{ color: a.action === "DELETE" ? c.danger : a.action === "INSERT" ? c.cardGreenDeep : c.blue }}>{a.action}</span></span>
+                        <span style={{ fontSize: "0.64rem", color: c.inkMuted2 }}>{new Date(a.createdAt).toLocaleString("fr-FR")}</span>
+                      </div>
+                      {a.champsModifies && a.champsModifies.length > 0 && (
+                        <div style={{ fontSize: "0.68rem", color: c.inkSoft }} className="mt-1">Champs modifiés : {a.champsModifies.filter((f) => f !== "created_at").join(", ")}</div>
+                      )}
+                    </div>
+                  ))}
+                  {auditLogs.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucun log pour le moment — cliquez "Actualiser"</p>}
+                </div>
               </div>
             )}
           </div>
