@@ -376,13 +376,41 @@ function BulletinPDF({ bulletin, farmNom, cycle, onClose }) {
   );
 }
 
-function LotTraceModal({ lot, parcelle, culture, seasonNom, farmNom, onClose }) {
+function QualiteModal({ lot, form, setForm, onSave, onClose }) {
+  return (
+    <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 50 }} className="flex items-center justify-center p-4" onClick={onClose}>
+      <div onClick={(e) => e.stopPropagation()} style={{ background: "#fff", borderRadius: 20, width: "100%", maxWidth: 460, maxHeight: "88vh", overflowY: "auto" }} className="p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div><div style={{ fontWeight: 800, fontSize: "1rem" }}>Contrôle qualité</div><div className="font-mono" style={{ fontSize: "0.72rem", color: "#888" }}>{lot.code}</div></div>
+          <button onClick={onClose}><X size={20} color="#888" /></button>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Brix"><input type="number" value={form.brix} onChange={(e) => setForm({ ...form, brix: e.target.value })} style={inputStyle} /></Field>
+          <Field label="pH"><input type="number" value={form.ph} onChange={(e) => setForm({ ...form, ph: e.target.value })} style={inputStyle} /></Field>
+          <Field label="Taille"><input value={form.taille} onChange={(e) => setForm({ ...form, taille: e.target.value })} style={inputStyle} /></Field>
+          <Field label="Couleur"><input value={form.couleur} onChange={(e) => setForm({ ...form, couleur: e.target.value })} style={inputStyle} /></Field>
+          <Field label="Fermeté"><input value={form.fermete} onChange={(e) => setForm({ ...form, fermete: e.target.value })} style={inputStyle} /></Field>
+          <Field label="Température (°C)"><input type="number" value={form.temperature} onChange={(e) => setForm({ ...form, temperature: e.target.value })} style={inputStyle} /></Field>
+          <Field label="Défauts (%)"><input type="number" value={form.defautsPct} onChange={(e) => setForm({ ...form, defautsPct: e.target.value })} style={inputStyle} /></Field>
+          <Field label="Moisissure (%)"><input type="number" value={form.moisissurePct} onChange={(e) => setForm({ ...form, moisissurePct: e.target.value })} style={inputStyle} /></Field>
+          <Field label="Dommages (%)"><input type="number" value={form.dommagesPct} onChange={(e) => setForm({ ...form, dommagesPct: e.target.value })} style={inputStyle} /></Field>
+          <Field label="Grade"><select value={form.grade} onChange={(e) => setForm({ ...form, grade: e.target.value })} style={inputStyle}><option value="A">A</option><option value="B">B</option><option value="C">C</option></select></Field>
+        </div>
+        <p style={{ fontSize: "0.68rem", color: "#999" }} className="mt-2">Moisissure &gt;5% ou Défauts &gt;10% = rejet automatique. Entre 3-5% / 5-10% = accepté sous condition.</p>
+        <button onClick={onSave} style={{ background: "#2A9D8F", color: "#fff", borderRadius: 11, padding: "11px 0", fontWeight: 700, width: "100%", marginTop: 16 }}>Enregistrer le contrôle</button>
+      </div>
+    </div>
+  );
+}
+
+function LotTraceModal({ lot, parcelle, culture, seasonNom, farmNom, coolerNom, dernierControle, onClose }) {
   const etapes = [
     { icon: "🌱", titre: "Culture", detail: culture ? `${culture.nom}${culture.variete ? " — " + culture.variete : ""}` : "—" },
     { icon: "📍", titre: "Ferme / Parcelle", detail: `${farmNom} — ${parcelle ? parcelle.code + " (" + parcelle.nom + ")" : "—"}` },
     { icon: "📅", titre: "Saison", detail: seasonNom || "—" },
-    { icon: "🌾", titre: "Récolte", detail: `${lot.dateRecolte} — ${lot.quantiteKg} kg` },
-    { icon: "🔬", titre: "Qualité", detail: `Grade ${lot.grade}${lot.note ? " — " + lot.note : ""}` },
+    { icon: "🌾", titre: "Récolte", detail: `${lot.dateRecolte}${lot.heureRecolte ? " " + lot.heureRecolte : ""} — ${lot.quantiteKg} kg` },
+    { icon: "🔬", titre: "Qualité", detail: dernierControle ? `${dernierControle.statut} — Grade ${dernierControle.grade || lot.grade}` : `Grade ${lot.grade} (pas encore contrôlé)` },
+    { icon: "❄️", titre: "Cooling", detail: coolerNom ? `${coolerNom}${lot.heureDebutRefroidissement ? " — depuis " + new Date(lot.heureDebutRefroidissement).toLocaleString("fr-FR") : ""}` : "Pas encore assigné" },
     { icon: "📦", titre: "Statut actuel", detail: lot.statut },
   ];
   return (
@@ -406,7 +434,7 @@ function LotTraceModal({ lot, parcelle, culture, seasonNom, farmNom, onClose }) 
             </div>
           ))}
         </div>
-        <p style={{ fontSize: "0.68rem", color: "#999", marginTop: 10 }}>Étapes suivantes (Cooler, Palette, Expédition) seront ajoutées dans une phase future.</p>
+        <p style={{ fontSize: "0.68rem", color: "#999", marginTop: 10 }}>Étape suivante (Palette, Expédition) sera ajoutée dans une phase future.</p>
       </div>
     </div>
   );
@@ -602,9 +630,15 @@ export default function App() {
   const [selected, setSelected] = useState(farmsInit.zm.parcelles[0]);
   const [lots, setLots] = useState([]);
   const [showAddLot, setShowAddLot] = useState(false);
-  const [lotForm, setLotForm] = useState({ parcelleId: "", dateRecolte: "", quantiteKg: "", grade: "A", note: "" });
+  const [lotForm, setLotForm] = useState({ parcelleId: "", dateRecolte: "", heureRecolte: "", quantiteKg: "", grade: "A", note: "" });
   const [lotTraceOuvert, setLotTraceOuvert] = useState(null);
   const [rechercheLot, setRechercheLot] = useState("");
+  const [coolers, setCoolers] = useState([]);
+  const [showAddCooler, setShowAddCooler] = useState(false);
+  const [coolerForm, setCoolerForm] = useState({ nom: "", capaciteKg: "", temperatureCible: "4" });
+  const [controlesQualite, setControlesQualite] = useState([]);
+  const [lotPourQualite, setLotPourQualite] = useState(null);
+  const [qualiteForm, setQualiteForm] = useState({ brix: "", ph: "", taille: "", couleur: "", fermete: "", defautsPct: "0", moisissurePct: "0", dommagesPct: "0", temperature: "", grade: "A" });
 
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [showAddWazin, setShowAddWazin] = useState(false);
@@ -790,6 +824,8 @@ export default function App() {
     await loadAccidents(firstFarm);
     await loadCycles(firstFarm);
     await loadLots(firstFarm);
+    await loadCoolers(firstFarm);
+    await loadControlesQualite(firstFarm);
     await loadCommandes();
     setLoadingData(false);
     setCheckingSession(false);
@@ -934,7 +970,7 @@ export default function App() {
   const tabs = allTabs.filter((t) => permTabs.includes(t.key));
   if (currentUser.role === "Owner") tabs.push({ key: "Permissions", icon: Lock });
 
-  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); loadCycles(fid); loadLots(fid); }
+  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); loadCycles(fid); loadLots(fid); loadCoolers(fid); loadControlesQualite(fid); }
 
   function toggleAffiliation(id) {
     updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, affilieCNSS: !e.affilieCNSS } : e) });
@@ -1266,8 +1302,9 @@ export default function App() {
     const { data: rows } = await supabase.from("lots").select("*").eq("farm_id", farmId).order("created_at", { ascending: false });
     setLots((rows || []).map((l) => ({
       id: l.id, code: l.code, parcelleId: l.parcelle_id, cultureId: l.culture_id, seasonId: l.season_id,
-      dateRecolte: l.date_recolte, quantiteKg: Number(l.quantite_kg) || 0, quantiteDisponible: Number(l.quantite_disponible) || 0,
+      dateRecolte: l.date_recolte, heureRecolte: l.heure_recolte, quantiteKg: Number(l.quantite_kg) || 0, quantiteDisponible: Number(l.quantite_disponible) || 0,
       grade: l.grade_qualite, statut: l.statut, note: l.note,
+      coolerId: l.cooler_id, heureDebutRefroidissement: l.heure_debut_refroidissement, temperatureStockage: l.temperature_stockage,
     })));
   }
 
@@ -1282,14 +1319,70 @@ export default function App() {
 
     const { error } = await supabase.from("lots").insert({
       farm_id: currentFarmId, code, parcelle_id: parcelle.id, culture_id: parcelle.cultureId || null, season_id: parcelle.seasonId || null,
-      date_recolte: lotForm.dateRecolte || new Date().toISOString().slice(0, 10),
+      date_recolte: lotForm.dateRecolte || new Date().toISOString().slice(0, 10), heure_recolte: lotForm.heureRecolte || null,
       quantite_kg: Number(lotForm.quantiteKg), quantite_disponible: Number(lotForm.quantiteKg),
       grade_qualite: lotForm.grade, statut: "recolte", note: lotForm.note || null,
     });
     if (error) { alert("مشكل: " + error.message); return; }
-    setLotForm({ parcelleId: "", dateRecolte: "", quantiteKg: "", grade: "A", note: "" });
+    setLotForm({ parcelleId: "", dateRecolte: "", heureRecolte: "", quantiteKg: "", grade: "A", note: "" });
     setShowAddLot(false);
     await loadLots(currentFarmId);
+  }
+
+  async function loadCoolers(farmId) {
+    const { data: rows } = await supabase.from("coolers").select("*").eq("farm_id", farmId);
+    setCoolers((rows || []).map((c) => ({ id: c.id, nom: c.nom, capaciteKg: Number(c.capacite_kg) || 0, temperatureCible: Number(c.temperature_cible) || 4 })));
+  }
+
+  async function addCooler() {
+    if (!coolerForm.nom.trim()) return;
+    const { error } = await supabase.from("coolers").insert({ farm_id: currentFarmId, nom: coolerForm.nom, capacite_kg: Number(coolerForm.capaciteKg) || null, temperature_cible: Number(coolerForm.temperatureCible) || 4 });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setCoolerForm({ nom: "", capaciteKg: "", temperatureCible: "4" });
+    setShowAddCooler(false);
+    await loadCoolers(currentFarmId);
+  }
+
+  async function assignerCooler(lot, coolerId) {
+    const { error } = await supabase.from("lots").update({
+      cooler_id: coolerId, heure_debut_refroidissement: new Date().toISOString(), statut: "en_stock",
+    }).eq("id", lot.id);
+    if (error) { alert("مشكل: " + error.message); return; }
+    await loadLots(currentFarmId);
+  }
+
+  async function loadControlesQualite(farmId) {
+    const { data: rows } = await supabase.from("controles_qualite").select("*").eq("farm_id", farmId).order("created_at", { ascending: false });
+    setControlesQualite((rows || []).map((q) => ({
+      id: q.id, lotId: q.lot_id, brix: q.brix, ph: q.ph, taille: q.taille, couleur: q.couleur, fermete: q.fermete,
+      defautsPct: Number(q.defauts_pct) || 0, moisissurePct: Number(q.moisissure_pct) || 0, dommagesPct: Number(q.dommages_pct) || 0,
+      temperature: q.temperature, grade: q.grade, statut: q.statut, note: q.note,
+    })));
+  }
+
+  async function saveControleQualite() {
+    if (!lotPourQualite) return;
+    const moisissure = Number(qualiteForm.moisissurePct) || 0;
+    const defauts = Number(qualiteForm.defautsPct) || 0;
+    // كشف anomaly أوطوماتيكي: moisissure > 3% ولا defauts > 5% = رفض/شرط
+    let statut = "accepte";
+    if (moisissure > 5 || defauts > 10) statut = "rejete";
+    else if (moisissure > 3 || defauts > 5) statut = "accepte_condition";
+
+    const { error } = await supabase.from("controles_qualite").insert({
+      farm_id: currentFarmId, lot_id: lotPourQualite.id,
+      brix: Number(qualiteForm.brix) || null, ph: Number(qualiteForm.ph) || null,
+      taille: qualiteForm.taille || null, couleur: qualiteForm.couleur || null, fermete: qualiteForm.fermete || null,
+      defauts_pct: defauts, moisissure_pct: moisissure, dommages_pct: Number(qualiteForm.dommagesPct) || 0,
+      temperature: Number(qualiteForm.temperature) || null, grade: qualiteForm.grade, statut,
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    await supabase.from("lots").update({ grade_qualite: qualiteForm.grade }).eq("id", lotPourQualite.id);
+    if (statut === "rejete") alert("⚠️ Lot rejeté — moisissure/défauts au-dessus du seuil");
+    else if (statut === "accepte_condition") alert("⚠️ Accepté sous condition — vérifier le lot");
+    setQualiteForm({ brix: "", ph: "", taille: "", couleur: "", fermete: "", defautsPct: "0", moisissurePct: "0", dommagesPct: "0", temperature: "", grade: "A" });
+    setLotPourQualite(null);
+    await Promise.all([loadLots(currentFarmId), loadControlesQualite(currentFarmId)]);
   }
 
   function addWorker() {
@@ -2290,6 +2383,7 @@ export default function App() {
                 <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
                   <Field label="Parcelle"><select value={lotForm.parcelleId} onChange={(e) => setLotForm({ ...lotForm, parcelleId: e.target.value })} style={inputStyle}><option value="">اختار</option>{data.parcelles.map((p) => (<option key={p.id} value={p.id}>{p.code} — {p.nom}</option>))}</select></Field>
                   <Field label="Date de récolte"><input type="date" value={lotForm.dateRecolte} onChange={(e) => setLotForm({ ...lotForm, dateRecolte: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Heure de récolte"><input type="time" value={lotForm.heureRecolte} onChange={(e) => setLotForm({ ...lotForm, heureRecolte: e.target.value })} style={inputStyle} /></Field>
                   <Field label="Quantité (kg)"><input type="number" value={lotForm.quantiteKg} onChange={(e) => setLotForm({ ...lotForm, quantiteKg: e.target.value })} style={inputStyle} /></Field>
                   <Field label="Grade qualité"><select value={lotForm.grade} onChange={(e) => setLotForm({ ...lotForm, grade: e.target.value })} style={inputStyle}><option value="A">A</option><option value="B">B</option><option value="C">C</option></select></Field>
                   <div className="col-span-2"><Field label="Note (optionnel)"><input value={lotForm.note} onChange={(e) => setLotForm({ ...lotForm, note: e.target.value })} style={inputStyle} /></Field></div>
@@ -2299,20 +2393,77 @@ export default function App() {
 
               <input value={rechercheLot} onChange={(e) => setRechercheLot(e.target.value)} placeholder="Rechercher un lot (code)..." style={{ ...inputStyle, marginBottom: 10 }} />
 
-              <div className="flex flex-col gap-2">
-                {lots.filter((l) => l.code.toLowerCase().includes(rechercheLot.toLowerCase())).map((l) => (
-                  <button key={l.id} onClick={() => setLotTraceOuvert(l)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12, textAlign: "right" }} className="p-3 flex items-center justify-between">
-                    <div>
-                      <div className="font-mono" style={{ fontWeight: 700, fontSize: "0.8rem" }}>{l.code}</div>
-                      <div style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{l.dateRecolte} · Grade {l.grade}</div>
+              <div className="flex flex-col gap-2 mb-4">
+                {lots.filter((l) => l.code.toLowerCase().includes(rechercheLot.toLowerCase())).map((l) => {
+                  let delaiMin = null, delaiAlerte = false;
+                  if (l.heureRecolte && l.heureDebutRefroidissement) {
+                    const [hR, mR] = l.heureRecolte.split(":").map(Number);
+                    const recolteDate = new Date(l.dateRecolte); recolteDate.setHours(hR, mR, 0, 0);
+                    const refroidDate = new Date(l.heureDebutRefroidissement);
+                    delaiMin = Math.round((refroidDate - recolteDate) / 60000);
+                    delaiAlerte = delaiMin > 120;
+                  }
+                  const controlesLot = controlesQualite.filter((q) => q.lotId === l.id);
+                  const dernierControle = controlesLot[0];
+                  return (
+                    <div key={l.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="p-3">
+                      <button onClick={() => setLotTraceOuvert(l)} className="flex items-center justify-between w-full text-right mb-1.5">
+                        <div>
+                          <div className="font-mono" style={{ fontWeight: 700, fontSize: "0.8rem" }}>{l.code}</div>
+                          <div style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{l.dateRecolte}{l.heureRecolte ? ` ${l.heureRecolte}` : ""} · Grade {l.grade}</div>
+                        </div>
+                        <div className="text-left">
+                          <div className="font-mono" style={{ fontWeight: 800, fontSize: "0.85rem" }}>{l.quantiteKg} kg</div>
+                          <span style={{ background: c.bg, borderRadius: 999, padding: "2px 8px", fontSize: "0.64rem", fontWeight: 700 }}>{l.statut}</span>
+                        </div>
+                      </button>
+                      {dernierControle && (
+                        <span style={{
+                          background: dernierControle.statut === "rejete" ? "rgba(193,89,79,0.12)" : dernierControle.statut === "accepte_condition" ? "rgba(244,162,97,0.15)" : "rgba(42,157,143,0.12)",
+                          color: dernierControle.statut === "rejete" ? c.danger : dernierControle.statut === "accepte_condition" ? c.orange : c.cardGreenDeep,
+                          borderRadius: 999, padding: "2px 8px", fontSize: "0.64rem", fontWeight: 700,
+                        }} className="ml-1.5">Qualité: {dernierControle.statut}</span>
+                      )}
+                      {delaiMin !== null && (
+                        <span style={{ color: delaiAlerte ? c.danger : c.inkMuted2, fontSize: "0.66rem", fontWeight: delaiAlerte ? 700 : 500 }} className="ml-1.5">
+                          {delaiAlerte ? "⚠️ " : ""}Délai refroidissement : {Math.floor(delaiMin / 60)}h{delaiMin % 60}mn
+                        </span>
+                      )}
+                      <div className="flex gap-2 mt-2">
+                        <button onClick={() => setLotPourQualite(l)} style={{ background: c.blue, color: "#fff", borderRadius: 8, padding: "5px 10px", fontSize: "0.68rem", fontWeight: 700 }}>Contrôle qualité</button>
+                        {!l.coolerId && coolers.length > 0 && (
+                          <select onChange={(e) => e.target.value && assignerCooler(l, e.target.value)} defaultValue="" style={{ ...inputStyle, padding: "5px 8px", fontSize: "0.68rem", width: "auto" }}>
+                            <option value="">Assigner à un cooler...</option>
+                            {coolers.map((co) => (<option key={co.id} value={co.id}>{co.nom}</option>))}
+                          </select>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-left">
-                      <div className="font-mono" style={{ fontWeight: 800, fontSize: "0.85rem" }}>{l.quantiteKg} kg</div>
-                      <span style={{ background: c.bg, borderRadius: 999, padding: "2px 8px", fontSize: "0.64rem", fontWeight: 700 }}>{l.statut}</span>
-                    </div>
-                  </button>
-                ))}
+                  );
+                })}
                 {lots.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucun lot créé</p>}
+              </div>
+
+              <div className="flex items-center justify-between mb-2">
+                <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Coolers</h3>
+                {canEdit("Parcelles") && <AddButton label="Nouveau cooler" open={showAddCooler} onClick={() => setShowAddCooler(!showAddCooler)} />}
+              </div>
+              {showAddCooler && (
+                <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16 }} className="p-3 mb-3 grid grid-cols-3 gap-2">
+                  <Field label="Nom"><input value={coolerForm.nom} onChange={(e) => setCoolerForm({ ...coolerForm, nom: e.target.value })} placeholder="ex. Cooler A2" style={inputStyle} /></Field>
+                  <Field label="Capacité (kg)"><input type="number" value={coolerForm.capaciteKg} onChange={(e) => setCoolerForm({ ...coolerForm, capaciteKg: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Température cible (°C)"><input type="number" value={coolerForm.temperatureCible} onChange={(e) => setCoolerForm({ ...coolerForm, temperatureCible: e.target.value })} style={inputStyle} /></Field>
+                  <div className="col-span-3"><button onClick={addCooler} style={{ background: c.cardGreen, color: "#fff", borderRadius: 10, padding: "8px 0", fontWeight: 700, width: "100%" }}>Créer le cooler</button></div>
+                </div>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {coolers.map((co) => (
+                  <div key={co.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 999 }} className="px-3 py-1.5">
+                    <span style={{ fontSize: "0.76rem", fontWeight: 700 }}>{co.nom}</span>
+                    <span className="font-mono" style={{ fontSize: "0.66rem", color: c.inkMuted2 }}> · {co.temperatureCible}°C</span>
+                  </div>
+                ))}
+                {coolers.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucun cooler créé</p>}
               </div>
             </div>
           </div>
@@ -3625,7 +3776,18 @@ export default function App() {
           culture={data.cultures.find((cu) => cu.id === lotTraceOuvert.cultureId)}
           seasonNom={(data.seasons.find((se) => se.id === lotTraceOuvert.seasonId) || {}).nom}
           farmNom={data.nom}
+          coolerNom={(coolers.find((co) => co.id === lotTraceOuvert.coolerId) || {}).nom}
+          dernierControle={controlesQualite.find((q) => q.lotId === lotTraceOuvert.id)}
           onClose={() => setLotTraceOuvert(null)}
+        />
+      )}
+      {lotPourQualite && (
+        <QualiteModal
+          lot={lotPourQualite}
+          form={qualiteForm}
+          setForm={setQualiteForm}
+          onSave={saveControleQualite}
+          onClose={() => setLotPourQualite(null)}
         />
       )}
     </div>
