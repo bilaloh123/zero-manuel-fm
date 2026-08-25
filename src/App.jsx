@@ -646,7 +646,7 @@ export default function App() {
   const [paletteForm, setPaletteForm] = useState({ lotId: "", nombreCaisses: "", poidsKg: "", coolerId: "" });
   const [expeditions, setExpeditions] = useState([]);
   const [showAddExpedition, setShowAddExpedition] = useState(false);
-  const [expeditionForm, setExpeditionForm] = useState({ client: "", chauffeur: "", telephoneChauffeur: "", camionImmat: "", temperatureTransport: "", dateDepart: "", destination: "" });
+  const [expeditionForm, setExpeditionForm] = useState({ client: "", chauffeur: "", telephoneChauffeur: "", camionImmat: "", temperatureTransport: "", dateDepart: "", destination: "", coutTransport: "" });
   const [paletteSelectionExpedition, setPaletteSelectionExpedition] = useState([]);
 
   const [showAddWorker, setShowAddWorker] = useState(false);
@@ -1430,6 +1430,7 @@ export default function App() {
       id: e.id, code: e.code, client: e.client, chauffeur: e.chauffeur, telephoneChauffeur: e.telephone_chauffeur,
       camionImmat: e.camion_immatriculation, temperatureTransport: e.temperature_transport, dateDepart: e.date_depart,
       destination: e.destination, statut: e.statut, paletteIds: (e.expedition_palettes || []).map((ep) => ep.palette_id),
+      coutTransport: Number(e.cout_transport) || 0,
     })));
   }
 
@@ -1442,6 +1443,7 @@ export default function App() {
       telephone_chauffeur: expeditionForm.telephoneChauffeur, camion_immatriculation: expeditionForm.camionImmat,
       temperature_transport: Number(expeditionForm.temperatureTransport) || null,
       date_depart: expeditionForm.dateDepart || null, destination: expeditionForm.destination, statut: "planifiee",
+      cout_transport: Number(expeditionForm.coutTransport) || 0,
     }).select().single();
     if (error) { alert("مشكل: " + error.message); return; }
 
@@ -1456,7 +1458,7 @@ export default function App() {
         });
       }
     }
-    setExpeditionForm({ client: "", chauffeur: "", telephoneChauffeur: "", camionImmat: "", temperatureTransport: "", dateDepart: "", destination: "" });
+    setExpeditionForm({ client: "", chauffeur: "", telephoneChauffeur: "", camionImmat: "", temperatureTransport: "", dateDepart: "", destination: "", coutTransport: "" });
     setPaletteSelectionExpedition([]);
     setShowAddExpedition(false);
     await Promise.all([loadExpeditions(currentFarmId), loadPalettes(currentFarmId)]);
@@ -2586,6 +2588,7 @@ export default function App() {
                   <Field label="Immatriculation camion"><input value={expeditionForm.camionImmat} onChange={(e) => setExpeditionForm({ ...expeditionForm, camionImmat: e.target.value })} style={inputStyle} /></Field>
                   <Field label="Température transport (°C)"><input type="number" value={expeditionForm.temperatureTransport} onChange={(e) => setExpeditionForm({ ...expeditionForm, temperatureTransport: e.target.value })} style={inputStyle} /></Field>
                   <Field label="Date départ"><input type="datetime-local" value={expeditionForm.dateDepart} onChange={(e) => setExpeditionForm({ ...expeditionForm, dateDepart: e.target.value })} style={inputStyle} /></Field>
+                  <Field label="Coût transport (DH)"><input type="number" value={expeditionForm.coutTransport} onChange={(e) => setExpeditionForm({ ...expeditionForm, coutTransport: e.target.value })} style={inputStyle} /></Field>
                   <div className="col-span-3"><Field label="Destination"><input value={expeditionForm.destination} onChange={(e) => setExpeditionForm({ ...expeditionForm, destination: e.target.value })} style={inputStyle} /></Field></div>
                   <div className="col-span-3">
                     <span style={{ fontSize: "0.72rem", fontWeight: 700 }} className="mb-1 block">Palettes à expédier</span>
@@ -3668,6 +3671,51 @@ export default function App() {
           <div>
             <h2 className="font-display mb-1" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Rentabilité لكل parcelle</h2>
             <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">Revenu (من Réceptions) ناقص Coûts (Produit phyto + Eau + main-d'œuvre) = Bénéfice net — هاد le mois</p>
+
+            {(() => {
+              const coutLabor = data.workers.reduce((s, w) => s + w.qte * w.taux, 0);
+              const coutIntrants = data.costs.reduce((s, cp) => s + cp.dawa + cp.ma + cp.omal, 0);
+              const coutEmballage = data.depenses.filter((d) => d.type === "Emballage" || d.detail?.toLowerCase().includes("emballage")).reduce((s, d) => s + d.montant, 0);
+              const coutTransport = expeditions.reduce((s, e) => s + (e.coutTransport || 0), 0);
+              const coutAutre = data.depenses.filter((d) => d.type !== "Emballage").reduce((s, d) => s + d.montant, 0);
+              const coutTotal = coutLabor + coutIntrants + coutEmballage + coutTransport + coutAutre;
+              const productionTotale = lots.reduce((s, l) => s + l.quantiteKg, 0);
+              const coutParKg = productionTotale > 0 ? coutTotal / productionTotale : 0;
+              const revenuTotal = data.wazin.reduce((s, w) => s + w.kg * w.prixKg, 0);
+              const profitTotal = revenuTotal - coutTotal;
+              const margeTotal = revenuTotal > 0 ? (profitTotal / revenuTotal) * 100 : 0;
+              return (
+                <div className="mb-5">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }} className="mb-2">Coût Total Ferme (Cost Engine)</h3>
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {[
+                      ["Main-d'œuvre", coutLabor], ["Intrants", coutIntrants], ["Emballage", coutEmballage],
+                      ["Transport", coutTransport], ["Autres dépenses", coutAutre], ["Coût total", coutTotal],
+                    ].map(([label, val]) => (
+                      <div key={label} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="p-3">
+                        <div style={{ fontSize: "0.66rem", color: c.inkMuted2 }}>{label}</div>
+                        <div className="font-mono" style={{ fontWeight: 800, fontSize: "0.95rem" }}>{val.toFixed(0)} DH</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div style={{ background: c.cardGreenDeep, borderRadius: 12 }} className="p-3">
+                      <div style={{ fontSize: "0.64rem", color: "rgba(255,255,255,0.8)" }}>Coût/kg</div>
+                      <div className="font-mono" style={{ fontWeight: 800, fontSize: "1rem", color: "#fff" }}>{coutParKg.toFixed(2)} DH</div>
+                    </div>
+                    <div style={{ background: c.blue, borderRadius: 12 }} className="p-3">
+                      <div style={{ fontSize: "0.64rem", color: "rgba(255,255,255,0.8)" }}>Revenu total</div>
+                      <div className="font-mono" style={{ fontWeight: 800, fontSize: "1rem", color: "#fff" }}>{revenuTotal.toFixed(0)} DH</div>
+                    </div>
+                    <div style={{ background: profitTotal >= 0 ? c.cardGreen : c.danger, borderRadius: 12 }} className="p-3">
+                      <div style={{ fontSize: "0.64rem", color: "rgba(255,255,255,0.85)" }}>Profit ({margeTotal.toFixed(1)}%)</div>
+                      <div className="font-mono" style={{ fontWeight: 800, fontSize: "1rem", color: "#fff" }}>{profitTotal.toFixed(0)} DH</div>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: "0.66rem", color: c.inkMuted2 }} className="mt-2">Production totale utilisée pour Coût/kg : {productionTotale.toFixed(0)} kg (basée sur les Lots créés)</p>
+                </div>
+              );
+            })()}
 
             <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-5">
               <ResponsiveContainer width="100%" height={220}>
