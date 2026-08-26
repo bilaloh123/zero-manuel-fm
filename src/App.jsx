@@ -1983,11 +1983,31 @@ export default function App() {
 
     const stockAlerts = data.stock.filter((s) => s.kammiya <= s.seuil).map((s) => `${s.nom}: باقي ${s.kammiya} ${s.wehda} (حد ${s.seuil})`);
     const wazinAttente = data.wazin.filter((w) => w.statut === "En attente").map((w) => `${w.wazan}: ${w.kg}kg × ${w.prixKg}DH`);
+
+    // مقارنة تكلفة اليد العاملة بين آخر دورتين ديال الأجر
+    const cyclesCalcules = cyclesPaie.filter((cy) => cy.totalBrut > 0).sort((a, b) => new Date(b.periodeDebut) - new Date(a.periodeDebut));
+    let comparaisonCycles = "ماكاينش دورتين محسوبتين للمقارنة";
+    if (cyclesCalcules.length >= 2) {
+      const [actuel, precedent] = cyclesCalcules;
+      const variation = precedent.totalBrut > 0 ? (((actuel.totalBrut - precedent.totalBrut) / precedent.totalBrut) * 100).toFixed(1) : "—";
+      comparaisonCycles = `Cycle actuel (${actuel.periodeDebut}→${actuel.periodeFin}): ${actuel.totalBrut.toFixed(0)}DH | Cycle précédent (${precedent.periodeDebut}→${precedent.periodeFin}): ${precedent.totalBrut.toFixed(0)}DH | Variation: ${variation}%`;
+    }
+
+    const heuresSupTotal = data.workers.reduce((s, w) => s + (w.heuresSup || 0), 0);
+    const nbEmployesUniques = new Set(data.workers.map((w) => w.nom)).size;
+    const productionTotaleLots = lots.reduce((s, l) => s + l.quantiteKg, 0);
+    const anomaliesQualite = controlesQualite.filter((q) => q.statut === "rejete" || q.statut === "accepte_condition").length;
+    const coutTransportTotal = expeditions.reduce((s, e) => s + (e.coutTransport || 0), 0);
+
     const context = `
 معطيات فيرمة "${data.nom}" Aujourd'hui (20 Juillet 2026):
-- Production du jour: ${kpis.totalHarvest} kg
+- Production du jour: ${kpis.totalHarvest} kg — Production totale (Lots créés): ${productionTotaleLots} kg
 - Coûts du mois: ${kpis.totalCost} DH (Produit phyto: ${kpis.totalDawa}, Eau+Main-d'œuvre: ${kpis.totalMaOmal})
-- عدد Employés Aujourd'hui: ${data.workers.length}, مجموع leur paie: ${kpis.totalKhlas} DH
+- عدد Employés Aujourd'hui: ${data.workers.length} (${nbEmployesUniques} personnes uniques), مجموع leur paie: ${kpis.totalKhlas} DH
+- Heures supplémentaires totales enregistrées: ${heuresSupTotal}h
+- مقارنة تكلفة اليد العاملة بين دورتين: ${comparaisonCycles}
+- Coût transport total (Expéditions): ${coutTransportTotal} DH
+- Anomalies qualité (rejeté/sous condition): ${anomaliesQualite}
 - Rentabilité لكل parcelle: ${rentabilite.map((r) => `${r.code}(${r.nom}): Revenu ${r.revenu}DH, Coût ${r.cout}DH, Bénéfice ${r.profit}DH (${r.marge}%)`).join(" | ")}
 - Alertes Stock: ${stockAlerts.length ? stockAlerts.join(", ") : "Aucun(e)"}
 - وزينات En attente الأداء: ${wazinAttente.length ? wazinAttente.join(", ") : "Aucun(e)"}
@@ -3863,7 +3883,7 @@ export default function App() {
             <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-4">كيقرا بيانات الفيرمة الحقيقية (Rentabilité, Coûts, Stock, Réceptions) ويجاوبك بالدارجة — سؤال حر، بالكتابة ou à l'oral</p>
 
             <div className="flex gap-2 flex-wrap mb-4">
-              {["حلل ليا Rentabilité هاد le mois", "Où est le plus grand risque en ce moment ?", "Que devons-nous faire cette semaine ?"].map((q) => (
+              {["حلل ليا Rentabilité هاد le mois", "علاش تكلفة اليد العاملة طلعات هاد الشهر؟", "شنو أحسن Parcelle؟", "Où est le plus grand risque en ce moment ?"].map((q) => (
                 <button key={q} onClick={() => askAnalyst(q)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 999, padding: "7px 13px", fontSize: "0.74rem", fontWeight: 600, color: c.inkSoft }}>{q}</button>
               ))}
             </div>
