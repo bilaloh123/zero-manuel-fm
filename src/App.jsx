@@ -10,7 +10,7 @@ const supabase = createClient(
 import {
   Sprout, Cherry, Droplets, ThermometerSun, AlertTriangle, Users, Truck,
   Wallet, LayoutGrid, FileText, Bell, LogOut, ChevronLeft, Trash2, ChevronDown,
-  Plus, X, Clock, ShieldCheck, Building2, Receipt, Download, CheckCircle2, TrendingUp, Package, ArrowDownCircle, ArrowUpCircle, ClipboardList, Mail, FileCheck, FileSpreadsheet, Percent, Lock, Mic, Square, Play, CalendarClock, Store, Phone, ArrowRight, Brain, Send, Scissors, SprayCan, Type, Grid3x3, WifiOff, RefreshCw,
+  Plus, X, Clock, ShieldCheck, Building2, Receipt, Download, CheckCircle2, TrendingUp, Package, ArrowDownCircle, ArrowUpCircle, ClipboardList, Mail, FileCheck, FileSpreadsheet, Percent, Lock, Mic, Square, Play, CalendarClock, Store, Phone, ArrowRight, Brain, Send, Scissors, SprayCan, Type, Grid3x3, WifiOff, RefreshCw, Search,
 } from "lucide-react";
 
 const c = {
@@ -649,6 +649,8 @@ export default function App() {
   const [expeditionForm, setExpeditionForm] = useState({ client: "", chauffeur: "", telephoneChauffeur: "", camionImmat: "", temperatureTransport: "", dateDepart: "", destination: "", coutTransport: "" });
   const [paletteSelectionExpedition, setPaletteSelectionExpedition] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
+  const [showGlobalSearch, setShowGlobalSearch] = useState(false);
+  const [globalSearchQuery, setGlobalSearchQuery] = useState("");
 
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [showAddWazin, setShowAddWazin] = useState(false);
@@ -931,6 +933,20 @@ export default function App() {
   const myFarmIds = canManageFarms ? Object.keys(farms) : currentUser.farms;
   function canEdit(moduleKey) { return permMatrix[currentUser.role][moduleKey] === "Modification"; }
   function isLocked(moduleKey) { return !(data.moduleAccess && data.moduleAccess[moduleKey]); }
+
+  const globalSearchResults = (() => {
+    const q = globalSearchQuery.trim().toLowerCase();
+    if (q.length < 2) return [];
+    const results = [];
+    data.employees.filter((e) => e.nom.toLowerCase().includes(q) || (e.matricule || "").toLowerCase().includes(q)).forEach((e) => results.push({ type: "Employé", icon: Users, label: e.nom, sub: e.poste || e.typeSalaire, tab: "Employés" }));
+    data.parcelles.filter((p) => p.code.toLowerCase().includes(q) || p.nom.toLowerCase().includes(q)).forEach((p) => results.push({ type: "Parcelle", icon: Sprout, label: `${p.code} — ${p.nom}`, sub: p.culture ? p.culture.nom : "", tab: "Parcelles" }));
+    lots.filter((l) => l.code.toLowerCase().includes(q)).forEach((l) => results.push({ type: "Lot", icon: Package, label: l.code, sub: `${l.quantiteKg} kg · ${l.statut}`, tab: "Parcelles" }));
+    palettes.filter((p) => p.code.toLowerCase().includes(q)).forEach((p) => results.push({ type: "Palette", icon: Package, label: p.code, sub: `${p.poidsKg} kg`, tab: "Parcelles" }));
+    expeditions.filter((e) => e.code.toLowerCase().includes(q) || (e.client || "").toLowerCase().includes(q)).forEach((e) => results.push({ type: "Expédition", icon: Truck, label: e.code, sub: e.client, tab: "Parcelles" }));
+    commandesGlobal.filter((cmd) => cmd.produit.toLowerCase().includes(q)).forEach((cmd) => results.push({ type: "Commande", icon: ClipboardList, label: cmd.produit, sub: `${cmd.qte} ${cmd.wehda} · ${cmd.statut}`, tab: "Commandes" }));
+    data.stock.filter((s) => s.nom.toLowerCase().includes(q)).forEach((s) => results.push({ type: "Stock", icon: Package, label: s.nom, sub: `${s.kammiya} ${s.wehda}`, tab: "Stock" }));
+    return results.slice(0, 30);
+  })();
 
   const notifications = (() => {
     const list = [];
@@ -2060,6 +2076,7 @@ export default function App() {
               {myFarmIds.map((fid) => (<option key={fid} value={fid} style={{ color: "#000" }}>{farms[fid].nom}</option>))}
             </select>
           )}
+          <button onClick={() => setShowGlobalSearch(true)}><Search size={19} color="#fff" /></button>
           <div style={{ position: "relative" }}>
             <button onClick={() => setShowNotifPanel(!showNotifPanel)} style={{ position: "relative" }}>
               <Bell size={19} color="#fff" />
@@ -4020,6 +4037,38 @@ export default function App() {
           onSave={saveControleQualite}
           onClose={() => setLotPourQualite(null)}
         />
+      )}
+      {showGlobalSearch && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 60 }} className="flex items-start justify-center pt-20 p-4" onClick={() => { setShowGlobalSearch(false); setGlobalSearchQuery(""); }}>
+          <div onClick={(e) => e.stopPropagation()} style={{ background: c.white, borderRadius: 18, width: "100%", maxWidth: 460, maxHeight: "70vh", overflowY: "auto" }} className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Search size={16} color={c.inkMuted2} />
+              <input autoFocus value={globalSearchQuery} onChange={(e) => setGlobalSearchQuery(e.target.value)} placeholder="Rechercher un lot, employé, parcelle, commande..." style={{ ...inputStyle, flex: 1, border: "none", padding: "6px 0" }} />
+              <button onClick={() => { setShowGlobalSearch(false); setGlobalSearchQuery(""); }}><X size={18} color={c.inkMuted2} /></button>
+            </div>
+            <div className="flex flex-col gap-1.5">
+              {globalSearchResults.map((r, i) => {
+                const Icon = r.icon;
+                return (
+                  <button key={i} onClick={() => { setTab(r.tab); setShowGlobalSearch(false); setGlobalSearchQuery(""); }} style={{ background: c.bg, borderRadius: 10, textAlign: "right" }} className="p-2.5 flex items-center gap-2.5">
+                    <Icon size={15} color={c.cardGreenDeep} />
+                    <div>
+                      <div style={{ fontSize: "0.68rem", color: c.inkMuted2, fontWeight: 700 }}>{r.type}</div>
+                      <div style={{ fontSize: "0.8rem", fontWeight: 600 }}>{r.label}</div>
+                      {r.sub && <div style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{r.sub}</div>}
+                    </div>
+                  </button>
+                );
+              })}
+              {globalSearchQuery.trim().length >= 2 && globalSearchResults.length === 0 && (
+                <p style={{ color: c.inkMuted2, fontSize: "0.8rem" }} className="p-2">Aucun résultat</p>
+              )}
+              {globalSearchQuery.trim().length < 2 && (
+                <p style={{ color: c.inkMuted2, fontSize: "0.76rem" }} className="p-2">Tapez au moins 2 caractères — recherche dans Employés, Parcelles, Lots, Palettes, Expéditions, Commandes, Stock</p>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
