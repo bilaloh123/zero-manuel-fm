@@ -609,6 +609,7 @@ export default function App() {
   const [farms, setFarms] = useState({});
   const [loadingData, setLoadingData] = useState(false);
   const [checkingSession, setCheckingSession] = useState(true);
+  const [subscriptionBlocked, setSubscriptionBlocked] = useState(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [pendingSync, setPendingSync] = useState(() => {
     try { return JSON.parse(localStorage.getItem("zm_offline_queue") || "[]"); } catch { return []; }
@@ -809,7 +810,7 @@ export default function App() {
     const userId = session.user.id;
     const { data: memberships, error } = await supabase
       .from("farm_members")
-      .select("role, nom_affiche, farms(id, nom, gps_lat, gps_lng, cnss_echeance_jour, cnss_declare)")
+      .select("role, nom_affiche, farms(id, nom, gps_lat, gps_lng, cnss_echeance_jour, cnss_declare, organization_id)")
       .eq("user_id", userId);
     if (error || !memberships || memberships.length === 0) {
       alert("Aucune ferme n'est liée à ce compte — contactez votre administrateur pour vous ajouter dans farm_members.");
@@ -817,6 +818,23 @@ export default function App() {
       setCheckingSession(false);
       return;
     }
+
+    // التحقق من الاشتراك قبل ما نكمل — البائع كيتحكم فيه مباشرة من organizations
+    const orgId = memberships[0].farms.organization_id;
+    if (orgId) {
+      const { data: org } = await supabase.from("organizations").select("abonnement_actif, abonnement_expire_le, plan_nom").eq("id", orgId).single();
+      if (org) {
+        const expire = org.abonnement_expire_le ? new Date(org.abonnement_expire_le) : null;
+        const expired = expire && expire < new Date();
+        if (org.abonnement_actif === false || expired) {
+          setSubscriptionBlocked({ expired, dateExpiration: org.abonnement_expire_le });
+          setLoadingData(false);
+          setCheckingSession(false);
+          return;
+        }
+      }
+    }
+
     const role = memberships[0].role;
     const nom = memberships[0].nom_affiche || session.user.email;
     const farmIds = memberships.map((m) => m.farms.id);
@@ -923,6 +941,21 @@ export default function App() {
     return (
       <div style={{ minHeight: "100vh", background: c.headerGreen }} className="flex items-center justify-center">
         <span style={{ color: "#fff", fontSize: "0.85rem", fontWeight: 700 }}>Chargement...</span>
+      </div>
+    );
+  }
+
+  if (subscriptionBlocked) {
+    return (
+      <div style={{ minHeight: "100vh", background: c.bg }} className="flex flex-col items-center justify-center p-6 text-center">
+        <div style={{ background: "rgba(193,89,79,0.12)", borderRadius: 999, width: 64, height: 64 }} className="flex items-center justify-center mb-4">
+          <Lock size={28} color={c.danger} />
+        </div>
+        <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.1rem" }}>{subscriptionBlocked.expired ? "Abonnement expiré" : "Compte suspendu"}</h2>
+        <p style={{ color: c.inkMuted2, fontSize: "0.82rem", maxWidth: 320 }} className="mt-2">
+          {subscriptionBlocked.expired ? `Votre abonnement a expiré le ${subscriptionBlocked.dateExpiration}.` : "L'accès à ce compte a été suspendu."} Contactez votre fournisseur Zero Manuel pour renouveler.
+        </p>
+        <button onClick={async () => { await supabase.auth.signOut(); setSubscriptionBlocked(null); }} style={{ marginTop: 20, fontSize: "0.78rem", color: c.cardGreenDeep, fontWeight: 700 }}>← Retour</button>
       </div>
     );
   }
