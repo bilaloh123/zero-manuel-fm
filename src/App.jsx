@@ -651,6 +651,9 @@ export default function App() {
   const [auditLogs, setAuditLogs] = useState([]);
   const [showGlobalSearch, setShowGlobalSearch] = useState(false);
   const [globalSearchQuery, setGlobalSearchQuery] = useState("");
+  const [avances, setAvances] = useState([]);
+  const [showAddAvance, setShowAddAvance] = useState(false);
+  const [avanceForm, setAvanceForm] = useState({ employeeId: "", montant: "", raison: "" });
 
   const [showAddWorker, setShowAddWorker] = useState(false);
   const [showAddWazin, setShowAddWazin] = useState(false);
@@ -840,6 +843,7 @@ export default function App() {
     await loadControlesQualite(firstFarm);
     await loadPalettes(firstFarm);
     await loadExpeditions(firstFarm);
+    await loadAvances(firstFarm);
     await loadCommandes();
     setLoadingData(false);
     setCheckingSession(false);
@@ -998,7 +1002,7 @@ export default function App() {
   const tabs = allTabs.filter((t) => permTabs.includes(t.key));
   if (currentUser.role === "Owner") tabs.push({ key: "Permissions", icon: Lock });
 
-  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); loadCycles(fid); loadLots(fid); loadCoolers(fid); loadControlesQualite(fid); loadPalettes(fid); loadExpeditions(fid); }
+  function switchFarm(fid) { setCurrentFarmId(fid); loadFarmDetails(fid); loadAccidents(fid); loadCycles(fid); loadLots(fid); loadCoolers(fid); loadControlesQualite(fid); loadPalettes(fid); loadExpeditions(fid); loadAvances(fid); }
 
   function toggleAffiliation(id) {
     updateFarm({ employees: data.employees.map((e) => e.id === id ? { ...e, affilieCNSS: !e.affilieCNSS } : e) });
@@ -1413,6 +1417,32 @@ export default function App() {
     await Promise.all([loadLots(currentFarmId), loadControlesQualite(currentFarmId)]);
   }
 
+  async function loadAvances(farmId) {
+    const { data: rows } = await supabase.from("avances_salaire").select("*").eq("farm_id", farmId).order("created_at", { ascending: false });
+    setAvances((rows || []).map((a) => ({
+      id: a.id, employeeId: a.employee_id, montant: Number(a.montant) || 0, dateAvance: a.date_avance,
+      statut: a.statut, cycleId: a.cycle_id, raison: a.raison, approuvePar: a.approuve_par,
+    })));
+  }
+
+  async function addAvance() {
+    if (!avanceForm.employeeId || !avanceForm.montant) return;
+    const { error } = await supabase.from("avances_salaire").insert({
+      farm_id: currentFarmId, employee_id: avanceForm.employeeId, montant: Number(avanceForm.montant),
+      raison: avanceForm.raison || null, statut: "demande",
+    });
+    if (error) { alert("مشكل: " + error.message); return; }
+    setAvanceForm({ employeeId: "", montant: "", raison: "" });
+    setShowAddAvance(false);
+    await loadAvances(currentFarmId);
+  }
+
+  async function changerStatutAvance(id, statut) {
+    const { error } = await supabase.from("avances_salaire").update({ statut, approuve_par: statut === "approuve" ? currentUser.nom : null }).eq("id", id);
+    if (error) { alert("مشكل: " + error.message); return; }
+    await loadAvances(currentFarmId);
+  }
+
   async function loadAuditLogs(farmId) {
     const { data: rows } = await supabase.from("audit_logs").select("*").eq("farm_id", farmId).order("created_at", { ascending: false }).limit(100);
     setAuditLogs((rows || []).map((a) => ({
@@ -1641,7 +1671,7 @@ export default function App() {
     const [{ data: logsData }, { data: absencesData }, { data: avancesData }] = await Promise.all([
       supabase.from("workers_log").select("*").eq("farm_id", currentFarmId).gte("date_travail", cycle.periodeDebut).lte("date_travail", cycle.periodeFin),
       supabase.from("absences").select("*").eq("farm_id", currentFarmId).gte("date_absence", cycle.periodeDebut).lte("date_absence", cycle.periodeFin),
-      supabase.from("avances_salaire").select("*").eq("farm_id", currentFarmId).is("cycle_id", null),
+      supabase.from("avances_salaire").select("*").eq("farm_id", currentFarmId).is("cycle_id", null).eq("statut", "approuve"),
     ]);
 
     const parEmploye = {};
@@ -1686,7 +1716,12 @@ export default function App() {
 
       const deductions = [];
       const avancesEmp = (infos.avances || []).reduce((s, a) => s + Number(a.montant), 0);
-      if (avancesEmp > 0) deductions.push({ rubrique: "AVANCE", montant: avancesEmp, explication: "Avances non remboursées" });
+      if (avancesEmp > 0) {
+        deductions.push({ rubrique: "AVANCE", montant: avancesEmp, explication: "Avances approuvées et non remboursées" });
+        for (const av of infos.avances) {
+          await supabase.from("avances_salaire").update({ cycle_id: cycleId, statut: "rembourse" }).eq("id", av.id);
+        }
+      }
 
       const absencesEmp = (infos.absences || []).filter((a) => a.type === "absence_non_justifiee").length;
       const tarifJour = (empRow && Number(empRow.salaireJournalier)) || 0;
@@ -3100,6 +3135,61 @@ export default function App() {
                     <div className="col-span-3"><button onClick={saveParametres} style={{ background: c.cardGreen, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%" }}>Enregistrer les paramètres</button></div>
                   </div>
                 )}
+              </div>
+            )}
+
+            {!isWorker && (
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 style={{ fontWeight: 700, fontSize: "0.85rem" }}>Avances</h3>
+                  <AddButton label="Nouvelle demande" open={showAddAvance} onClick={() => setShowAddAvance(!showAddAvance)} />
+                </div>
+                {showAddAvance && (
+                  <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-3 grid grid-cols-3 gap-3">
+                    <Field label="Employé"><select value={avanceForm.employeeId} onChange={(e) => setAvanceForm({ ...avanceForm, employeeId: e.target.value })} style={inputStyle}><option value="">اختار</option>{data.employees.map((emp) => (<option key={emp.id} value={emp.id}>{emp.nom}</option>))}</select></Field>
+                    <Field label="Montant (DH)"><input type="number" value={avanceForm.montant} onChange={(e) => setAvanceForm({ ...avanceForm, montant: e.target.value })} style={inputStyle} /></Field>
+                    <Field label="Raison"><input value={avanceForm.raison} onChange={(e) => setAvanceForm({ ...avanceForm, raison: e.target.value })} style={inputStyle} /></Field>
+                    <div className="col-span-3"><button onClick={addAvance} style={{ background: c.orange, color: "#fff", borderRadius: 11, padding: "9px 0", fontWeight: 700, width: "100%" }}>Soumettre la demande</button></div>
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  {avances.map((av) => {
+                    const emp = data.employees.find((e) => e.id === av.employeeId);
+                    const statutColorMap = { demande: c.orange, approuve: c.blue, rembourse: c.cardGreenDeep, rejete: c.danger };
+                    return (
+                      <div key={av.id} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 12 }} className="p-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <span style={{ fontWeight: 700, fontSize: "0.82rem" }}>{emp ? emp.nom : "—"}</span>
+                          <span style={{ background: `${statutColorMap[av.statut]}18`, color: statutColorMap[av.statut], borderRadius: 999, padding: "2px 9px", fontSize: "0.66rem", fontWeight: 700 }}>{av.statut}</span>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono" style={{ fontWeight: 800, fontSize: "0.85rem" }}>{av.montant} DH</span>
+                          {av.raison && <span style={{ fontSize: "0.7rem", color: c.inkMuted2 }}>{av.raison}</span>}
+                        </div>
+                        {av.statut === "demande" && canManageFarms && (
+                          <div className="flex gap-2 mt-2">
+                            <button onClick={() => changerStatutAvance(av.id, "approuve")} style={{ background: c.cardGreen, color: "#fff", borderRadius: 8, padding: "5px 12px", fontSize: "0.7rem", fontWeight: 700 }}>Approuver</button>
+                            <button onClick={() => changerStatutAvance(av.id, "rejete")} style={{ background: c.white, border: `1px solid ${c.danger}`, color: c.danger, borderRadius: 8, padding: "5px 12px", fontSize: "0.7rem", fontWeight: 700 }}>Rejeter</button>
+                          </div>
+                        )}
+                        {av.approuvePar && <div style={{ fontSize: "0.66rem", color: c.inkMuted2 }} className="mt-1">Approuvé par {av.approuvePar}</div>}
+                      </div>
+                    );
+                  })}
+                  {avances.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem" }}>Aucune avance</p>}
+                </div>
+                {(() => {
+                  const total = avances.reduce((s, a) => s + a.montant, 0);
+                  const paye = avances.filter((a) => a.statut === "rembourse").reduce((s, a) => s + a.montant, 0);
+                  const restant = avances.filter((a) => a.statut === "approuve").reduce((s, a) => s + a.montant, 0);
+                  return (
+                    <div className="grid grid-cols-3 gap-2 mt-3">
+                      <div style={{ background: c.bg, borderRadius: 10 }} className="p-2 text-center"><div style={{ fontSize: "0.64rem", color: c.inkMuted2 }}>Total</div><div className="font-mono" style={{ fontWeight: 800 }}>{total} DH</div></div>
+                      <div style={{ background: c.bg, borderRadius: 10 }} className="p-2 text-center"><div style={{ fontSize: "0.64rem", color: c.inkMuted2 }}>Remboursé</div><div className="font-mono" style={{ fontWeight: 800 }}>{paye} DH</div></div>
+                      <div style={{ background: c.bg, borderRadius: 10 }} className="p-2 text-center"><div style={{ fontSize: "0.64rem", color: c.inkMuted2 }}>À déduire</div><div className="font-mono" style={{ fontWeight: 800 }}>{restant} DH</div></div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
