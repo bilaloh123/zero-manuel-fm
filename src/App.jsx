@@ -2200,9 +2200,44 @@ export default function App() {
       )}
 
       <main className="p-4">
-        {tab === "Tableau de bord" && (
+        {tab === "Tableau de bord" && (() => {
+          const employesPresents = new Set(data.workers.map((w) => w.nom)).size;
+          const productionTotale = lots.reduce((s, l) => s + l.quantiteKg, 0);
+          const stockFaible = data.stock.filter((s) => s.kammiya <= s.seuil).length;
+          const qualityAlerts = controlesQualite.filter((q) => q.statut === "rejete" || q.statut === "accepte_condition").length;
+          const payrollAlerts = cyclesPaie.filter((cy) => cy.statut === "brouillon" && cy.periodeFin && new Date(cy.periodeFin) < new Date()).length
+            + bulletinsActifs.filter((b) => b.anomalies.length > 0).length;
+          const cards = [
+            { icon: Building2, label: "Fermes", value: myFarmIds.length, tab: "Fermes", color: c.cardGreen },
+            { icon: Sprout, label: "Parcelles actives", value: data.parcelles.length, tab: "Parcelles", color: c.cardGreen },
+            { icon: Users, label: "Employés présents", value: employesPresents, tab: "Employés", color: c.cardGreen },
+            { icon: Package, label: "Production (Lots)", value: `${productionTotale.toFixed(0)} kg`, tab: "Parcelles", color: c.blue },
+            { icon: Package, label: "Stock faible", value: stockFaible, tab: "Stock", color: stockFaible > 0 ? c.danger : c.cardGreen },
+            { icon: Package, label: "Lots créés", value: lots.length, tab: "Parcelles", color: c.blue },
+            { icon: Truck, label: "Expéditions", value: expeditions.length, tab: "Parcelles", color: c.blue },
+            { icon: Wallet, label: "Coût main-d'œuvre (jour)", value: `${kpis.totalKhlas} DH`, tab: "Employés", color: c.orange },
+            { icon: AlertTriangle, label: "Alertes qualité", value: qualityAlerts, tab: "Parcelles", color: qualityAlerts > 0 ? c.danger : c.cardGreen },
+            { icon: AlertTriangle, label: "Alertes paie", value: payrollAlerts, tab: "Employés", color: payrollAlerts > 0 ? c.danger : c.cardGreen },
+          ];
+          return (
           <>
-            <div className="grid grid-cols-2 gap-3">
+            <h2 className="font-display mb-3" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Aujourd'hui — {data.nom}</h2>
+            <div className="grid grid-cols-2 gap-2.5 mb-6">
+              {cards.map((card) => {
+                const Icon = card.icon;
+                return (
+                  <button key={card.label} onClick={() => setTab(card.tab)} style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 14, textAlign: "right", boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-3">
+                    <div style={{ background: `${card.color}18`, borderRadius: 10, width: 32, height: 32 }} className="flex items-center justify-center mb-2">
+                      <Icon size={16} color={card.color} />
+                    </div>
+                    <div className="font-mono" style={{ fontWeight: 800, fontSize: "1.15rem", color: c.ink }}>{card.value}</div>
+                    <div style={{ fontSize: "0.68rem", color: c.inkMuted2 }}>{card.label}</div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mb-6">
               <StatCard title={{ icon: <Sprout size={17} color="#fff" />, label: "Production du jour" }} value={kpis.totalHarvest.toLocaleString()} unit="kg"
                 sub={[{ label: "parcelles", value: data.parcelles.length }, { label: "hectares", value: data.parcelles.reduce((s, p) => s + p.ha, 0).toFixed(1) }]} />
               <StatCard title={{ icon: <Wallet size={17} color="#fff" />, label: "Coûts du mois" }} value={kpis.totalCost.toLocaleString()} unit="DH"
@@ -2211,7 +2246,8 @@ export default function App() {
                 sub={[{ label: "heures", value: `${kpis.totalHeures} س` }, { label: "Paie du jour", value: `${kpis.totalKhlas} DH` }]} />
               <StatCard title={{ icon: <AlertTriangle size={17} color="#fff" />, label: "Envoi En attente الأداء" }} value={kpis.enAttente} unit="Envoi" variant="orange" />
             </div>
-            <div className="mt-6">
+
+            <div>
               <h2 className="font-display mb-3" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Alertes</h2>
               <div className="flex flex-col gap-2">
                 {alertes.map((a, i) => { const Icon = a.icon; return (
@@ -2222,7 +2258,8 @@ export default function App() {
               </div>
             </div>
           </>
-        )}
+          );
+        })()}
 
         {tab === "Fermes" && (
           <div>
