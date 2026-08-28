@@ -29,7 +29,7 @@ const users = [
 ];
 const roleLabel = { Owner: "Propriétaire", Manager: "Gérant", Supervisor: "Superviseur terrain", Accountant: "Comptable", Worker: "Ouvrier" };
 const initMarketplace = [
-  { id: 1, farmId: "zm", farmNom: "Zero Manuel", type: "J'offre", produit: "Fongicide (cuivre)", kammiya: 15, wehda: "kilo", prix: 45, description: "Excédent du dernier achat, bonne qualité", contactNom: "El Hachimi", contactTel: "0661-00-00-00", date: "19 juillet" },
+  { id: 1, farmId: "zm", farmNom: "AGRICORE", type: "J'offre", produit: "Fongicide (cuivre)", kammiya: 15, wehda: "kilo", prix: 45, description: "Excédent du dernier achat, bonne qualité", contactNom: "El Hachimi", contactTel: "0661-00-00-00", date: "19 juillet" },
   { id: 2, farmId: "atlas", farmNom: "Ferme Atlas", type: "Besoin", produit: "كياس Emballage", kammiya: 300, wehda: "sac", prix: "", description: "Besoin urgent avant la prochaine récolte", contactNom: "Rachid", contactTel: "0662-00-00-00", date: "18 juillet" },
 ];
 
@@ -101,7 +101,7 @@ const initStock = [
 ];
 
 const initCommandesGlobal = [
-  { id: 1, farmId: "zm", farmNom: "Zero Manuel", demandePar: "Youssef", produit: "Insecticide cochenille", qte: 20, wehda: "litre", motif: "Stock وصل تحت الحد", date: "20 juillet", statut: "Nouveau", fournisseur: "", fournisseurEmail: "", prix: "", poNumero: "" },
+  { id: 1, farmId: "zm", farmNom: "AGRICORE", demandePar: "Youssef", produit: "Insecticide cochenille", qte: 20, wehda: "litre", motif: "Stock وصل تحت الحد", date: "20 juillet", statut: "Nouveau", fournisseur: "", fournisseurEmail: "", prix: "", poNumero: "" },
   { id: 2, farmId: "atlas", farmNom: "Ferme Atlas", demandePar: "Rachid", produit: "كياس Emballage", qte: 500, wehda: "sac", motif: "Préparation de la saison de récolte", date: "19 juillet", statut: "Commandé", fournisseur: "مؤسسة d'emballage moderne", fournisseurEmail: "contact@packaging-example.ma", prix: "1500", poNumero: "PO-0619" },
 ];
 
@@ -116,7 +116,7 @@ const initAchatsGlobal = [
 // ---------- farm datasets ----------
 const farmsInit = {
   zm: {
-    nom: "Zero Manuel",
+    nom: "AGRICORE",
     gps: { lat: 34.9200, lng: -6.1000 },
     parcelles: [
       { code: "A1", crop: "avocat", nom: "Avocat - حاس", ha: 3.2, statut: "ok", irrigation: "Aujourd'hui 06:00", recolte: 20, dernierTraitement: "12 juillet", secu: 0 },
@@ -193,8 +193,10 @@ function ZMLogo({ size = 40 }) {
         </linearGradient>
       </defs>
       <circle cx="24" cy="24" r="24" fill="url(#zmLogoGrad)" />
-      <path d="M24 35c-7-2-11.5-8.5-10.5-17 8 0 14.5 4.5 17 11.5 1 3 0.5 5.5-1 7-2.5-6-7-9.5-12.5-11 3.5 2.5 6 6 7 9.5z" fill="#FFFBF2" />
-      <circle cx="33.5" cy="14.5" r="3.2" fill="#F4A261" style={{ transformOrigin: "33.5px 14.5px", animation: "dotPop 0.9s ease 0.5s both" }} />
+      <polygon points="24,9 36,15.5 36,29.5 24,36 12,29.5 12,15.5" fill="#FFFBF2" />
+      <path d="M24 17c9 3.5 11.5 13 6 18.5-6-2-11-8-6-18.5z" fill="#2A9D8F" />
+      <path d="M24 17c-9 3.5-11.5 13-6 18.5 6-2 11-8 6-18.5z" fill="#3DBBA8" />
+      <circle cx="24" cy="17" r="2.6" fill="#F4A261" style={{ transformOrigin: "24px 17px", animation: "dotPop 0.9s ease 0.5s both" }} />
     </svg>
   );
 }
@@ -449,7 +451,7 @@ function LockedFeature({ nom }) {
         <Lock size={26} color="#F4A261" />
       </div>
       <h3 style={{ fontWeight: 800, fontSize: "1rem" }} className="mb-1.5">{nom} — fonctionnalité non activée</h3>
-      <p style={{ color: "#9C9186", fontSize: "0.82rem", maxWidth: 320 }}>Ce module fait partie de Zero Manuel mais n'a pas encore été activé sur votre compte. Contactez votre fournisseur pour l'activer.</p>
+      <p style={{ color: "#9C9186", fontSize: "0.82rem", maxWidth: 320 }}>Ce module fait partie de AGRICORE mais n'a pas encore été activé sur votre compte. Contactez votre fournisseur pour l'activer.</p>
     </div>
   );
 }
@@ -574,7 +576,7 @@ function LoginScreen({ onLogin }) {
           </svg>
         </div>
       </div>
-      <h1 className="font-display logo-title" style={{ color: "#fff", fontWeight: 800, fontSize: "1.55rem", position: "relative" }}>Zero Manuel</h1>
+      <h1 className="font-display logo-title" style={{ color: "#fff", fontWeight: 800, fontSize: "1.55rem", position: "relative" }}>AGRICORE</h1>
       <p className="logo-title mb-8" style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.8rem", position: "relative" }}>Connectez-vous avec votre e-mail et mot de passe</p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3 w-full relative" style={{ maxWidth: 340 }}>
@@ -953,7 +955,7 @@ export default function App() {
         </div>
         <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.1rem" }}>{subscriptionBlocked.expired ? "Abonnement expiré" : "Compte suspendu"}</h2>
         <p style={{ color: c.inkMuted2, fontSize: "0.82rem", maxWidth: 320 }} className="mt-2">
-          {subscriptionBlocked.expired ? `Votre abonnement a expiré le ${subscriptionBlocked.dateExpiration}.` : "L'accès à ce compte a été suspendu."} Contactez votre fournisseur Zero Manuel pour renouveler.
+          {subscriptionBlocked.expired ? `Votre abonnement a expiré le ${subscriptionBlocked.dateExpiration}.` : "L'accès à ce compte a été suspendu."} Contactez votre fournisseur AGRICORE pour renouveler.
         </p>
         <button onClick={async () => { await supabase.auth.signOut(); setSubscriptionBlocked(null); }} style={{ marginTop: 20, fontSize: "0.78rem", color: c.cardGreenDeep, fontWeight: 700 }}>← Retour</button>
       </div>
@@ -1915,7 +1917,7 @@ export default function App() {
 
   function exportInvoice(inv) {
     const aoa = [
-      [`Zero Manuel — ${data.nom}`],
+      [`AGRICORE — ${data.nom}`],
       ["فاتورة / Facture"],
       [`رقم: ${inv.numero}`],
       [`التاريخ: ${inv.date}`],
@@ -1972,7 +1974,7 @@ export default function App() {
 
   function exportBonCommande(cmd) {
     const aoa = [
-      ["Zero Manuel — Bon de commande"],
+      ["AGRICORE — Bon de commande"],
       [`رقم Le bon: ${cmd.poNumero}`],
       [`التاريخ: ${cmd.date}`],
       [],
@@ -2011,7 +2013,7 @@ export default function App() {
 
   function mailtoLink(cmd) {
     const subject = encodeURIComponent(`Bon de commande ${cmd.poNumero} — ${cmd.produit}`);
-    const body = encodeURIComponent(`Bonjour,\n\nVeuillez trouver ci-joint le bon de commande n° ${cmd.poNumero} :\n- Produit : ${cmd.produit}\n- Quantité : ${cmd.qte} ${cmd.wehda}\n- Prix total : ${cmd.prix} DH\n- Ferme demandeuse : ${cmd.farmNom}\n\nMerci,\nZero Manuel`);
+    const body = encodeURIComponent(`Bonjour,\n\nVeuillez trouver ci-joint le bon de commande n° ${cmd.poNumero} :\n- Produit : ${cmd.produit}\n- Quantité : ${cmd.qte} ${cmd.wehda}\n- Prix total : ${cmd.prix} DH\n- Ferme demandeuse : ${cmd.farmNom}\n\nMerci,\nAGRICORE`);
     return `mailto:${cmd.fournisseurEmail}?subject=${subject}&body=${body}`;
   }
 
@@ -2140,12 +2142,23 @@ export default function App() {
   }
 
   return (
-    <div dir="ltr" style={{ background: c.bg, minHeight: "100vh", color: c.ink, fontFamily: "'Inter', sans-serif", paddingBottom: 80 }}>
+    <div dir="ltr" className="app-shell" style={{ background: c.bg, minHeight: "100vh", color: c.ink, fontFamily: "'Inter', sans-serif", paddingBottom: 80 }}>
       <style>{`@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@700;800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600&display=swap');
         .font-display { font-family: 'Manrope', sans-serif; letter-spacing: -0.01em; }
         button { transition: all 0.15s ease; cursor: pointer; }
         button:active { transform: scale(0.98); }
         ::selection { background: #2A9D8F; color: #fff; }
+        @media (min-width: 860px) {
+          body { background: #E4DCC9; }
+          .app-shell { max-width: 860px; margin: 0 auto; min-height: 100vh; box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 20px 60px rgba(0,0,0,0.12); font-size: 1.06em; }
+          .app-shell header, .app-shell nav { max-width: 860px; margin: 0 auto; }
+          .app-bottom-nav { left: 50% !important; right: auto !important; width: 860px; transform: translateX(-50%); }
+        }
+        @media (min-width: 1200px) {
+          .app-shell { max-width: 1000px; font-size: 1.1em; }
+          .app-shell header, .app-shell nav { max-width: 1000px; }
+          .app-bottom-nav { width: 1000px; }
+        }
         @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(193,89,79,0.5); } 50% { box-shadow: 0 0 0 8px rgba(193,89,79,0); } }
         #bottomNav { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         #bottomNav::-webkit-scrollbar { display: none; }`}</style>
@@ -2480,7 +2493,7 @@ export default function App() {
               <h2 className="font-display" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Alerte précoce — ravageurs et maladies proches de vous</h2>
               <AddButton label="Signaler un problème" open={showReportIssue} onClick={() => setShowReportIssue(!showReportIssue)} />
             </div>
-            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">مبني على القرب الجغرافي الحقيقي (GPS) entre tous les utilisateurs de Zero Manuel — rayon de 60 km</p>
+            <p style={{ color: c.inkMuted2, fontSize: "0.72rem" }} className="mb-3">مبني على القرب الجغرافي الحقيقي (GPS) entre tous les utilisateurs de AGRICORE — rayon de 60 km</p>
 
             {showReportIssue && (
               <div style={{ background: c.white, border: `1px solid ${c.line}`, borderRadius: 16, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }} className="p-4 mb-4 grid grid-cols-3 gap-3">
@@ -4171,7 +4184,7 @@ export default function App() {
         )}
       </main>
 
-            <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: c.white, borderTop: `1px solid ${c.line}`, boxShadow: "0 -4px 16px rgba(0,0,0,0.05)" }} className="flex overflow-x-auto py-2.5 px-3 gap-4" id="bottomNav">
+            <nav style={{ position: "fixed", bottom: 0, left: 0, right: 0, background: c.white, borderTop: `1px solid ${c.line}`, boxShadow: "0 -4px 16px rgba(0,0,0,0.05)" }} className="flex overflow-x-auto py-2.5 px-3 gap-4 app-bottom-nav" id="bottomNav">
         {tabs.map((t) => { const Icon = t.icon; const active = tab === t.key; return (
           <button key={t.key} onClick={() => setTab(t.key)} className="flex flex-col items-center gap-1 flex-shrink-0" style={{ scrollSnapAlign: "center" }}>
             <Icon size={19} color={active ? c.cardGreen : c.inkMuted2} /><span style={{ fontSize: "0.62rem", fontWeight: 700, color: active ? c.cardGreen : c.inkMuted2, whiteSpace: "nowrap" }}>{t.key}</span>
