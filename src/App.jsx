@@ -2150,14 +2150,14 @@ export default function App() {
         ::selection { background: #2A9D8F; color: #fff; }
         @media (min-width: 860px) {
           body { background: #E4DCC9; }
-          .app-shell { max-width: 860px; margin: 0 auto; min-height: 100vh; box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 20px 60px rgba(0,0,0,0.12); font-size: 1.06em; }
-          .app-shell header, .app-shell nav { max-width: 860px; margin: 0 auto; }
-          .app-bottom-nav { left: 50% !important; right: auto !important; width: 860px; transform: translateX(-50%); }
+          .app-shell { max-width: 1400px; margin: 0 auto; min-height: 100vh; box-shadow: 0 0 0 1px rgba(0,0,0,0.04), 0 20px 60px rgba(0,0,0,0.12); font-size: 1.04em; }
+          .app-shell header, .app-shell nav { max-width: 1400px; margin: 0 auto; }
+          .app-bottom-nav { left: 50% !important; right: auto !important; width: 1400px; transform: translateX(-50%); }
         }
-        @media (min-width: 1200px) {
-          .app-shell { max-width: 1000px; font-size: 1.1em; }
-          .app-shell header, .app-shell nav { max-width: 1000px; }
-          .app-bottom-nav { width: 1000px; }
+        @media (min-width: 1600px) {
+          .app-shell { max-width: 1700px; font-size: 1.08em; }
+          .app-shell header, .app-shell nav { max-width: 1700px; }
+          .app-bottom-nav { width: 1700px; }
         }
         @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(193,89,79,0.5); } 50% { box-shadow: 0 0 0 8px rgba(193,89,79,0); } }
         #bottomNav { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
