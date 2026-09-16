@@ -2159,16 +2159,73 @@ export default function App() {
           .app-shell header, .app-shell nav { max-width: 1700px; }
           .app-bottom-nav { width: 1700px; }
         }
+        .sidebar-desktop { display: none; }
+        @media (min-width: 1024px) {
+          body { background: #F1EDE0; }
+          .app-shell { max-width: none; box-shadow: none; margin: 0; }
+          .app-shell header, .app-shell nav { max-width: none; }
+          .app-bottom-nav { display: none !important; }
+          .sidebar-desktop {
+            display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; width: 232px;
+            background: #fff; border-right: 1px solid #F0E6D2; z-index: 25; padding: 20px 14px; overflow-y: auto;
+          }
+          .content-col { margin-left: 232px; }
+          .desktop-search { display: flex !important; }
+          .header-logo-mobile { display: none !important; }
+          .kpi-strip { grid-template-columns: repeat(5, minmax(0,1fr)) !important; }
+          .kpi-strip-2 { grid-template-columns: repeat(4, minmax(0,1fr)) !important; }
+        }
+        .desktop-search { display: none; }
+        .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; margin-bottom: 2px; }
         @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(193,89,79,0.5); } 50% { box-shadow: 0 0 0 8px rgba(193,89,79,0); } }
         #bottomNav { scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
         #bottomNav::-webkit-scrollbar { display: none; }`}</style>
 
+      <aside className="sidebar-desktop">
+        <div className="flex items-center gap-2.5 mb-6 px-2">
+          <div style={{ borderRadius: 10, width: 34, height: 34, overflow: "hidden" }}><ZMLogo size={34} /></div>
+          <span className="font-display" style={{ fontWeight: 800, fontSize: "0.95rem", color: c.ink }}>AGRICORE</span>
+        </div>
+        <div style={{ flex: 1 }}>
+          {tabs.map((t) => {
+            const Icon = t.icon; const active = tab === t.key;
+            return (
+              <button key={t.key} onClick={() => setTab(t.key)} className="sidebar-link" style={{ background: active ? "rgba(42,157,143,0.12)" : "transparent", color: active ? c.cardGreenDeep : c.inkSoft, width: "100%", textAlign: "right" }}>
+                <Icon size={17} color={active ? c.cardGreenDeep : c.inkMuted2} />
+                <span>{t.key}</span>
+              </button>
+            );
+          })}
+        </div>
+        <div style={{ borderTop: `1px solid ${c.line}` }} className="pt-3 mt-2 flex items-center gap-2.5 px-2">
+          <div style={{ width: 32, height: 32, borderRadius: "50%", background: c.bg }} className="flex items-center justify-center">
+            <span style={{ fontSize: "0.72rem", fontWeight: 800, color: c.cardGreenDeep }}>{(currentUser.nom || "?")[0]}</span>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: "0.76rem", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentUser.nom}</div>
+            <div style={{ fontSize: "0.66rem", color: c.inkMuted2 }}>{roleLabel[currentUser.role]}</div>
+          </div>
+          <button onClick={async () => { await supabase.auth.signOut(); setCurrentUser(null); setFarms({}); setCurrentFarmId(null); }}><LogOut size={15} color={c.inkMuted2} /></button>
+        </div>
+      </aside>
+
+      <div className="content-col">
       <header style={{ background: `linear-gradient(135deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 100%)`, boxShadow: "0 4px 20px rgba(33,102,92,0.18)" }} className="px-5 py-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2.5 header-logo-mobile">
           <div style={{ borderRadius: 12, width: 40, height: 40, overflow: "hidden" }} className="flex items-center justify-center"><ZMLogo size={40} /></div>
           <div>
             <div className="font-display" style={{ color: "#fff", fontWeight: 800, fontSize: "1.05rem" }}>{data.nom}</div>
             <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.68rem" }}>{currentUser.nom} · {roleLabel[currentUser.role]}</div>
+          </div>
+        </div>
+        <div className="desktop-search" style={{ flex: 1, maxWidth: 420, margin: "0 20px" }}>
+          <div className="flex items-center gap-2" style={{ background: "rgba(255,255,255,0.16)", borderRadius: 10, padding: "8px 12px" }}>
+            <Search size={15} color="rgba(255,255,255,0.8)" />
+            <input
+              onFocus={() => setShowGlobalSearch(true)}
+              placeholder="Rechercher une ferme, un lot, un employé..."
+              style={{ background: "transparent", border: "none", outline: "none", color: "#fff", fontSize: "0.8rem", flex: 1 }}
+            />
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -2235,7 +2292,7 @@ export default function App() {
           return (
           <>
             <h2 className="font-display mb-3" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Aujourd'hui — {data.nom}</h2>
-            <div className="grid grid-cols-2 gap-2.5 mb-6">
+            <div className="grid grid-cols-2 gap-2.5 mb-6 kpi-strip">
               {cards.map((card) => {
                 const Icon = card.icon;
                 return (
@@ -2250,7 +2307,7 @@ export default function App() {
               })}
             </div>
 
-            <div className="grid grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-2 gap-3 mb-6 kpi-strip-2">
               <StatCard title={{ icon: <Sprout size={17} color="#fff" />, label: "Production du jour" }} value={kpis.totalHarvest.toLocaleString()} unit="kg"
                 sub={[{ label: "parcelles", value: data.parcelles.length }, { label: "hectares", value: data.parcelles.reduce((s, p) => s + p.ha, 0).toFixed(1) }]} />
               <StatCard title={{ icon: <Wallet size={17} color="#fff" />, label: "Coûts du mois" }} value={kpis.totalCost.toLocaleString()} unit="DH"
@@ -4191,6 +4248,7 @@ export default function App() {
           </button>
         );})}
       </nav>
+      </div>
 
       {ficheEmployeOuverte && (
         <FicheEmployeModal
