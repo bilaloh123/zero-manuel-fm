@@ -463,6 +463,223 @@ function AddButton({ label, open, onClick }) {
     </button>
   );
 }
+function VueGlobaleDesktop({ c, setTab, currentUser }) {
+  const kpis7 = [
+    { label: "Fermes", value: "20", trend: "+2 ce mois", icon: Sprout, color: "#2A9D8F" },
+    { label: "Hectares", value: "1 850", trend: "+5%", icon: TrendingUp, color: "#3DBBA8" },
+    { label: "Employés", value: "640", trend: "+12 ce mois", icon: Users, color: "#4A90D9" },
+    { label: "Production totale", value: "12 540 T", trend: "+16%", icon: Package, color: "#F4A261" },
+    { label: "Chiffre d'affaires", value: "48,2 MDH", trend: "+18%", icon: Wallet, color: "#E8A33D" },
+    { label: "Marge brute", value: "32,6%", trend: "+2,8 pts", icon: TrendingUp, color: "#2A9D8F" },
+    { label: "Alertes actives", value: "12", trend: "3 critiques", icon: AlertTriangle, color: "#D9534F" },
+  ];
+  const fermesListe = ["El Gharb","Sidi Allal","Kenitra","Berrechid","Larache","Agadir","Taroudant","Saïss","Meknès","Fès","Berkane","Oujda","Marrakech","Dakhla","Souss","Tadla","Haouz","Gharb Nord","Gharb Sud","Test"];
+  const cultures = [
+    { nom: "Avocats", t: "5 420 t", pct: 43, color: "#2A9D8F" },
+    { nom: "Fraises", t: "3 280 t", pct: 26, color: "#E8384F" },
+    { nom: "Agrumes", t: "2 150 t", pct: 17, color: "#F4A261" },
+    { nom: "Fruits rouges", t: "980 t", pct: 8, color: "#D4537E" },
+    { nom: "Autres", t: "710 t", pct: 6, color: "#94A3B8" },
+  ];
+  const top5 = [
+    { nom: "Ferme 4 - Berrechid", t: "1 250 t", pct: 100 },
+    { nom: "Ferme 7 - Taroudant", t: "980 t", pct: 78 },
+    { nom: "Ferme 1 - El Gharb", t: "760 t", pct: 61 },
+    { nom: "Ferme 12 - Oujda", t: "690 t", pct: 55 },
+    { nom: "Ferme 3 - Kenitra", t: "540 t", pct: 43 },
+  ];
+  const activites = [
+    { icon: CheckCircle2, color: "#2A9D8F", titre: "Récolte terminée - Ferme 4", detail: "120 t d'avocats", temps: "Il y a 2 heures" },
+    { icon: AlertTriangle, color: "#F4A261", titre: "Alerte irrigation - Ferme 11", detail: "Pression anormale", temps: "Il y a 3 heures" },
+    { icon: Truck, color: "#4A90D9", titre: "Nouveau lot expédié - Ferme 7", detail: "45 t - Export", temps: "Il y a 5 heures" },
+    { icon: Users, color: "#8B7FD9", titre: "Arrivée nouveaux employés - Ferme 3", detail: "12 saisonniers", temps: "Il y a 6 heures" },
+  ];
+  const evolution2025 = [2100,2600,3200,3900,4600,5300,5900,6400,6900,7300,7600,7900];
+  const evolution2024 = [1800,2000,2400,2900,3300,3700,4100,4400,4700,4900,5100,5300];
+  const mois = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"];
+  const couts = [
+    { nom: "Main-d'œuvre", pct: 28, color: "#2A9D8F" },
+    { nom: "Intrants", pct: 24, color: "#4A90D9" },
+    { nom: "Irrigation", pct: 18, color: "#E8384F" },
+    { nom: "Équipement", pct: 15, color: "#E8A33D" },
+    { nom: "Transport", pct: 10, color: "#8B7FD9" },
+    { nom: "Autres", pct: 5, color: "#94A3B8" },
+  ];
+  const rendements = [{ nom: "Avocats", v: 12.4 },{ nom: "Fraises", v: 28.6 },{ nom: "Agrumes", v: 18.2 },{ nom: "Fruits rouges", v: 15.7 }];
+  const env = [
+    { icon: "💧", label: "Eau utilisée", val: "1 250 000 m³", trend: "-12%" },
+    { icon: "🌿", label: "CO2 évitées", val: "256 t", trend: "+18%" },
+    { icon: "🌳", label: "Surfaces gérées", val: "1 850 ha", trend: "" },
+    { icon: "♻️", label: "Déchets valorisés", val: "78%", trend: "" },
+  ];
+
+  const donutGradient = (() => {
+    let acc = 0;
+    return couts.map((s) => { const start = acc; acc += s.pct; return `${s.color} ${start}% ${acc}%`; }).join(", ");
+  })();
+
+  const cardStyle = { background: "#fff", border: "1px solid #ECE7DC", borderRadius: 14, padding: 16 };
+
+  return (
+    <div className="vue-globale-desktop">
+      <div style={{ borderRadius: 16, overflow: "hidden", position: "relative", background: "linear-gradient(120deg, #E8E2D0, #D8CFB3)", marginBottom: 16 }} className="p-5 flex items-center justify-between">
+        <div>
+          <div className="font-display" style={{ fontWeight: 800, fontSize: "1.3rem", color: "#1A2E27" }}>Bonjour, {currentUser.nom} !</div>
+          <div style={{ fontSize: "0.85rem", color: "#5C6B62" }} className="mt-1">Vue d'ensemble de vos 20 fermes connectées en temps réel</div>
+        </div>
+        <div style={{ fontFamily: "cursive", fontSize: "1rem", color: "#3A4A40", opacity: 0.7, textAlign: "center", transform: "rotate(-2deg)" }}>Des fermes connectées<br/>pour un avenir durable</div>
+        <div style={{ background: "#fff", borderRadius: 12 }} className="p-3 flex items-center gap-3">
+          <Sprout size={22} color="#2A9D8F" />
+          <div>
+            <div style={{ fontWeight: 800, fontSize: "0.95rem", color: "#1A2E27" }}>20 fermes</div>
+            <div style={{ fontSize: "0.68rem", color: "#94A3B8" }}>1 seule vision</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid gap-2.5 mb-4" style={{ gridTemplateColumns: "repeat(7, minmax(0,1fr))" }}>
+        {kpis7.map((k) => { const Icon = k.icon; return (
+          <div key={k.label} style={cardStyle} className="p-3.5">
+            <div style={{ background: `${k.color}18`, borderRadius: 9, width: 30, height: 30 }} className="flex items-center justify-center mb-2">
+              <Icon size={15} color={k.color} />
+            </div>
+            <div className="font-mono" style={{ fontWeight: 800, fontSize: "1.15rem", color: "#1A2E27" }}>{k.value}</div>
+            <div style={{ fontSize: "0.68rem", color: "#5C6B62" }}>{k.label}</div>
+            <div style={{ fontSize: "0.64rem", color: k.color, fontWeight: 700 }} className="mt-1">{k.trend}</div>
+          </div>
+        );})}
+      </div>
+
+      <div className="grid gap-3 mb-4" style={{ gridTemplateColumns: "1.7fr 1fr" }}>
+        <div style={cardStyle} className="p-0 overflow-hidden">
+          <div className="flex items-center justify-between p-3.5" style={{ borderBottom: "1px solid #ECE7DC" }}>
+            <span style={{ fontWeight: 700, fontSize: "0.85rem" }}>Carte des 20 fermes</span>
+            <div className="flex gap-1.5">
+              {["Toutes (20)","Agrumes (6)","Avocats (5)","Fraises (4)"].map((f,i) => (
+                <span key={f} style={{ background: i===0?"#2A9D8F":"#F7F6F1", color: i===0?"#fff":"#5C6B62", borderRadius: 999, padding: "4px 10px", fontSize: "0.66rem", fontWeight: 700 }}>{f}</span>
+              ))}
+            </div>
+          </div>
+          <div style={{ display: "flex", height: 380 }}>
+            <div style={{ width: 140, borderRight: "1px solid #ECE7DC", overflowY: "auto" }} className="p-2">
+              {fermesListe.map((f, i) => (
+                <div key={f} className="flex items-center gap-1.5 px-1.5 py-1.5" style={{ background: i===6?"#E1F5EE":"transparent", borderRadius: 6 }}>
+                  <span style={{ width: 6, height: 6, borderRadius: "50%", background: i<15?"#2A9D8F":i<18?"#E8A33D":"#D9534F" }} />
+                  <span style={{ fontSize: "0.68rem", fontWeight: i===6?700:500 }}>Ferme {i+1} {f}</span>
+                </div>
+              ))}
+            </div>
+            <div style={{ flex: 1, position: "relative", background: "linear-gradient(135deg, #2F4A3D, #4A6B4A 40%, #6B8A4A 70%, #7FA05A)" }}>
+              {[[15,20],[35,15],[55,10],[70,25],[20,40],[45,45],[65,50],[80,45],[30,60],[50,65],[70,70],[85,65],[25,80],[45,85],[65,80]].map(([x,y],i) => (
+                <div key={i} style={{ position: "absolute", left: `${x}%`, top: `${y}%`, width: 22, height: 22, borderRadius: "50%", background: i%7===6?"#D9534F":i%5===0?"#E8A33D":"#2A9D8F", color: "#fff", fontSize: "0.6rem", fontWeight: 800 }} className="flex items-center justify-center">{i+1}</div>
+              ))}
+              <div style={{ position: "absolute", left: "38%", top: "28%", background: "#fff", borderRadius: 10, width: 190, padding: 10, boxShadow: "0 8px 20px rgba(0,0,0,0.25)" }}>
+                <div className="flex items-center gap-1.5 mb-1"><span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2A9D8F" }} /><span style={{ fontWeight: 800, fontSize: "0.75rem" }}>Ferme 7 - Taroudant</span></div>
+                <div style={{ fontSize: "0.62rem", color: "#5C6B62" }}>245 ha · Avocats</div>
+                <div style={{ fontSize: "0.62rem", color: "#5C6B62" }}>1 250 T (cette saison) · 68 employés</div>
+                <button style={{ background: "#2A9D8F", color: "#fff", borderRadius: 6, padding: "4px 0", fontSize: "0.64rem", fontWeight: 700, width: "100%" }} className="mt-1.5">Voir les détails →</button>
+              </div>
+              <div style={{ position: "absolute", left: 10, bottom: 10, background: "rgba(255,255,255,0.92)", borderRadius: 8, padding: "6px 10px", fontSize: "0.62rem" }}>
+                <div style={{ fontWeight: 700 }} className="mb-1">Statut des fermes</div>
+                <div className="flex items-center gap-1"><span style={{ width: 6, height: 6, borderRadius: "50%", background: "#2A9D8F" }} />Active (15)</div>
+                <div className="flex items-center gap-1"><span style={{ width: 6, height: 6, borderRadius: "50%", background: "#E8A33D" }} />Maintenance (3)</div>
+                <div className="flex items-center gap-1"><span style={{ width: 6, height: 6, borderRadius: "50%", background: "#D9534F" }} />Alerte (2)</div>
+              </div>
+              <div style={{ position: "absolute", right: 10, bottom: 10, background: "rgba(255,255,255,0.92)", borderRadius: 8, padding: "5px 10px", fontSize: "0.62rem", fontWeight: 700 }}>☀️ 24°C Ensoleillé</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <div style={cardStyle}>
+            <div style={{ fontWeight: 700, fontSize: "0.82rem" }} className="mb-2.5">Production par culture (Tonnes)</div>
+            {cultures.map((cu) => (
+              <div key={cu.nom} className="mb-2">
+                <div className="flex justify-between mb-1"><span style={{ fontSize: "0.7rem" }}>{cu.nom}</span><span style={{ fontSize: "0.68rem", fontWeight: 700 }}>{cu.t} · {cu.pct}%</span></div>
+                <div style={{ background: "#F1EDE0", borderRadius: 999, height: 6 }}><div style={{ width: `${cu.pct}%`, background: cu.color, height: 6, borderRadius: 999 }} /></div>
+              </div>
+            ))}
+          </div>
+          <div style={cardStyle}>
+            <div style={{ fontWeight: 700, fontSize: "0.82rem" }} className="mb-2.5">Top 5 fermes (Production)</div>
+            {top5.map((f, i) => (
+              <div key={f.nom} className="mb-2">
+                <div className="flex justify-between mb-1"><span style={{ fontSize: "0.7rem" }}>{i+1}. {f.nom}</span><span style={{ fontSize: "0.68rem", fontWeight: 700 }}>{f.t}</span></div>
+                <div style={{ background: "#F1EDE0", borderRadius: 999, height: 6 }}><div style={{ width: `${f.pct}%`, background: "#2A9D8F", height: 6, borderRadius: 999 }} /></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={cardStyle} className="mb-4">
+        <div style={{ fontWeight: 700, fontSize: "0.82rem" }} className="mb-2.5">Activités récentes</div>
+        <div className="grid grid-cols-2 gap-2">
+          {activites.map((a, i) => { const Icon = a.icon; return (
+            <div key={i} className="flex items-start gap-2.5">
+              <div style={{ background: `${a.color}18`, borderRadius: 8, width: 28, height: 28 }} className="flex items-center justify-center flex-shrink-0"><Icon size={14} color={a.color} /></div>
+              <div>
+                <div style={{ fontSize: "0.74rem", fontWeight: 700 }}>{a.titre}</div>
+                <div style={{ fontSize: "0.68rem", color: "#5C6B62" }}>{a.detail} · {a.temps}</div>
+              </div>
+            </div>
+          );})}
+        </div>
+      </div>
+
+      <div className="grid gap-3 mb-4" style={{ gridTemplateColumns: "1.4fr 1fr 1fr" }}>
+        <div style={cardStyle}>
+          <div style={{ fontWeight: 700, fontSize: "0.82rem" }} className="mb-3">Évolution de la production (Tonnes)</div>
+          <svg viewBox="0 0 300 120" width="100%" height="120">
+            <polyline points={evolution2024.map((v,i) => `${i*(300/11)},${120 - (v/8000)*110}`).join(" ")} fill="none" stroke="#94A3B8" strokeWidth="1.5" strokeDasharray="4,3" />
+            <polyline points={evolution2025.map((v,i) => `${i*(300/11)},${120 - (v/8000)*110}`).join(" ")} fill="none" stroke="#2A9D8F" strokeWidth="2" />
+          </svg>
+          <div className="flex justify-between mt-1">{mois.map((m) => (<span key={m} style={{ fontSize: "0.52rem", color: "#94A3B8" }}>{m}</span>))}</div>
+        </div>
+        <div style={cardStyle}>
+          <div style={{ fontWeight: 700, fontSize: "0.82rem" }} className="mb-3">Répartition des coûts</div>
+          <div style={{ width: 110, height: 110, borderRadius: "50%", background: `conic-gradient(${donutGradient})`, margin: "0 auto", position: "relative" }} className="flex items-center justify-center">
+            <div style={{ width: 62, height: 62, borderRadius: "50%", background: "#fff" }} className="flex flex-col items-center justify-center">
+              <span style={{ fontWeight: 800, fontSize: "0.72rem" }}>32,6 MDH</span>
+              <span style={{ fontSize: "0.55rem", color: "#94A3B8" }}>Total</span>
+            </div>
+          </div>
+          <div className="mt-3">
+            {couts.map((s) => (<div key={s.nom} className="flex items-center justify-between mb-1"><span className="flex items-center gap-1.5" style={{ fontSize: "0.62rem" }}><span style={{ width: 6, height: 6, borderRadius: "50%", background: s.color }} />{s.nom}</span><span style={{ fontSize: "0.62rem", fontWeight: 700 }}>{s.pct}%</span></div>))}
+          </div>
+        </div>
+        <div style={cardStyle}>
+          <div style={{ fontWeight: 700, fontSize: "0.82rem" }} className="mb-3">Rendement moyen (T/ha)</div>
+          <div className="flex items-end justify-around" style={{ height: 110 }}>
+            {rendements.map((r) => (
+              <div key={r.nom} className="flex flex-col items-center" style={{ width: 40 }}>
+                <span style={{ fontSize: "0.62rem", fontWeight: 700 }} className="mb-1">{r.v}</span>
+                <div style={{ width: 24, height: `${(r.v/30)*90}px`, background: "#2A9D8F", borderRadius: "4px 4px 0 0" }} />
+                <span style={{ fontSize: "0.56rem", color: "#5C6B62" }} className="mt-1">{r.nom}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div style={cardStyle}>
+        <div style={{ fontWeight: 700, fontSize: "0.82rem" }} className="mb-3">Indicateurs environnementaux</div>
+        <div className="grid grid-cols-4 gap-3">
+          {env.map((e) => (
+            <div key={e.label} className="flex items-center gap-2.5">
+              <span style={{ fontSize: "1.3rem" }}>{e.icon}</span>
+              <div>
+                <div style={{ fontWeight: 800, fontSize: "0.85rem" }}>{e.val}</div>
+                <div style={{ fontSize: "0.64rem", color: "#5C6B62" }}>{e.label} {e.trend && <span style={{ color: "#2A9D8F", fontWeight: 700 }}>{e.trend}</span>}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StatCard({ title, value, unit, sub, footer, variant = "green" }) {
   const bg = variant === "orange"
     ? `linear-gradient(145deg, ${c.orangeLight} 0%, ${c.orange} 100%)`
@@ -2167,14 +2384,20 @@ export default function App() {
           .app-bottom-nav { display: none !important; }
           .sidebar-desktop {
             display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; width: 232px;
-            background: #fff; border-right: 1px solid #F0E6D2; z-index: 25; padding: 20px 14px; overflow-y: auto;
+            background: #14261F; z-index: 25; padding: 20px 14px; overflow-y: auto;
           }
           .content-col { margin-left: 232px; }
           .desktop-search { display: flex !important; }
           .header-logo-mobile { display: none !important; }
-          .kpi-strip { grid-template-columns: repeat(5, minmax(0,1fr)) !important; }
-          .kpi-strip-2 { grid-template-columns: repeat(4, minmax(0,1fr)) !important; }
+          .kpi-strip { grid-template-columns: repeat(7, minmax(0,1fr)) !important; }
+          .kpi-strip-2 { grid-template-columns: 1.7fr 1fr !important; }
+          .topbar-mobile { display: none !important; }
+          .topbar-desktop { display: flex !important; }
+          .dashboard-mobile-only { display: none !important; }
+          .vue-globale-desktop { display: block !important; }
         }
+        .vue-globale-desktop { display: none; }
+        .topbar-desktop { display: none; align-items: center; justify-content: space-between; padding: 14px 24px; position: sticky; top: 0; z-index: 10; }
         .desktop-search { display: none; }
         .sidebar-link { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; font-size: 0.82rem; font-weight: 600; margin-bottom: 2px; }
         @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(193,89,79,0.5); } 50% { box-shadow: 0 0 0 8px rgba(193,89,79,0); } }
@@ -2182,58 +2405,45 @@ export default function App() {
         #bottomNav::-webkit-scrollbar { display: none; }`}</style>
 
       <aside className="sidebar-desktop">
-        <div className="flex items-center gap-2.5 mb-6 px-2">
-          <div style={{ borderRadius: 10, width: 34, height: 34, overflow: "hidden" }}><ZMLogo size={34} /></div>
-          <span className="font-display" style={{ fontWeight: 800, fontSize: "0.95rem", color: c.ink }}>AGRICORE</span>
+        <div className="flex items-center gap-2.5 mb-7 px-1">
+          <div style={{ borderRadius: 8, width: 30, height: 30, overflow: "hidden" }}><ZMLogo size={30} /></div>
+          <div>
+            <div className="font-display" style={{ fontWeight: 800, fontSize: "0.92rem", color: "#fff", lineHeight: 1.1 }}>AGRIMAX</div>
+            <div style={{ fontSize: "0.52rem", color: "#7FA593", letterSpacing: "0.06em", fontWeight: 700 }}>GROUPE AGRICOLE</div>
+          </div>
         </div>
         <div style={{ flex: 1 }}>
           {tabs.map((t) => {
             const Icon = t.icon; const active = tab === t.key;
             return (
-              <button key={t.key} onClick={() => setTab(t.key)} className="sidebar-link" style={{ background: active ? "rgba(42,157,143,0.12)" : "transparent", color: active ? c.cardGreenDeep : c.inkSoft, width: "100%", textAlign: "right" }}>
-                <Icon size={17} color={active ? c.cardGreenDeep : c.inkMuted2} />
+              <button key={t.key} onClick={() => setTab(t.key)} className="sidebar-link" style={{ background: active ? "rgba(255,255,255,0.12)" : "transparent", color: active ? "#fff" : "#8FAD9E", width: "100%", textAlign: "right" }}>
+                <Icon size={16} color={active ? "#4ADE80" : "#6F8F80"} />
                 <span>{t.key}</span>
               </button>
             );
           })}
         </div>
-        <div style={{ borderTop: `1px solid ${c.line}` }} className="pt-3 mt-2 flex items-center gap-2.5 px-2">
-          <div style={{ width: 32, height: 32, borderRadius: "50%", background: c.bg }} className="flex items-center justify-center">
-            <span style={{ fontSize: "0.72rem", fontWeight: 800, color: c.cardGreenDeep }}>{(currentUser.nom || "?")[0]}</span>
-          </div>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: "0.76rem", fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{currentUser.nom}</div>
-            <div style={{ fontSize: "0.66rem", color: c.inkMuted2 }}>{roleLabel[currentUser.role]}</div>
-          </div>
-          <button onClick={async () => { await supabase.auth.signOut(); setCurrentUser(null); setFarms({}); setCurrentFarmId(null); }}><LogOut size={15} color={c.inkMuted2} /></button>
+        <div style={{ background: "rgba(255,255,255,0.06)", borderRadius: 12 }} className="p-3 mb-3">
+          <div style={{ fontSize: "0.72rem", fontWeight: 700, color: "#fff" }}>Un support à vos côtés</div>
+          <div style={{ fontSize: "0.62rem", color: "#8FAD9E" }} className="mt-0.5 mb-2">Notre équipe vous accompagne</div>
+          <button style={{ background: "#fff", color: "#14261F", borderRadius: 8, padding: "6px 0", fontSize: "0.68rem", fontWeight: 700, width: "100%" }}>Nous contacter</button>
+        </div>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }} className="pt-3 flex items-center justify-between px-1">
+          <span style={{ fontSize: "0.6rem", color: "#6F8F80" }}>AGRIMAX v2.5.0</span>
+          <button onClick={async () => { await supabase.auth.signOut(); setCurrentUser(null); setFarms({}); setCurrentFarmId(null); }}><LogOut size={13} color="#6F8F80" /></button>
         </div>
       </aside>
 
       <div className="content-col">
-      <header style={{ background: `linear-gradient(135deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 100%)`, boxShadow: "0 4px 20px rgba(33,102,92,0.18)" }} className="px-5 py-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-2.5 header-logo-mobile">
+      <header style={{ background: `linear-gradient(135deg, ${c.headerGreenLight} 0%, ${c.headerGreen} 100%)`, boxShadow: "0 4px 20px rgba(33,102,92,0.18)" }} className="px-5 py-4 flex items-center justify-between sticky top-0 z-10 topbar-mobile">
+        <div className="flex items-center gap-2.5">
           <div style={{ borderRadius: 12, width: 40, height: 40, overflow: "hidden" }} className="flex items-center justify-center"><ZMLogo size={40} /></div>
           <div>
             <div className="font-display" style={{ color: "#fff", fontWeight: 800, fontSize: "1.05rem" }}>{data.nom}</div>
             <div style={{ color: "rgba(255,255,255,0.7)", fontSize: "0.68rem" }}>{currentUser.nom} · {roleLabel[currentUser.role]}</div>
           </div>
         </div>
-        <div className="desktop-search" style={{ flex: 1, maxWidth: 420, margin: "0 20px" }}>
-          <div className="flex items-center gap-2" style={{ background: "rgba(255,255,255,0.16)", borderRadius: 10, padding: "8px 12px" }}>
-            <Search size={15} color="rgba(255,255,255,0.8)" />
-            <input
-              onFocus={() => setShowGlobalSearch(true)}
-              placeholder="Rechercher une ferme, un lot, un employé..."
-              style={{ background: "transparent", border: "none", outline: "none", color: "#fff", fontSize: "0.8rem", flex: 1 }}
-            />
-          </div>
-        </div>
         <div className="flex items-center gap-3">
-          {myFarmIds.length > 1 && (
-            <select value={currentFarmId} onChange={(e) => switchFarm(e.target.value)} style={{ background: "rgba(255,255,255,0.16)", color: "#fff", border: "none", borderRadius: 10, padding: "6px 10px", fontSize: "0.75rem", fontWeight: 700 }}>
-              {myFarmIds.map((fid) => (<option key={fid} value={fid} style={{ color: "#000" }}>{farms[fid].nom}</option>))}
-            </select>
-          )}
           <button onClick={() => setShowGlobalSearch(true)}><Search size={19} color="#fff" /></button>
           <div style={{ position: "relative" }}>
             <button onClick={() => setShowNotifPanel(!showNotifPanel)} style={{ position: "relative" }}>
@@ -2253,6 +2463,48 @@ export default function App() {
             )}
           </div>
           <button onClick={async () => { await supabase.auth.signOut(); setCurrentUser(null); setFarms({}); setCurrentFarmId(null); }}><LogOut size={18} color="rgba(255,255,255,0.85)" /></button>
+        </div>
+      </header>
+
+      <header className="topbar-desktop" style={{ background: "#fff", borderBottom: "1px solid #ECE7DC" }}>
+        <div className="flex items-center" style={{ flex: 1, maxWidth: 480, background: "#F7F6F1", border: "1px solid #ECE7DC", borderRadius: 10, padding: "9px 14px", gap: 8 }}>
+          <Search size={16} color="#94A3B8" />
+          <input onFocus={() => setShowGlobalSearch(true)} placeholder="Rechercher une ferme, une parcelle, une culture..." style={{ background: "transparent", border: "none", outline: "none", fontSize: "0.82rem", flex: 1, color: c.ink }} />
+          <span style={{ fontSize: "0.66rem", color: "#94A3B8", border: "1px solid #ECE7DC", borderRadius: 5, padding: "1px 6px" }}>⌘K</span>
+        </div>
+        <div className="flex items-center gap-3">
+          {myFarmIds.length > 1 && (
+            <select value={currentFarmId} onChange={(e) => switchFarm(e.target.value)} style={{ background: "#fff", color: c.ink, border: "1px solid #ECE7DC", borderRadius: 10, padding: "8px 12px", fontSize: "0.78rem", fontWeight: 700 }}>
+              {myFarmIds.map((fid) => (<option key={fid} value={fid}>{farms[fid].nom}</option>))}
+            </select>
+          )}
+          <div style={{ position: "relative" }}>
+            <button onClick={() => setShowNotifPanel(!showNotifPanel)} style={{ position: "relative" }}>
+              <Bell size={19} color={c.ink} />
+              <span style={{ position: "absolute", top: -5, left: -6, background: c.danger, color: "#fff", fontSize: "0.6rem", fontWeight: 700, borderRadius: 999, width: 15, height: 15 }} className="flex items-center justify-center">{notifications.length}</span>
+            </button>
+            {showNotifPanel && (
+              <div style={{ position: "absolute", top: 32, left: 0, width: 300, background: c.white, borderRadius: 14, boxShadow: "0 12px 30px rgba(0,0,0,0.18)", zIndex: 30, maxHeight: 380, overflowY: "auto" }} className="p-2">
+                {notifications.length === 0 && <p style={{ color: c.inkMuted2, fontSize: "0.78rem", padding: "10px" }}>Aucune notification</p>}
+                {notifications.map((n, i) => (
+                  <div key={i} style={{ borderBottom: i < notifications.length - 1 ? `1px solid ${c.line}` : "none" }} className="p-2.5 flex items-start gap-2">
+                    <AlertTriangle size={14} color={n.severite === "danger" ? c.danger : c.orange} style={{ marginTop: 2, flexShrink: 0 }} />
+                    <span style={{ fontSize: "0.76rem", color: c.inkSoft }}>{n.message}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <div className="flex items-center gap-2" style={{ cursor: "pointer" }}>
+            <div style={{ width: 34, height: 34, borderRadius: "50%", background: c.bg }} className="flex items-center justify-center">
+              <span style={{ fontSize: "0.78rem", fontWeight: 800, color: c.cardGreenDeep }}>{(currentUser.nom || "?")[0]}</span>
+            </div>
+            <div>
+              <div style={{ fontSize: "0.8rem", fontWeight: 700, color: c.ink }}>{currentUser.nom}</div>
+              <div style={{ fontSize: "0.66rem", color: "#94A3B8" }}>{roleLabel[currentUser.role]}</div>
+            </div>
+            <ChevronDown size={14} color="#94A3B8" />
+          </div>
         </div>
       </header>
 
@@ -2291,6 +2543,7 @@ export default function App() {
           ];
           return (
           <>
+          <div className="dashboard-mobile-only">
             <h2 className="font-display mb-3" style={{ fontWeight: 800, fontSize: "1.05rem", color: c.ink }}>Aujourd'hui — {data.nom}</h2>
             <div className="grid grid-cols-2 gap-2.5 mb-6 kpi-strip">
               {cards.map((card) => {
@@ -2327,6 +2580,9 @@ export default function App() {
                 );})}
               </div>
             </div>
+          </div>
+
+          <VueGlobaleDesktop c={c} setTab={setTab} currentUser={currentUser} />
           </>
           );
         })()}
