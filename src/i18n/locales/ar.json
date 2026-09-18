@@ -1,0 +1,1276 @@
+{
+  "app": {
+    "name": "AGRIMAX",
+    "tagline": "مجموعة فلاحية"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "noData": "لا توجد بيانات",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "confirm": "تأكيد",
+    "optional": "اختياري",
+    "expired": "منتهي",
+    "expiring": "قريب من الانتهاء",
+    "search": "بحث",
+    "all": "الكل",
+    "logout": "تسجيل الخروج",
+    "language": "اللغة",
+    "notifications": "التنبيهات",
+    "searchPlaceholder": "بحث فـ AGRIMAX...",
+    "error": "وقع خطأ",
+    "retry": "إعادة المحاولة"
+  },
+  "auth": {
+    "title": "تسجيل الدخول",
+    "subtitle": "ادخل بياناتك للوصول إلى منصة AGRIMAX",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "submit": "دخول",
+    "submitting": "جاري الدخول...",
+    "invalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "noProfile": "حسابك غير مفعّل بعد على المنصة. تواصل مع المسؤول.",
+    "noFarmAccess": "لا تتوفر لديك صلاحية الوصول لأي مزرعة حالياً."
+  },
+  "filters": {
+    "farm": "المزرعة",
+    "allFarms": "كل المزارع",
+    "period": "الفترة",
+    "periods": {
+      "today": "اليوم",
+      "week": "هذا الأسبوع",
+      "month": "هذا الشهر",
+      "season": "هذا الموسم",
+      "year": "هذه السنة",
+      "custom": "فترة مخصصة"
+    }
+  },
+  "nav": {
+    "dashboard": "لوحة القيادة",
+    "sections": {
+      "farmsLand": "المزارع والأراضي",
+      "cropsProduction": "المحاصيل والإنتاج",
+      "traceabilityQuality": "التتبع والجودة",
+      "hrPayroll": "الموارد البشرية والأجور",
+      "stockWarehouses": "المخزون والمستودعات",
+      "procurement": "المشتريات",
+      "salesFinance": "المبيعات والمالية",
+      "fleetEquipment": "الأسطول والمعدات",
+      "administration": "الإدارة"
+    },
+    "items": {
+      "farms": "المزارع",
+      "sites": "المواقع",
+      "parcels": "القطع الفلاحية",
+      "seasons": "المواسم",
+      "crops": "المحاصيل",
+      "varieties": "الأصناف",
+      "cropCycles": "دورات الزراعة",
+      "harvestPlans": "خطط الحصاد",
+      "harvestSessions": "جلسات الحصاد",
+      "lots": "الدفعات",
+      "qualityChecks": "فحوصات الجودة",
+      "weighingTickets": "تذاكر الوزن",
+      "employees": "الموظفون",
+      "teams": "الفرق",
+      "attendance": "الحضور",
+      "payroll": "الأجور",
+      "products": "المنتجات",
+      "warehouses": "المستودعات",
+      "stockMovements": "حركات المخزون",
+      "stockBalances": "أرصدة المخزون",
+      "transfers": "تحويلات المخزون",
+      "suppliers": "الموردون",
+      "purchaseRequests": "طلبات الشراء",
+      "purchaseOrders": "أوامر الشراء",
+      "receptions": "الاستلامات",
+      "customers": "الزبائن",
+      "sales": "المبيعات",
+      "invoices": "الفواتير",
+      "expenses": "المصاريف",
+      "profitability": "الربحية",
+      "vehicles": "المركبات",
+      "drivers": "السائقون",
+      "transportMissions": "مهام النقل",
+      "equipment": "المعدات",
+      "maintenance": "الصيانة",
+      "fuelLogs": "سجل الوقود",
+      "groups": "مجموعات المستخدمين",
+      "roles": "الأدوار والصلاحيات",
+      "users": "المستخدمون",
+      "auditLog": "سجل التدقيق"
+    }
+  },
+  "farms": {
+    "title": "المزارع",
+    "add": "إضافة مزرعة",
+    "edit": "تعديل المزرعة",
+    "addTitle": "مزرعة جديدة",
+    "deleteConfirmTitle": "حذف المزرعة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف مزرعة \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "code": "الرمز",
+      "name": "الاسم",
+      "area": "المساحة (هكتار)",
+      "status": "الحالة",
+      "phone": "الهاتف",
+      "actions": ""
+    },
+    "fields": {
+      "code": "الرمز",
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "totalArea": "المساحة الإجمالية (هكتار)",
+      "cultivatedArea": "المساحة المزروعة (هكتار)",
+      "gpsLat": "خط العرض (GPS)",
+      "gpsLng": "خط الطول (GPS)",
+      "status": "الحالة"
+    },
+    "status": {
+      "active": "نشطة",
+      "maintenance": "صيانة",
+      "alert": "تنبيه",
+      "inactive": "غير نشطة"
+    }
+  },
+  "sites": {
+    "title": "المواقع",
+    "add": "إضافة موقع",
+    "edit": "تعديل الموقع",
+    "addTitle": "موقع جديد",
+    "deleteConfirmTitle": "حذف الموقع",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف الموقع \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "code": "الرمز",
+      "name": "الاسم",
+      "farm": "المزرعة",
+      "actions": ""
+    },
+    "fields": {
+      "code": "الرمز",
+      "name": "الاسم",
+      "farm": "المزرعة",
+      "gpsLat": "خط العرض (GPS)",
+      "gpsLng": "خط الطول (GPS)"
+    }
+  },
+  "parcels": {
+    "title": "القطع الفلاحية",
+    "add": "إضافة قطعة",
+    "edit": "تعديل القطعة",
+    "addTitle": "قطعة جديدة",
+    "deleteConfirmTitle": "حذف القطعة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف القطعة \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "filterBySite": "كل المواقع",
+    "columns": {
+      "code": "الرمز",
+      "name": "الاسم",
+      "site": "الموقع",
+      "area": "المساحة (هكتار)",
+      "actions": ""
+    },
+    "fields": {
+      "code": "الرمز",
+      "name": "الاسم",
+      "farm": "المزرعة",
+      "site": "الموقع",
+      "totalArea": "المساحة الإجمالية (هكتار)",
+      "usableArea": "المساحة القابلة للاستغلال (هكتار)",
+      "gpsLat": "خط العرض (GPS)",
+      "gpsLng": "خط الطول (GPS)"
+    },
+    "selectFarmFirst": "اختر المزرعة أولاً"
+  },
+  "crops": {
+    "title": "المحاصيل",
+    "add": "إضافة محصول",
+    "edit": "تعديل المحصول",
+    "addTitle": "محصول جديد",
+    "deleteConfirmTitle": "حذف المحصول",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف المحصول \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "nameAr": "الاسم (عربية)",
+      "nameFr": "الاسم (فرنسية)",
+      "category": "التصنيف",
+      "actions": ""
+    },
+    "fields": {
+      "nameAr": "الاسم (عربية)",
+      "nameFr": "الاسم (فرنسية)",
+      "category": "التصنيف"
+    },
+    "categories": {
+      "avocat": "أفوكا",
+      "fraise": "فراولة",
+      "agrumes": "حوامض",
+      "autres": "أخرى"
+    }
+  },
+  "varieties": {
+    "title": "الأصناف",
+    "add": "إضافة صنف",
+    "edit": "تعديل الصنف",
+    "addTitle": "صنف جديد",
+    "deleteConfirmTitle": "حذف الصنف",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف الصنف \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "name": "الاسم",
+      "crop": "المحصول",
+      "actions": ""
+    },
+    "fields": {
+      "name": "الاسم",
+      "crop": "المحصول"
+    }
+  },
+  "seasons": {
+    "title": "المواسم",
+    "add": "إضافة موسم",
+    "edit": "تعديل الموسم",
+    "addTitle": "موسم جديد",
+    "deleteConfirmTitle": "حذف الموسم",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف الموسم \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "generalFarm": "عام (كل المجموعة)",
+    "columns": {
+      "label": "الموسم",
+      "farm": "المزرعة",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية",
+      "actions": ""
+    },
+    "fields": {
+      "label": "الموسم (مثال: 2025-2026)",
+      "farm": "المزرعة",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ النهاية"
+    }
+  },
+  "cropCycles": {
+    "title": "دورات المحصول",
+    "add": "إضافة دورة",
+    "edit": "تعديل الدورة",
+    "addTitle": "دورة محصول جديدة",
+    "deleteConfirmTitle": "حذف دورة المحصول",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الدورة؟ هاد العملية ما ترجعش.",
+    "selectFarmFirst": "اختر المزرعة أولاً",
+    "selectParcelFirst": "اختر القطعة أولاً",
+    "selectCropFirst": "اختر المحصول أولاً",
+    "columns": {
+      "parcel": "القطعة",
+      "crop": "المحصول",
+      "variety": "الصنف",
+      "season": "الموسم",
+      "planting": "تاريخ الزرع",
+      "harvest": "تاريخ الحصاد المتوقع",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "parcel": "القطعة",
+      "crop": "المحصول",
+      "variety": "الصنف",
+      "season": "الموسم",
+      "plantingDate": "تاريخ الزرع",
+      "expectedHarvestDate": "تاريخ الحصاد المتوقع",
+      "actualHarvestDate": "تاريخ الحصاد الفعلي",
+      "expectedYield": "الإنتاج المتوقع (كلغ)",
+      "actualYield": "الإنتاج الفعلي (كلغ)",
+      "status": "الحالة"
+    },
+    "status": {
+      "planned": "مخططة",
+      "growing": "قيد النمو",
+      "harvesting": "قيد الحصاد",
+      "closed": "منتهية"
+    }
+  },
+  "employees": {
+    "title": "الموظفون",
+    "add": "إضافة موظف",
+    "edit": "تعديل الموظف",
+    "addTitle": "موظف جديد",
+    "deleteConfirmTitle": "حذف الموظف",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف الموظف \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "kpi": {
+      "total": "العدد الإجمالي",
+      "permanent": "دائم",
+      "seasonal": "موسمي",
+      "daily": "يومي"
+    },
+    "columns": {
+      "employeeNo": "الرقم",
+      "fullName": "الاسم الكامل",
+      "jobTitle": "المنصب",
+      "employmentType": "نوع التوظيف",
+      "status": "الحالة",
+      "phone": "الهاتف",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "employeeNo": "رقم الموظف",
+      "cin": "رقم البطاقة الوطنية",
+      "fullName": "الاسم الكامل",
+      "phone": "الهاتف",
+      "address": "العنوان",
+      "jobTitle": "المنصب",
+      "hireDate": "تاريخ التوظيف",
+      "cnssNo": "رقم CNSS",
+      "employmentType": "نوع التوظيف",
+      "status": "الحالة"
+    },
+    "employmentType": {
+      "permanent": "دائم",
+      "seasonal": "موسمي",
+      "daily": "يومي"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    }
+  },
+  "teams": {
+    "title": "الفرق",
+    "add": "إضافة فريق",
+    "edit": "تعديل الفريق",
+    "addTitle": "فريق جديد",
+    "deleteConfirmTitle": "حذف الفريق",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف الفريق \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "noLeader": "بلا رئيس فريق",
+    "manageMembers": "الأعضاء",
+    "membersCount": "{{count}} عضو",
+    "columns": {
+      "name": "اسم الفريق",
+      "farm": "المزرعة",
+      "leader": "رئيس الفريق",
+      "members": "الأعضاء",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "name": "اسم الفريق",
+      "leader": "رئيس الفريق"
+    },
+    "membersModal": {
+      "title": "أعضاء الفريق: {{name}}",
+      "addMember": "إضافة عضو",
+      "selectEmployee": "اختر موظف",
+      "noMembers": "ماكاين حتى عضو فهاد الفريق بعد",
+      "remove": "إزالة"
+    }
+  },
+  "attendance": {
+    "title": "الحضور",
+    "add": "تسجيل حضور",
+    "edit": "تعديل الحضور",
+    "addTitle": "تسجيل حضور جديد",
+    "deleteConfirmTitle": "حذف السجل",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد السجل؟ هاد العملية ما ترجعش.",
+    "dateFilter": "التاريخ",
+    "columns": {
+      "employee": "الموظف",
+      "checkIn": "الدخول",
+      "checkOut": "الخروج",
+      "hoursWorked": "ساعات العمل",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "employee": "الموظف",
+      "checkIn": "وقت الدخول",
+      "checkOut": "وقت الخروج",
+      "hoursWorked": "ساعات العمل",
+      "status": "الحالة"
+    },
+    "status": {
+      "present": "حاضر",
+      "absent": "غائب",
+      "leave": "إجازة"
+    }
+  },
+  "payroll": {
+    "title": "الأجور",
+    "add": "إضافة فترة أجور",
+    "edit": "تعديل الفترة",
+    "addTitle": "فترة أجور جديدة",
+    "deleteConfirmTitle": "حذف الفترة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الفترة؟ هاد العملية ما ترجعش.",
+    "manageLines": "خطوط الأجور",
+    "linesCount": "{{count}} خط",
+    "columns": {
+      "period": "الفترة",
+      "farm": "المزرعة",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "periodStart": "بداية الفترة",
+      "periodEnd": "نهاية الفترة",
+      "status": "الحالة"
+    },
+    "status": {
+      "open": "مفتوحة",
+      "closed": "مغلقة"
+    },
+    "lines": {
+      "title": "خطوط الأجور",
+      "employee": "الموظف",
+      "basePay": "الأجر الأساسي",
+      "daysWorked": "أيام العمل",
+      "hours": "الساعات",
+      "overtimePay": "أجر الساعات الإضافية",
+      "bonuses": "المكافآت",
+      "advances": "السلف",
+      "deductions": "الاقتطاعات",
+      "cnss": "CNSS",
+      "netPay": "الصافي",
+      "addLine": "إضافة خط",
+      "noLines": "ماكاين حتى خط بعد",
+      "selectEmployee": "اختر موظف"
+    },
+    "errors": {
+      "endBeforeStart": "تاريخ نهاية الفترة خاصو يكون بعد تاريخ البداية"
+    }
+  },
+  "products": {
+    "title": "المنتجات",
+    "add": "إضافة منتج",
+    "edit": "تعديل المنتج",
+    "addTitle": "منتج جديد",
+    "deleteConfirmTitle": "حذف المنتج",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف المنتج \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "sku": "SKU",
+      "nameAr": "الاسم (عربية)",
+      "nameFr": "الاسم (فرنسية)",
+      "category": "التصنيف",
+      "unit": "الوحدة",
+      "actions": ""
+    },
+    "fields": {
+      "sku": "SKU",
+      "nameAr": "الاسم (عربية)",
+      "nameFr": "الاسم (فرنسية)",
+      "category": "التصنيف",
+      "unit": "الوحدة"
+    },
+    "categories": {
+      "fertilizer": "سماد",
+      "pesticide": "مبيد",
+      "seed": "بذور",
+      "fuel": "وقود",
+      "packaging": "تغليف",
+      "harvested_product": "منتج مقطوف",
+      "spare_part": "قطعة غيار"
+    },
+    "units": {
+      "kg": "كيلوغرام (كلغ)",
+      "g": "غرام",
+      "L": "لتر",
+      "piece": "وحدة",
+      "sac_25kg": "كيس 25 كلغ",
+      "sac_50kg": "كيس 50 كلغ",
+      "tonne": "طن",
+      "carton": "كرطونة"
+    }
+  },
+  "warehouses": {
+    "title": "المستودعات",
+    "add": "إضافة مستودع",
+    "edit": "تعديل المستودع",
+    "addTitle": "مستودع جديد",
+    "deleteConfirmTitle": "حذف المستودع",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف المستودع \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "name": "الاسم",
+      "farm": "المزرعة",
+      "type": "النوع",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "name": "الاسم",
+      "type": "النوع"
+    },
+    "types": {
+      "main": "رئيسي",
+      "cold_storage": "تبريد",
+      "fuel_tank": "خزان وقود"
+    }
+  },
+  "stockMovements": {
+    "title": "حركات المخزون",
+    "add": "إضافة حركة",
+    "addTitle": "حركة مخزون جديدة",
+    "appendOnlyNotice": "سجل الحركات append-only: بلا تعديل على حركة موجودة. التصحيح يتم بحركة ADJUSTMENT جديدة.",
+    "deleteConfirmTitle": "حذف الحركة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الحركة؟ هاد العملية ما ترجعش (استعمالها فقط فحالة خطأ حقيقي فالإدخال).",
+    "columns": {
+      "date": "التاريخ",
+      "product": "المنتج",
+      "type": "نوع الحركة",
+      "quantity": "الكمية",
+      "source": "من مخزن",
+      "destination": "إلى مخزن",
+      "reason": "السبب",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "movementType": "نوع الحركة",
+      "product": "المنتج",
+      "quantity": "الكمية",
+      "sourceWarehouse": "المخزن المصدر",
+      "destinationWarehouse": "المخزن الوجهة",
+      "occurredAt": "تاريخ ووقت الحركة",
+      "reason": "السبب"
+    },
+    "types": {
+      "PURCHASE_RECEIPT": "استلام شراء",
+      "TRANSFER_OUT": "تحويل صادر",
+      "TRANSFER_IN": "تحويل وارد",
+      "CONSUMPTION": "استهلاك",
+      "HARVEST_ENTRY": "دخول من الحصاد",
+      "RETURN": "إرجاع",
+      "LOSS": "فقدان",
+      "DAMAGE": "تلف",
+      "SALE": "بيع",
+      "SHIPMENT": "شحن",
+      "ADJUSTMENT": "تسوية"
+    }
+  },
+  "stockBalances": {
+    "title": "أرصدة المخزون",
+    "columns": {
+      "product": "المنتج",
+      "warehouse": "المخزن",
+      "balance": "الرصيد الحالي",
+      "status": "الحالة"
+    },
+    "status": {
+      "normal": "طبيعي",
+      "low": "منخفض",
+      "out": "نافذ"
+    }
+  },
+  "suppliers": {
+    "title": "الموردون",
+    "add": "إضافة مورد",
+    "edit": "تعديل المورد",
+    "addTitle": "مورد جديد",
+    "deleteConfirmTitle": "حذف المورد",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف المورد \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "companyName": "الشركة",
+      "contactName": "المسؤول",
+      "phone": "الهاتف",
+      "leadTime": "مدة التسليم (أيام)",
+      "actions": ""
+    },
+    "fields": {
+      "companyName": "اسم الشركة",
+      "ice": "ICE",
+      "ifNo": "IF",
+      "rc": "RC",
+      "address": "العنوان",
+      "contactName": "اسم المسؤول",
+      "phone": "الهاتف",
+      "email": "البريد الإلكتروني",
+      "paymentTerms": "شروط الأداء",
+      "leadTimeDays": "مدة التسليم (أيام)"
+    }
+  },
+  "purchaseRequests": {
+    "title": "طلبات الشراء",
+    "add": "إضافة طلب",
+    "edit": "تعديل الطلب",
+    "addTitle": "طلب شراء جديد",
+    "deleteConfirmTitle": "حذف الطلب",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الطلب؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "farm": "المزرعة",
+      "product": "المنتج",
+      "quantity": "الكمية",
+      "neededBy": "مطلوب قبل",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة الطالبة",
+      "product": "المنتج",
+      "quantity": "الكمية",
+      "neededBy": "مطلوب قبل تاريخ"
+    },
+    "status": {
+      "open": "مفتوح",
+      "fulfilled": "منجز",
+      "cancelled": "ملغى"
+    },
+    "suggestion": {
+      "title": "كاين كمية كافية فمزارع أخرى!",
+      "message": "لقينا {{quantity}} {{unit}} من هاد المنتج متوفرة فالمزارع التالية — يمكن تحول بدل ما تشري:",
+      "availableQty": "متوفر: {{quantity}}",
+      "transferFrom": "تحويل من هنا",
+      "declineAndRequest": "لا، كمل الطلب عادي",
+      "transferCreated": "تصنع طلب تحويل بنجاح بدل طلب الشراء."
+    }
+  },
+  "purchaseOrders": {
+    "title": "أوامر الشراء",
+    "add": "إضافة أمر شراء",
+    "edit": "تعديل أمر الشراء",
+    "addTitle": "أمر شراء جديد",
+    "deleteConfirmTitle": "حذف أمر الشراء",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الأمر؟ هاد العملية ما ترجعش.",
+    "manageLines": "المنتجات",
+    "linesCount": "{{count}} سطر",
+    "noLinkedRequest": "بلا طلب مرتبط",
+    "columns": {
+      "supplier": "المورد",
+      "requestingFarm": "المزرعة الطالبة",
+      "deliveryFarm": "مزرعة التسليم",
+      "payingFarm": "المزرعة الدافعة",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "linkedRequest": "طلب الشراء المرتبط (اختياري)",
+      "supplier": "المورد",
+      "requestingFarm": "المزرعة الطالبة",
+      "deliveryFarm": "مزرعة التسليم",
+      "payingFarm": "المزرعة الدافعة",
+      "status": "الحالة",
+      "expectedDeliveryDate": "تاريخ التسليم المتوقع"
+    },
+    "status": {
+      "draft": "مسودة",
+      "approved": "موافق عليه",
+      "confirmed": "مؤكد",
+      "delivered": "تم التسليم",
+      "invoiced": "تمت الفوترة",
+      "paid": "مؤدى",
+      "cancelled": "ملغى"
+    },
+    "lines": {
+      "title": "منتجات أمر الشراء",
+      "product": "المنتج",
+      "quantity": "الكمية",
+      "unitPrice": "سعر الوحدة",
+      "tax": "الضريبة",
+      "addLine": "إضافة سطر",
+      "noLines": "ماكاين حتى سطر بعد",
+      "selectProduct": "اختر منتج"
+    }
+  },
+  "receptions": {
+    "title": "الاستلامات",
+    "add": "تسجيل استلام",
+    "addTitle": "استلام جديد",
+    "deleteConfirmTitle": "حذف الاستلام",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الاستلام؟ هاد العملية ما ترجعش.",
+    "autoStockNotice": "عند التأكيد، غادي تتصنع تلقائياً حركة \"استلام شراء\" فـ stock_movements (إلا كانت الحالة ماشي \"مرفوض\").",
+    "selectOrderFirst": "اختر أمر الشراء أولاً",
+    "columns": {
+      "order": "أمر الشراء",
+      "farm": "مزرعة التسليم",
+      "product": "المنتج",
+      "quantity": "الكمية المستلمة",
+      "quality": "حالة الجودة",
+      "receivedAt": "تاريخ الاستلام",
+      "actions": ""
+    },
+    "fields": {
+      "purchaseOrder": "أمر الشراء",
+      "line": "المنتج (من الطلبية)",
+      "deliveryFarm": "مزرعة التسليم",
+      "warehouse": "المخزن الوجهة",
+      "receivedQuantity": "الكمية المستلمة",
+      "qualityStatus": "حالة الجودة"
+    },
+    "quality": {
+      "accepted": "مقبول",
+      "rejected": "مرفوض",
+      "partial": "جزئي"
+    }
+  },
+  "invoices": {
+    "title": "الفواتير",
+    "add": "إضافة فاتورة",
+    "edit": "تعديل الفاتورة",
+    "addTitle": "فاتورة جديدة",
+    "deleteConfirmTitle": "حذف الفاتورة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الفاتورة؟ هاد العملية ما ترجعش.",
+    "managePayments": "الأداءات",
+    "paidOf": "{{paid}} / {{amount}}",
+    "columns": {
+      "order": "أمر الشراء",
+      "farm": "المزرعة الدافعة",
+      "amount": "المبلغ",
+      "dueDate": "تاريخ الاستحقاق",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "purchaseOrder": "أمر الشراء",
+      "payingFarm": "المزرعة الدافعة",
+      "amount": "المبلغ",
+      "dueDate": "تاريخ الاستحقاق",
+      "status": "الحالة"
+    },
+    "status": {
+      "unpaid": "غير مؤدى",
+      "partial": "مؤدى جزئياً",
+      "paid": "مؤدى بالكامل"
+    },
+    "payments": {
+      "title": "أداءات الفاتورة",
+      "amount": "المبلغ",
+      "paidAt": "تاريخ الأداء",
+      "addPayment": "إضافة أداء",
+      "noPayments": "ماكاين حتى أداء بعد",
+      "totalPaid": "المجموع المؤدى: {{total}} / {{amount}}"
+    }
+  },
+  "harvestPlans": {
+    "title": "خطط الحصاد",
+    "add": "إضافة خطة",
+    "edit": "تعديل الخطة",
+    "addTitle": "خطة حصاد جديدة",
+    "deleteConfirmTitle": "حذف الخطة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الخطة؟ هاد العملية ما ترجعش.",
+    "selectFarmFirst": "اختر المزرعة أولاً",
+    "filters": {
+      "today": "اليوم",
+      "tomorrow": "غداً",
+      "week": "7 أيام",
+      "month": "30 يوم"
+    },
+    "columns": {
+      "cropCycle": "دورة المحصول",
+      "plannedDate": "التاريخ المخطط",
+      "expectedQuantity": "الكمية المتوقعة (كلغ)",
+      "team": "الفريق",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "cropCycle": "دورة المحصول",
+      "plannedDate": "التاريخ المخطط",
+      "expectedQuantity": "الكمية المتوقعة (كلغ)",
+      "team": "الفريق"
+    }
+  },
+  "harvestSessions": {
+    "title": "جلسات الحصاد",
+    "add": "إضافة جلسة",
+    "edit": "تعديل الجلسة",
+    "addTitle": "جلسة حصاد جديدة",
+    "deleteConfirmTitle": "حذف الجلسة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الجلسة؟ هاد العملية ما ترجعش.",
+    "inProgress": "جارية",
+    "columns": {
+      "cropCycle": "دورة المحصول",
+      "team": "الفريق",
+      "start": "بداية",
+      "end": "نهاية",
+      "boxes": "الصناديق",
+      "weight": "الوزن (كلغ)",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "cropCycle": "دورة المحصول",
+      "team": "الفريق",
+      "responsible": "المسؤول",
+      "startTime": "وقت البداية",
+      "endTime": "وقت النهاية",
+      "boxesCount": "عدد الصناديق",
+      "weightKg": "الوزن (كلغ)",
+      "qualityGrade": "درجة الجودة"
+    }
+  },
+  "lots": {
+    "title": "الدفعات (Lots)",
+    "createFromSession": "إنشاء LOT",
+    "alreadyCreated": "تم إنشاء LOT",
+    "createModalTitle": "تأكيد إنشاء LOT",
+    "createNotice": "غادي يتصنع LOT جديد بهاد المعطيات، + حركة \"دخول من الحصاد\" فـ stock_movements تلقائياً.",
+    "viewTitle": "تفاصيل الدفعة",
+    "columns": {
+      "lotCode": "الرمز",
+      "parcel": "القطعة",
+      "crop": "المحصول",
+      "quantity": "الكمية (كلغ)",
+      "boxes": "الصناديق",
+      "status": "الحالة",
+      "harvestedAt": "تاريخ الحصاد",
+      "actions": ""
+    },
+    "fields": {
+      "lotCode": "رمز الدفعة",
+      "parcel": "القطعة",
+      "crop": "المحصول",
+      "variety": "الصنف",
+      "season": "الموسم",
+      "harvestedAt": "تاريخ الحصاد",
+      "team": "الفريق",
+      "quantity": "الكمية (كلغ)",
+      "boxes": "الصناديق",
+      "qualityGrade": "درجة الجودة",
+      "product": "المنتج (فالمخزون)",
+      "warehouse": "المخزن الوجهة"
+    },
+    "packaging": {
+      "action": "تسجيل تعبئة",
+      "title": "تسجيل تعبئة",
+      "notice": "غادي تتصنع حركة \"استهلاك\" لمواد التعبئة + حدث تعبئة فالـ Traceability.",
+      "product": "منتج التعبئة",
+      "warehouse": "المخزن",
+      "quantity": "الكمية",
+      "confirm": "تأكيد التعبئة"
+    },
+    "shipment": {
+      "action": "تسجيل شحنة",
+      "title": "تسجيل شحنة",
+      "notice": "غادي تتصنع حركة \"شحن\" + تحديث حالة اللوط لـ \"مشحون\" + حدث شحن فالـ Traceability.",
+      "destinationWarehouse": "مخزن الوجهة (اختياري)",
+      "quantity": "الكمية",
+      "confirm": "تأكيد الشحن"
+    }
+  },
+  "traceability": {
+    "title": "تتبع الدفعة",
+    "viewTimeline": "التتبع",
+    "noEvents": "ماكاين حتى حدث بعد",
+    "eventTypes": {
+      "harvest": "الحصاد",
+      "transport": "النقل",
+      "quality_check": "فحص الجودة",
+      "shipment": "الشحن"
+    },
+    "by": "بواسطة {{name}}",
+    "location": "الموقع: {{location}}"
+  },
+  "vehicles": {
+    "title": "المركبات",
+    "add": "إضافة مركبة",
+    "edit": "تعديل المركبة",
+    "addTitle": "مركبة جديدة",
+    "deleteConfirmTitle": "حذف المركبة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف المركبة \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "expiring": "قريبة من الانتهاء",
+    "expired": "منتهية",
+    "columns": {
+      "plateNo": "رقم اللوحة",
+      "brandModel": "الماركة/الموديل",
+      "farm": "المزرعة",
+      "status": "الحالة",
+      "insurance": "التأمين",
+      "inspection": "الفحص التقني",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "plateNo": "رقم اللوحة",
+      "brand": "الماركة",
+      "model": "الموديل",
+      "type": "النوع",
+      "capacity": "الحمولة",
+      "odometerKm": "عداد الكيلومترات",
+      "insuranceExpiry": "تاريخ انتهاء التأمين",
+      "inspectionExpiry": "تاريخ انتهاء الفحص التقني",
+      "status": "الحالة"
+    },
+    "status": {
+      "available": "متاحة",
+      "on_mission": "فمهمة",
+      "maintenance": "فالصيانة",
+      "out_of_service": "خارج الخدمة"
+    }
+  },
+  "drivers": {
+    "title": "السائقون",
+    "add": "إضافة سائق",
+    "edit": "تعديل السائق",
+    "addTitle": "سائق جديد",
+    "deleteConfirmTitle": "حذف السائق",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف السائق \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "noVehicle": "بلا مركبة",
+    "columns": {
+      "fullName": "الاسم الكامل",
+      "farm": "المزرعة",
+      "phone": "الهاتف",
+      "licenseNo": "رقم الرخصة",
+      "vehicle": "المركبة الحالية",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "fullName": "الاسم الكامل",
+      "cin": "رقم البطاقة الوطنية",
+      "phone": "الهاتف",
+      "licenseNo": "رقم الرخصة",
+      "licenseCategories": "أصناف الرخصة (مثال: B, C, EC)",
+      "licenseExpiry": "تاريخ انتهاء الرخصة",
+      "currentVehicle": "المركبة الحالية"
+    }
+  },
+  "weighingTickets": {
+    "title": "تذاكر الوزن",
+    "add": "إضافة تذكرة",
+    "addTitle": "تذكرة وزن جديدة",
+    "deleteConfirmTitle": "حذف التذكرة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد التذكرة؟ هاد العملية ما ترجعش.",
+    "noLot": "بلا لوط",
+    "columns": {
+      "ticketNo": "الرقم",
+      "vehicle": "المركبة",
+      "driver": "السائق",
+      "product": "المنتج",
+      "netWeight": "الوزن الصافي",
+      "occurredAt": "التاريخ",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "lot": "اللوط (اختياري)",
+      "vehicle": "المركبة",
+      "driver": "السائق",
+      "product": "المنتج",
+      "grossWeight": "الوزن الإجمالي",
+      "tareWeight": "الوزن الفارغ",
+      "netWeight": "الوزن الصافي (محسوب)",
+      "source": "المصدر",
+      "destination": "الوجهة"
+    }
+  },
+  "transportMissions": {
+    "title": "مهمات النقل",
+    "add": "إضافة مهمة",
+    "edit": "تعديل المهمة",
+    "addTitle": "مهمة نقل جديدة",
+    "deleteConfirmTitle": "حذف المهمة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد المهمة؟ هاد العملية ما ترجعش.",
+    "noLot": "بلا لوط",
+    "columns": {
+      "vehicle": "المركبة",
+      "driver": "السائق",
+      "sourceFarm": "من مزرعة",
+      "destinationFarm": "إلى مزرعة",
+      "status": "الحالة",
+      "departure": "الانطلاق",
+      "arrival": "الوصول",
+      "actions": ""
+    },
+    "fields": {
+      "vehicle": "المركبة",
+      "driver": "السائق",
+      "sourceFarm": "المزرعة المصدر",
+      "destinationFarm": "المزرعة الوجهة",
+      "product": "المنتج",
+      "lot": "اللوط (اختياري)",
+      "quantity": "الكمية",
+      "departureTime": "وقت الانطلاق",
+      "expectedArrival": "الوصول المتوقع",
+      "actualArrival": "الوصول الفعلي",
+      "distanceKm": "المسافة (كلم)",
+      "fuelUsed": "الوقود المستهلك",
+      "status": "الحالة"
+    },
+    "status": {
+      "planned": "مخططة",
+      "in_progress": "جارية",
+      "completed": "منتهية"
+    }
+  },
+  "equipment": {
+    "title": "المعدات",
+    "add": "إضافة معدة",
+    "edit": "تعديل المعدة",
+    "addTitle": "معدة جديدة",
+    "deleteConfirmTitle": "حذف المعدة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف المعدة \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "noOperator": "بلا مشغل",
+    "columns": {
+      "code": "الرمز",
+      "type": "النوع",
+      "farm": "المزرعة",
+      "operator": "المشغل",
+      "status": "الحالة",
+      "nextMaintenance": "الصيانة القادمة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "code": "الرمز",
+      "type": "النوع",
+      "operator": "المشغل",
+      "workingHours": "ساعات العمل",
+      "odometerKm": "عداد الكيلومترات",
+      "nextMaintenanceDate": "تاريخ الصيانة القادمة",
+      "status": "الحالة"
+    },
+    "types": {
+      "tractor": "جرار",
+      "pump": "مضخة",
+      "irrigation": "سقي",
+      "machine": "آلة",
+      "generator": "مولد",
+      "tool": "أداة",
+      "other": "أخرى"
+    },
+    "status": {
+      "available": "متاحة",
+      "in_use": "قيد الاستعمال",
+      "maintenance": "فالصيانة",
+      "out_of_service": "خارج الخدمة"
+    }
+  },
+  "maintenanceRecords": {
+    "title": "سجلات الصيانة",
+    "add": "إضافة سجل صيانة",
+    "addTitle": "سجل صيانة جديد",
+    "deleteConfirmTitle": "حذف السجل",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد السجل؟ هاد العملية ما ترجعش.",
+    "targetType": "نوع الهدف",
+    "targetTypes": {
+      "equipment": "معدة",
+      "vehicle": "مركبة"
+    },
+    "columns": {
+      "target": "الهدف",
+      "issue": "المشكل",
+      "technician": "التقني",
+      "cost": "التكلفة",
+      "nextDue": "الموعد القادم",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "target": "المعدة/المركبة",
+      "issue": "المشكل",
+      "technicianName": "اسم التقني",
+      "partsUsed": "القطع المستعملة",
+      "laborCost": "تكلفة اليد العاملة",
+      "partsCost": "تكلفة القطع",
+      "downtimeHours": "ساعات التوقف",
+      "nextDueDate": "الموعد القادم للصيانة"
+    }
+  },
+  "fuelLogs": {
+    "title": "سجلات الوقود",
+    "add": "إضافة تعبئة",
+    "addTitle": "تعبئة وقود جديدة",
+    "deleteConfirmTitle": "حذف السجل",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد السجل؟ هاد العملية ما ترجعش.",
+    "autoStockNotice": "عند الحفظ، غادي تتصنع تلقائياً حركة \"استهلاك\" فـ stock_movements من مخزن الخزان.",
+    "targetType": "نوع الهدف",
+    "targetTypes": {
+      "vehicle": "مركبة",
+      "equipment": "معدة"
+    },
+    "columns": {
+      "target": "الهدف",
+      "tank": "الخزان",
+      "quantity": "الكمية (لتر)",
+      "consumptionRate": "معدل الاستهلاك",
+      "occurredAt": "التاريخ",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "tankWarehouse": "خزان الوقود",
+      "fuelProduct": "منتج الوقود",
+      "target": "المركبة/المعدة",
+      "operator": "المشغل",
+      "quantityLiters": "الكمية (لتر)",
+      "odometerOrHours": "العداد (كلم أو ساعات)"
+    }
+  },
+  "qualityChecks": {
+    "title": "فحوصات الجودة",
+    "add": "إضافة فحص",
+    "addTitle": "فحص جودة جديد",
+    "deleteConfirmTitle": "حذف الفحص",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الفحص؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "lot": "اللوط",
+      "stage": "المرحلة",
+      "inspector": "المفتش",
+      "result": "النتيجة",
+      "checkedAt": "التاريخ",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "lot": "اللوط",
+      "stage": "المرحلة (مثال: استلام، ما قبل الشحن)",
+      "notes": "ملاحظات المعايير",
+      "result": "النتيجة",
+      "rejectReason": "سبب الرفض"
+    },
+    "result": {
+      "pass": "ناجح",
+      "fail": "راسب"
+    }
+  },
+  "expenses": {
+    "title": "المصاريف",
+    "add": "إضافة مصروف",
+    "addTitle": "مصروف جديد",
+    "deleteConfirmTitle": "حذف المصروف",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد المصروف؟ هاد العملية ما ترجعش.",
+    "allCategories": "كل الفئات",
+    "totalForPeriod": "مجموع المصاريف (الفترة المختارة)",
+    "byCategory": "حسب الفئة",
+    "columns": {
+      "date": "التاريخ",
+      "category": "الفئة",
+      "amount": "المبلغ",
+      "parcel": "القطعة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "parcel": "القطعة (اختياري)",
+      "cropCycle": "دورة المحصول (اختياري)",
+      "lot": "اللوط (اختياري)",
+      "category": "الفئة",
+      "amount": "المبلغ",
+      "expenseDate": "تاريخ المصروف"
+    },
+    "categories": {
+      "labor": "يد عاملة",
+      "fertilizer": "أسمدة",
+      "treatment": "معالجة",
+      "irrigation": "سقي",
+      "transport": "نقل",
+      "fuel": "وقود",
+      "maintenance": "صيانة",
+      "packaging": "تعبئة"
+    }
+  },
+  "customers": {
+    "title": "العملاء",
+    "add": "إضافة عميل",
+    "edit": "تعديل العميل",
+    "addTitle": "عميل جديد",
+    "deleteConfirmTitle": "حذف العميل",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف العميل \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "email": "البريد الإلكتروني",
+      "actions": ""
+    },
+    "fields": {
+      "name": "الاسم",
+      "phone": "الهاتف",
+      "email": "البريد الإلكتروني"
+    }
+  },
+  "sales": {
+    "title": "المبيعات",
+    "add": "إضافة بيع",
+    "addTitle": "بيع جديد",
+    "deleteConfirmTitle": "حذف البيع",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد البيع؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "lot": "اللوط",
+      "customer": "العميل",
+      "quantity": "الكمية",
+      "unitPrice": "سعر الوحدة",
+      "total": "المجموع",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "lot": "اللوط",
+      "customer": "العميل",
+      "quantity": "الكمية",
+      "unitPrice": "سعر الوحدة",
+      "destination": "الوجهة",
+      "status": "الحالة"
+    },
+    "status": {
+      "confirmed": "مؤكد",
+      "cancelled": "ملغى"
+    }
+  },
+  "profitability": {
+    "title": "الربحية",
+    "groupBy": "التجميع حسب",
+    "levels": {
+      "parcel": "القطعة",
+      "crop": "المحصول",
+      "season": "الموسم"
+    },
+    "unspecified": "غير محدد",
+    "columns": {
+      "name": "الاسم",
+      "costs": "التكاليف",
+      "revenue": "الإيرادات",
+      "margin": "الهامش",
+      "marginPct": "نسبة الهامش"
+    },
+    "totals": "الإجمالي"
+  },
+  "alerts": {
+    "title": "التنبيهات",
+    "allSeverities": "كل المستويات",
+    "noAlerts": "لا توجد تنبيهات حالياً — كلشي طبيعي",
+    "severity": {
+      "critical": "حرج",
+      "warning": "تحذير"
+    },
+    "types": {
+      "stock_out": "نفاد المخزون",
+      "stock_low": "انخفاض المخزون",
+      "vehicle_insurance": "تأمين المركبة",
+      "vehicle_inspection": "الفحص التقني للمركبة",
+      "equipment_maintenance": "صيانة المعدة"
+    },
+    "messages": {
+      "stock_out": "المنتج \"{{product}}\" نافد فمخزن {{warehouse}}",
+      "stock_low": "المنتج \"{{product}}\" منخفض فمخزن {{warehouse}} ({{balance}} / الحد الأدنى {{threshold}})",
+      "vehicle_insurance": "تأمين المركبة {{plateNo}} كيسالي فـ {{date}} ({{days}} يوم)",
+      "vehicle_inspection": "الفحص التقني للمركبة {{plateNo}} كيسالي فـ {{date}} ({{days}} يوم)",
+      "equipment_maintenance": "صيانة المعدة {{code}} مقررة فـ {{date}} ({{days}} يوم)"
+    },
+    "daysOverdue": "فات بـ {{days}} يوم",
+    "daysLeft": "باقي {{days}} يوم"
+  },
+  "dashboard": {
+    "title": "لوحة القيادة",
+    "emptyState": "لا توجد بيانات لعرضها بعد لهذه المزرعة والفترة المختارة.",
+    "greetingMorning": "صباح الخير",
+    "greetingEvening": "مساء الخير",
+    "subtitle": "هذه نظرة عامة على مزارعك اليوم.",
+    "weather": {
+      "title": "الطقس",
+      "notConnected": "غير مربوط بعد"
+    }
+  },
+  "reports": {
+    "title": "التقارير",
+    "export": "تصدير Excel",
+    "columns": {
+      "metric": "المؤشر",
+      "value": "القيمة"
+    },
+    "metrics": {
+      "totalProduction": "مجموع الإنتاج",
+      "totalRevenue": "مجموع المداخيل",
+      "totalExpenses": "مجموع المصاريف",
+      "netMargin": "الهامش الصافي",
+      "employeeCount": "عدد الأجراء النشيطين",
+      "activeVehicleCount": "عدد السيارات النشيطة"
+    }
+  }
+}

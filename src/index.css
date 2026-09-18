@@ -2,6 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   margin: 0;
+  background-color: #faf7f0;
+  color: #1f2a27;
+  -webkit-font-smoothing: antialiased;
+}
+
+html[dir="rtl"] {
+  font-family: "Cairo", "Inter", system-ui, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d8d0bb;
+  border-radius: 999px;
 }

@@ -1,0 +1,96 @@
+export const navSections = [
+  {
+    key: "farmsLand",
+    icon: "Sprout",
+    items: [
+      { key: "farms", path: "/farms" },
+      { key: "sites", path: "/sites" },
+      { key: "parcels", path: "/parcels" },
+      { key: "seasons", path: "/seasons" },
+    ],
+  },
+  {
+    key: "cropsProduction",
+    icon: "Wheat",
+    items: [
+      { key: "crops", path: "/crops" },
+      { key: "varieties", path: "/varieties" },
+      { key: "cropCycles", path: "/crop-cycles" },
+      { key: "harvestPlans", path: "/harvest-plans" },
+      { key: "harvestSessions", path: "/harvest-sessions" },
+    ],
+  },
+  {
+    key: "traceabilityQuality",
+    icon: "ScanLine",
+    items: [
+      { key: "lots", path: "/lots" },
+      { key: "qualityChecks", path: "/quality-checks" },
+      { key: "weighingTickets", path: "/weighing-tickets" },
+    ],
+  },
+  {
+    key: "hrPayroll",
+    icon: "Users",
+    items: [
+      { key: "employees", path: "/employees" },
+      { key: "teams", path: "/teams" },
+      { key: "attendance", path: "/attendance" },
+      { key: "payroll", path: "/payroll" },
+    ],
+  },
+  {
+    key: "stockWarehouses",
+    icon: "Warehouse",
+    items: [
+      { key: "products", path: "/products" },
+      { key: "warehouses", path: "/warehouses" },
+      { key: "stockMovements", path: "/stock-movements" },
+      { key: "stockBalances", path: "/stock-balances" },
+      { key: "transfers", path: "/transfers" },
+    ],
+  },
+  {
+    key: "procurement",
+    icon: "ShoppingCart",
+    items: [
+      { key: "suppliers", path: "/suppliers" },
+      { key: "purchaseRequests", path: "/purchase-requests" },
+      { key: "purchaseOrders", path: "/purchase-orders" },
+      { key: "receptions", path: "/receptions" },
+    ],
+  },
+  {
+    key: "salesFinance",
+    icon: "Wallet",
+    items: [
+      { key: "customers", path: "/customers" },
+      { key: "sales", path: "/sales" },
+      { key: "invoices", path: "/invoices" },
+      { key: "expenses", path: "/expenses" },
+      { key: "profitability", path: "/profitability" },
+    ],
+  },
+  {
+    key: "fleetEquipment",
+    icon: "Truck",
+    items: [
+      { key: "vehicles", path: "/vehicles" },
+      { key: "drivers", path: "/drivers" },
+      { key: "transportMissions", path: "/transport-missions" },
+      { key: "equipment", path: "/equipment" },
+      { key: "maintenance", path: "/maintenance" },
+      { key: "fuelLogs", path: "/fuel-logs" },
+    ],
+  },
+  {
+    key: "administration",
+    icon: "Settings",
+    items: [
+      { key: "groups", path: "/admin/groups" },
+      { key: "roles", path: "/admin/roles" },
+      { key: "users", path: "/admin/users" },
+      { key: "auditLog", path: "/admin/audit-log" },
+    ],
+  },
+];

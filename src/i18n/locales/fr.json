@@ -1,0 +1,1276 @@
+{
+  "app": {
+    "name": "AGRIMAX",
+    "tagline": "GROUPE AGRICOLE"
+  },
+  "common": {
+    "loading": "Chargement...",
+    "noData": "Aucune donnée",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "confirm": "Confirmer",
+    "optional": "Optionnel",
+    "expired": "Expiré",
+    "expiring": "Bientôt expiré",
+    "search": "Rechercher",
+    "all": "Tous",
+    "logout": "Déconnexion",
+    "language": "Langue",
+    "notifications": "Notifications",
+    "searchPlaceholder": "Rechercher dans AGRIMAX...",
+    "error": "Une erreur est survenue",
+    "retry": "Réessayer"
+  },
+  "auth": {
+    "title": "Connexion",
+    "subtitle": "Connectez-vous pour accéder à la plateforme AGRIMAX",
+    "email": "Adresse e-mail",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "submitting": "Connexion en cours...",
+    "invalidCredentials": "E-mail ou mot de passe incorrect",
+    "noProfile": "Votre compte n'est pas encore activé sur la plateforme. Contactez l'administrateur.",
+    "noFarmAccess": "Vous n'avez accès à aucune ferme pour le moment."
+  },
+  "filters": {
+    "farm": "Ferme",
+    "allFarms": "Toutes les fermes",
+    "period": "Période",
+    "periods": {
+      "today": "Aujourd'hui",
+      "week": "Cette semaine",
+      "month": "Ce mois",
+      "season": "Cette saison",
+      "year": "Cette année",
+      "custom": "Période personnalisée"
+    }
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "sections": {
+      "farmsLand": "Fermes et terrains",
+      "cropsProduction": "Cultures et production",
+      "traceabilityQuality": "Traçabilité et qualité",
+      "hrPayroll": "RH et paie",
+      "stockWarehouses": "Stock et entrepôts",
+      "procurement": "Achats",
+      "salesFinance": "Ventes et finance",
+      "fleetEquipment": "Flotte et équipements",
+      "administration": "Administration"
+    },
+    "items": {
+      "farms": "Fermes",
+      "sites": "Sites",
+      "parcels": "Parcelles",
+      "seasons": "Saisons",
+      "crops": "Cultures",
+      "varieties": "Variétés",
+      "cropCycles": "Cycles de culture",
+      "harvestPlans": "Plans de récolte",
+      "harvestSessions": "Sessions de récolte",
+      "lots": "Lots",
+      "qualityChecks": "Contrôles qualité",
+      "weighingTickets": "Tickets de pesée",
+      "employees": "Employés",
+      "teams": "Équipes",
+      "attendance": "Présences",
+      "payroll": "Paie",
+      "products": "Produits",
+      "warehouses": "Entrepôts",
+      "stockMovements": "Mouvements de stock",
+      "stockBalances": "Soldes de stock",
+      "transfers": "Transferts de stock",
+      "suppliers": "Fournisseurs",
+      "purchaseRequests": "Demandes d'achat",
+      "purchaseOrders": "Bons de commande",
+      "receptions": "Réceptions",
+      "customers": "Clients",
+      "sales": "Ventes",
+      "invoices": "Factures",
+      "expenses": "Dépenses",
+      "profitability": "Rentabilité",
+      "vehicles": "Véhicules",
+      "drivers": "Chauffeurs",
+      "transportMissions": "Missions de transport",
+      "equipment": "Équipements",
+      "maintenance": "Maintenance",
+      "fuelLogs": "Journal carburant",
+      "groups": "Groupes d'utilisateurs",
+      "roles": "Rôles et permissions",
+      "users": "Utilisateurs",
+      "auditLog": "Journal d'audit"
+    }
+  },
+  "farms": {
+    "title": "Fermes",
+    "add": "Ajouter une ferme",
+    "edit": "Modifier la ferme",
+    "addTitle": "Nouvelle ferme",
+    "deleteConfirmTitle": "Supprimer la ferme",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer la ferme \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "code": "Code",
+      "name": "Nom",
+      "area": "Surface (ha)",
+      "status": "Statut",
+      "phone": "Téléphone",
+      "actions": ""
+    },
+    "fields": {
+      "code": "Code",
+      "name": "Nom",
+      "phone": "Téléphone",
+      "totalArea": "Surface totale (ha)",
+      "cultivatedArea": "Surface cultivée (ha)",
+      "gpsLat": "Latitude (GPS)",
+      "gpsLng": "Longitude (GPS)",
+      "status": "Statut"
+    },
+    "status": {
+      "active": "Active",
+      "maintenance": "En maintenance",
+      "alert": "En alerte",
+      "inactive": "Inactive"
+    }
+  },
+  "sites": {
+    "title": "Sites",
+    "add": "Ajouter un site",
+    "edit": "Modifier le site",
+    "addTitle": "Nouveau site",
+    "deleteConfirmTitle": "Supprimer le site",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer le site \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "code": "Code",
+      "name": "Nom",
+      "farm": "Ferme",
+      "actions": ""
+    },
+    "fields": {
+      "code": "Code",
+      "name": "Nom",
+      "farm": "Ferme",
+      "gpsLat": "Latitude (GPS)",
+      "gpsLng": "Longitude (GPS)"
+    }
+  },
+  "parcels": {
+    "title": "Parcelles",
+    "add": "Ajouter une parcelle",
+    "edit": "Modifier la parcelle",
+    "addTitle": "Nouvelle parcelle",
+    "deleteConfirmTitle": "Supprimer la parcelle",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer la parcelle \"{{name}}\" ? Cette action est irréversible.",
+    "filterBySite": "Tous les sites",
+    "columns": {
+      "code": "Code",
+      "name": "Nom",
+      "site": "Site",
+      "area": "Surface (ha)",
+      "actions": ""
+    },
+    "fields": {
+      "code": "Code",
+      "name": "Nom",
+      "farm": "Ferme",
+      "site": "Site",
+      "totalArea": "Surface totale (ha)",
+      "usableArea": "Surface exploitable (ha)",
+      "gpsLat": "Latitude (GPS)",
+      "gpsLng": "Longitude (GPS)"
+    },
+    "selectFarmFirst": "Choisissez d'abord une ferme"
+  },
+  "crops": {
+    "title": "Cultures",
+    "add": "Ajouter une culture",
+    "edit": "Modifier la culture",
+    "addTitle": "Nouvelle culture",
+    "deleteConfirmTitle": "Supprimer la culture",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer la culture \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "nameAr": "Nom (arabe)",
+      "nameFr": "Nom (français)",
+      "category": "Catégorie",
+      "actions": ""
+    },
+    "fields": {
+      "nameAr": "Nom (arabe)",
+      "nameFr": "Nom (français)",
+      "category": "Catégorie"
+    },
+    "categories": {
+      "avocat": "Avocat",
+      "fraise": "Fraise",
+      "agrumes": "Agrumes",
+      "autres": "Autres"
+    }
+  },
+  "varieties": {
+    "title": "Variétés",
+    "add": "Ajouter une variété",
+    "edit": "Modifier la variété",
+    "addTitle": "Nouvelle variété",
+    "deleteConfirmTitle": "Supprimer la variété",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer la variété \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "name": "Nom",
+      "crop": "Culture",
+      "actions": ""
+    },
+    "fields": {
+      "name": "Nom",
+      "crop": "Culture"
+    }
+  },
+  "seasons": {
+    "title": "Saisons",
+    "add": "Ajouter une saison",
+    "edit": "Modifier la saison",
+    "addTitle": "Nouvelle saison",
+    "deleteConfirmTitle": "Supprimer la saison",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer la saison \"{{name}}\" ? Cette action est irréversible.",
+    "generalFarm": "Générale (tout le groupe)",
+    "columns": {
+      "label": "Saison",
+      "farm": "Ferme",
+      "startDate": "Date de début",
+      "endDate": "Date de fin",
+      "actions": ""
+    },
+    "fields": {
+      "label": "Saison (ex : 2025-2026)",
+      "farm": "Ferme",
+      "startDate": "Date de début",
+      "endDate": "Date de fin"
+    }
+  },
+  "cropCycles": {
+    "title": "Cycles de culture",
+    "add": "Ajouter un cycle",
+    "edit": "Modifier le cycle",
+    "addTitle": "Nouveau cycle de culture",
+    "deleteConfirmTitle": "Supprimer le cycle",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer ce cycle ? Cette action est irréversible.",
+    "selectFarmFirst": "Choisissez d'abord une ferme",
+    "selectParcelFirst": "Choisissez d'abord une parcelle",
+    "selectCropFirst": "Choisissez d'abord une culture",
+    "columns": {
+      "parcel": "Parcelle",
+      "crop": "Culture",
+      "variety": "Variété",
+      "season": "Saison",
+      "planting": "Date de semis",
+      "harvest": "Récolte prévue",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "parcel": "Parcelle",
+      "crop": "Culture",
+      "variety": "Variété",
+      "season": "Saison",
+      "plantingDate": "Date de semis",
+      "expectedHarvestDate": "Date de récolte prévue",
+      "actualHarvestDate": "Date de récolte réelle",
+      "expectedYield": "Rendement prévu (kg)",
+      "actualYield": "Rendement réel (kg)",
+      "status": "Statut"
+    },
+    "status": {
+      "planned": "Planifié",
+      "growing": "En croissance",
+      "harvesting": "En récolte",
+      "closed": "Terminé"
+    }
+  },
+  "employees": {
+    "title": "Employés",
+    "add": "Ajouter un employé",
+    "edit": "Modifier l'employé",
+    "addTitle": "Nouvel employé",
+    "deleteConfirmTitle": "Supprimer l'employé",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer l'employé \"{{name}}\" ? Cette action est irréversible.",
+    "kpi": {
+      "total": "Total",
+      "permanent": "Permanents",
+      "seasonal": "Saisonniers",
+      "daily": "Journaliers"
+    },
+    "columns": {
+      "employeeNo": "N°",
+      "fullName": "Nom complet",
+      "jobTitle": "Poste",
+      "employmentType": "Type de contrat",
+      "status": "Statut",
+      "phone": "Téléphone",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "employeeNo": "N° employé",
+      "cin": "CIN",
+      "fullName": "Nom complet",
+      "phone": "Téléphone",
+      "address": "Adresse",
+      "jobTitle": "Poste",
+      "hireDate": "Date d'embauche",
+      "cnssNo": "N° CNSS",
+      "employmentType": "Type de contrat",
+      "status": "Statut"
+    },
+    "employmentType": {
+      "permanent": "Permanent",
+      "seasonal": "Saisonnier",
+      "daily": "Journalier"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    }
+  },
+  "teams": {
+    "title": "Équipes",
+    "add": "Ajouter une équipe",
+    "edit": "Modifier l'équipe",
+    "addTitle": "Nouvelle équipe",
+    "deleteConfirmTitle": "Supprimer l'équipe",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer l'équipe \"{{name}}\" ? Cette action est irréversible.",
+    "noLeader": "Sans chef d'équipe",
+    "manageMembers": "Membres",
+    "membersCount": "{{count}} membre(s)",
+    "columns": {
+      "name": "Nom de l'équipe",
+      "farm": "Ferme",
+      "leader": "Chef d'équipe",
+      "members": "Membres",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "name": "Nom de l'équipe",
+      "leader": "Chef d'équipe"
+    },
+    "membersModal": {
+      "title": "Membres de l'équipe : {{name}}",
+      "addMember": "Ajouter un membre",
+      "selectEmployee": "Choisir un employé",
+      "noMembers": "Aucun membre dans cette équipe pour l'instant",
+      "remove": "Retirer"
+    }
+  },
+  "attendance": {
+    "title": "Présences",
+    "add": "Enregistrer une présence",
+    "edit": "Modifier la présence",
+    "addTitle": "Nouvelle présence",
+    "deleteConfirmTitle": "Supprimer l'enregistrement",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cet enregistrement ? Cette action est irréversible.",
+    "dateFilter": "Date",
+    "columns": {
+      "employee": "Employé",
+      "checkIn": "Entrée",
+      "checkOut": "Sortie",
+      "hoursWorked": "Heures travaillées",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "employee": "Employé",
+      "checkIn": "Heure d'entrée",
+      "checkOut": "Heure de sortie",
+      "hoursWorked": "Heures travaillées",
+      "status": "Statut"
+    },
+    "status": {
+      "present": "Présent",
+      "absent": "Absent",
+      "leave": "Congé"
+    }
+  },
+  "payroll": {
+    "title": "Paie",
+    "add": "Ajouter une période",
+    "edit": "Modifier la période",
+    "addTitle": "Nouvelle période de paie",
+    "deleteConfirmTitle": "Supprimer la période",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette période ? Cette action est irréversible.",
+    "manageLines": "Lignes de paie",
+    "linesCount": "{{count}} ligne(s)",
+    "columns": {
+      "period": "Période",
+      "farm": "Ferme",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "periodStart": "Début de période",
+      "periodEnd": "Fin de période",
+      "status": "Statut"
+    },
+    "status": {
+      "open": "Ouverte",
+      "closed": "Clôturée"
+    },
+    "lines": {
+      "title": "Lignes de paie",
+      "employee": "Employé",
+      "basePay": "Salaire de base",
+      "daysWorked": "Jours travaillés",
+      "hours": "Heures",
+      "overtimePay": "Heures supplémentaires",
+      "bonuses": "Primes",
+      "advances": "Avances",
+      "deductions": "Retenues",
+      "cnss": "CNSS",
+      "netPay": "Net à payer",
+      "addLine": "Ajouter une ligne",
+      "noLines": "Aucune ligne pour l'instant",
+      "selectEmployee": "Choisir un employé"
+    },
+    "errors": {
+      "endBeforeStart": "La date de fin doit être postérieure à la date de début"
+    }
+  },
+  "products": {
+    "title": "Produits",
+    "add": "Ajouter un produit",
+    "edit": "Modifier le produit",
+    "addTitle": "Nouveau produit",
+    "deleteConfirmTitle": "Supprimer le produit",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer le produit \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "sku": "SKU",
+      "nameAr": "Nom (arabe)",
+      "nameFr": "Nom (français)",
+      "category": "Catégorie",
+      "unit": "Unité",
+      "actions": ""
+    },
+    "fields": {
+      "sku": "SKU",
+      "nameAr": "Nom (arabe)",
+      "nameFr": "Nom (français)",
+      "category": "Catégorie",
+      "unit": "Unité"
+    },
+    "categories": {
+      "fertilizer": "Engrais",
+      "pesticide": "Pesticide",
+      "seed": "Semence",
+      "fuel": "Carburant",
+      "packaging": "Emballage",
+      "harvested_product": "Produit récolté",
+      "spare_part": "Pièce détachée"
+    },
+    "units": {
+      "kg": "Kilogramme (kg)",
+      "g": "Gramme",
+      "L": "Litre",
+      "piece": "Unité",
+      "sac_25kg": "Sac 25 kg",
+      "sac_50kg": "Sac 50 kg",
+      "tonne": "Tonne",
+      "carton": "Carton"
+    }
+  },
+  "warehouses": {
+    "title": "Entrepôts",
+    "add": "Ajouter un entrepôt",
+    "edit": "Modifier l'entrepôt",
+    "addTitle": "Nouvel entrepôt",
+    "deleteConfirmTitle": "Supprimer l'entrepôt",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer l'entrepôt \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "name": "Nom",
+      "farm": "Ferme",
+      "type": "Type",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "name": "Nom",
+      "type": "Type"
+    },
+    "types": {
+      "main": "Principal",
+      "cold_storage": "Chambre froide",
+      "fuel_tank": "Cuve à carburant"
+    }
+  },
+  "stockMovements": {
+    "title": "Mouvements de stock",
+    "add": "Ajouter un mouvement",
+    "addTitle": "Nouveau mouvement de stock",
+    "appendOnlyNotice": "Registre append-only : aucune modification d'un mouvement existant. Toute correction se fait via un nouveau mouvement ADJUSTMENT.",
+    "deleteConfirmTitle": "Supprimer le mouvement",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer ce mouvement ? Action irréversible (à utiliser uniquement en cas d'erreur de saisie réelle).",
+    "columns": {
+      "date": "Date",
+      "product": "Produit",
+      "type": "Type",
+      "quantity": "Quantité",
+      "source": "Entrepôt source",
+      "destination": "Entrepôt destination",
+      "reason": "Motif",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "movementType": "Type de mouvement",
+      "product": "Produit",
+      "quantity": "Quantité",
+      "sourceWarehouse": "Entrepôt source",
+      "destinationWarehouse": "Entrepôt destination",
+      "occurredAt": "Date et heure du mouvement",
+      "reason": "Motif"
+    },
+    "types": {
+      "PURCHASE_RECEIPT": "Réception achat",
+      "TRANSFER_OUT": "Transfert sortant",
+      "TRANSFER_IN": "Transfert entrant",
+      "CONSUMPTION": "Consommation",
+      "HARVEST_ENTRY": "Entrée récolte",
+      "RETURN": "Retour",
+      "LOSS": "Perte",
+      "DAMAGE": "Dommage",
+      "SALE": "Vente",
+      "SHIPMENT": "Expédition",
+      "ADJUSTMENT": "Ajustement"
+    }
+  },
+  "stockBalances": {
+    "title": "Soldes de stock",
+    "columns": {
+      "product": "Produit",
+      "warehouse": "Entrepôt",
+      "balance": "Solde actuel",
+      "status": "Statut"
+    },
+    "status": {
+      "normal": "Normal",
+      "low": "Faible",
+      "out": "Épuisé"
+    }
+  },
+  "suppliers": {
+    "title": "Fournisseurs",
+    "add": "Ajouter un fournisseur",
+    "edit": "Modifier le fournisseur",
+    "addTitle": "Nouveau fournisseur",
+    "deleteConfirmTitle": "Supprimer le fournisseur",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer le fournisseur \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "companyName": "Société",
+      "contactName": "Contact",
+      "phone": "Téléphone",
+      "leadTime": "Délai (jours)",
+      "actions": ""
+    },
+    "fields": {
+      "companyName": "Nom de la société",
+      "ice": "ICE",
+      "ifNo": "IF",
+      "rc": "RC",
+      "address": "Adresse",
+      "contactName": "Nom du contact",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "paymentTerms": "Conditions de paiement",
+      "leadTimeDays": "Délai de livraison (jours)"
+    }
+  },
+  "purchaseRequests": {
+    "title": "Demandes d'achat",
+    "add": "Ajouter une demande",
+    "edit": "Modifier la demande",
+    "addTitle": "Nouvelle demande d'achat",
+    "deleteConfirmTitle": "Supprimer la demande",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette demande ? Cette action est irréversible.",
+    "columns": {
+      "farm": "Ferme",
+      "product": "Produit",
+      "quantity": "Quantité",
+      "neededBy": "Besoin avant",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme demandeuse",
+      "product": "Produit",
+      "quantity": "Quantité",
+      "neededBy": "Besoin avant le"
+    },
+    "status": {
+      "open": "Ouverte",
+      "fulfilled": "Satisfaite",
+      "cancelled": "Annulée"
+    },
+    "suggestion": {
+      "title": "Quantité suffisante disponible ailleurs !",
+      "message": "Nous avons trouvé {{quantity}} {{unit}} de ce produit disponible dans les fermes suivantes — vous pouvez transférer au lieu d'acheter :",
+      "availableQty": "Disponible : {{quantity}}",
+      "transferFrom": "Transférer depuis ici",
+      "declineAndRequest": "Non, continuer la demande",
+      "transferCreated": "Une demande de transfert a été créée à la place de la demande d'achat."
+    }
+  },
+  "purchaseOrders": {
+    "title": "Bons de commande",
+    "add": "Ajouter un bon de commande",
+    "edit": "Modifier le bon de commande",
+    "addTitle": "Nouveau bon de commande",
+    "deleteConfirmTitle": "Supprimer le bon de commande",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer ce bon de commande ? Cette action est irréversible.",
+    "manageLines": "Produits",
+    "linesCount": "{{count}} ligne(s)",
+    "noLinkedRequest": "Aucune demande liée",
+    "columns": {
+      "supplier": "Fournisseur",
+      "requestingFarm": "Ferme demandeuse",
+      "deliveryFarm": "Ferme de livraison",
+      "payingFarm": "Ferme payeuse",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "linkedRequest": "Demande d'achat liée (optionnel)",
+      "supplier": "Fournisseur",
+      "requestingFarm": "Ferme demandeuse",
+      "deliveryFarm": "Ferme de livraison",
+      "payingFarm": "Ferme payeuse",
+      "status": "Statut",
+      "expectedDeliveryDate": "Date de livraison prévue"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "approved": "Approuvé",
+      "confirmed": "Confirmé",
+      "delivered": "Livré",
+      "invoiced": "Facturé",
+      "paid": "Payé",
+      "cancelled": "Annulé"
+    },
+    "lines": {
+      "title": "Produits du bon de commande",
+      "product": "Produit",
+      "quantity": "Quantité",
+      "unitPrice": "Prix unitaire",
+      "tax": "Taxe",
+      "addLine": "Ajouter une ligne",
+      "noLines": "Aucune ligne pour l'instant",
+      "selectProduct": "Choisir un produit"
+    }
+  },
+  "receptions": {
+    "title": "Réceptions",
+    "add": "Enregistrer une réception",
+    "addTitle": "Nouvelle réception",
+    "deleteConfirmTitle": "Supprimer la réception",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette réception ? Cette action est irréversible.",
+    "autoStockNotice": "À la validation, un mouvement \"Réception achat\" sera créé automatiquement dans stock_movements (sauf si le statut est \"Rejeté\").",
+    "selectOrderFirst": "Choisissez d'abord un bon de commande",
+    "columns": {
+      "order": "Bon de commande",
+      "farm": "Ferme de livraison",
+      "product": "Produit",
+      "quantity": "Quantité reçue",
+      "quality": "Qualité",
+      "receivedAt": "Date de réception",
+      "actions": ""
+    },
+    "fields": {
+      "purchaseOrder": "Bon de commande",
+      "line": "Produit (de la commande)",
+      "deliveryFarm": "Ferme de livraison",
+      "warehouse": "Entrepôt de destination",
+      "receivedQuantity": "Quantité reçue",
+      "qualityStatus": "Statut qualité"
+    },
+    "quality": {
+      "accepted": "Accepté",
+      "rejected": "Rejeté",
+      "partial": "Partiel"
+    }
+  },
+  "invoices": {
+    "title": "Factures",
+    "add": "Ajouter une facture",
+    "edit": "Modifier la facture",
+    "addTitle": "Nouvelle facture",
+    "deleteConfirmTitle": "Supprimer la facture",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette facture ? Cette action est irréversible.",
+    "managePayments": "Paiements",
+    "paidOf": "{{paid}} / {{amount}}",
+    "columns": {
+      "order": "Bon de commande",
+      "farm": "Ferme payeuse",
+      "amount": "Montant",
+      "dueDate": "Échéance",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "purchaseOrder": "Bon de commande",
+      "payingFarm": "Ferme payeuse",
+      "amount": "Montant",
+      "dueDate": "Date d'échéance",
+      "status": "Statut"
+    },
+    "status": {
+      "unpaid": "Non payée",
+      "partial": "Partiellement payée",
+      "paid": "Payée"
+    },
+    "payments": {
+      "title": "Paiements de la facture",
+      "amount": "Montant",
+      "paidAt": "Date de paiement",
+      "addPayment": "Ajouter un paiement",
+      "noPayments": "Aucun paiement pour l'instant",
+      "totalPaid": "Total payé : {{total}} / {{amount}}"
+    }
+  },
+  "harvestPlans": {
+    "title": "Plans de récolte",
+    "add": "Ajouter un plan",
+    "edit": "Modifier le plan",
+    "addTitle": "Nouveau plan de récolte",
+    "deleteConfirmTitle": "Supprimer le plan",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer ce plan ? Cette action est irréversible.",
+    "selectFarmFirst": "Choisissez d'abord une ferme",
+    "filters": {
+      "today": "Aujourd'hui",
+      "tomorrow": "Demain",
+      "week": "7 jours",
+      "month": "30 jours"
+    },
+    "columns": {
+      "cropCycle": "Cycle de culture",
+      "plannedDate": "Date prévue",
+      "expectedQuantity": "Quantité prévue (kg)",
+      "team": "Équipe",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "cropCycle": "Cycle de culture",
+      "plannedDate": "Date prévue",
+      "expectedQuantity": "Quantité prévue (kg)",
+      "team": "Équipe"
+    }
+  },
+  "harvestSessions": {
+    "title": "Sessions de récolte",
+    "add": "Ajouter une session",
+    "edit": "Modifier la session",
+    "addTitle": "Nouvelle session de récolte",
+    "deleteConfirmTitle": "Supprimer la session",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette session ? Cette action est irréversible.",
+    "inProgress": "En cours",
+    "columns": {
+      "cropCycle": "Cycle de culture",
+      "team": "Équipe",
+      "start": "Début",
+      "end": "Fin",
+      "boxes": "Caisses",
+      "weight": "Poids (kg)",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "cropCycle": "Cycle de culture",
+      "team": "Équipe",
+      "responsible": "Responsable",
+      "startTime": "Heure de début",
+      "endTime": "Heure de fin",
+      "boxesCount": "Nombre de caisses",
+      "weightKg": "Poids (kg)",
+      "qualityGrade": "Grade qualité"
+    }
+  },
+  "lots": {
+    "title": "Lots",
+    "createFromSession": "Créer un LOT",
+    "alreadyCreated": "LOT déjà créé",
+    "createModalTitle": "Confirmer la création du LOT",
+    "createNotice": "Un nouveau LOT sera créé avec ces données, plus un mouvement \"Entrée récolte\" automatique dans stock_movements.",
+    "viewTitle": "Détails du lot",
+    "columns": {
+      "lotCode": "Code",
+      "parcel": "Parcelle",
+      "crop": "Culture",
+      "quantity": "Quantité (kg)",
+      "boxes": "Caisses",
+      "status": "Statut",
+      "harvestedAt": "Date de récolte",
+      "actions": ""
+    },
+    "fields": {
+      "lotCode": "Code du lot",
+      "parcel": "Parcelle",
+      "crop": "Culture",
+      "variety": "Variété",
+      "season": "Saison",
+      "harvestedAt": "Date de récolte",
+      "team": "Équipe",
+      "quantity": "Quantité (kg)",
+      "boxes": "Caisses",
+      "qualityGrade": "Grade qualité",
+      "product": "Produit (stock)",
+      "warehouse": "Entrepôt de destination"
+    },
+    "packaging": {
+      "action": "Enregistrer un emballage",
+      "title": "Enregistrer un emballage",
+      "notice": "Un mouvement \"Consommation\" pour les matériaux d'emballage sera créé, plus un événement d'emballage dans la traçabilité.",
+      "product": "Produit d'emballage",
+      "warehouse": "Entrepôt",
+      "quantity": "Quantité",
+      "confirm": "Confirmer l'emballage"
+    },
+    "shipment": {
+      "action": "Enregistrer une expédition",
+      "title": "Enregistrer une expédition",
+      "notice": "Un mouvement \"Expédition\" sera créé, le statut du lot passera à \"expédié\", et un événement d'expédition sera ajouté à la traçabilité.",
+      "destinationWarehouse": "Entrepôt de destination (optionnel)",
+      "quantity": "Quantité",
+      "confirm": "Confirmer l'expédition"
+    }
+  },
+  "traceability": {
+    "title": "Traçabilité du lot",
+    "viewTimeline": "Traçabilité",
+    "noEvents": "Aucun événement pour l'instant",
+    "eventTypes": {
+      "harvest": "Récolte",
+      "transport": "Transport",
+      "quality_check": "Contrôle qualité",
+      "shipment": "Expédition"
+    },
+    "by": "Par {{name}}",
+    "location": "Lieu : {{location}}"
+  },
+  "vehicles": {
+    "title": "Véhicules",
+    "add": "Ajouter un véhicule",
+    "edit": "Modifier le véhicule",
+    "addTitle": "Nouveau véhicule",
+    "deleteConfirmTitle": "Supprimer le véhicule",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer le véhicule \"{{name}}\" ? Cette action est irréversible.",
+    "expiring": "Bientôt expiré",
+    "expired": "Expiré",
+    "columns": {
+      "plateNo": "Immatriculation",
+      "brandModel": "Marque/Modèle",
+      "farm": "Ferme",
+      "status": "Statut",
+      "insurance": "Assurance",
+      "inspection": "Contrôle technique",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "plateNo": "Immatriculation",
+      "brand": "Marque",
+      "model": "Modèle",
+      "type": "Type",
+      "capacity": "Capacité",
+      "odometerKm": "Kilométrage",
+      "insuranceExpiry": "Expiration assurance",
+      "inspectionExpiry": "Expiration contrôle technique",
+      "status": "Statut"
+    },
+    "status": {
+      "available": "Disponible",
+      "on_mission": "En mission",
+      "maintenance": "En maintenance",
+      "out_of_service": "Hors service"
+    }
+  },
+  "drivers": {
+    "title": "Chauffeurs",
+    "add": "Ajouter un chauffeur",
+    "edit": "Modifier le chauffeur",
+    "addTitle": "Nouveau chauffeur",
+    "deleteConfirmTitle": "Supprimer le chauffeur",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer le chauffeur \"{{name}}\" ? Cette action est irréversible.",
+    "noVehicle": "Aucun véhicule",
+    "columns": {
+      "fullName": "Nom complet",
+      "farm": "Ferme",
+      "phone": "Téléphone",
+      "licenseNo": "N° de permis",
+      "vehicle": "Véhicule actuel",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "fullName": "Nom complet",
+      "cin": "CIN",
+      "phone": "Téléphone",
+      "licenseNo": "N° de permis",
+      "licenseCategories": "Catégories de permis (ex : B, C, EC)",
+      "licenseExpiry": "Expiration du permis",
+      "currentVehicle": "Véhicule actuel"
+    }
+  },
+  "weighingTickets": {
+    "title": "Tickets de pesée",
+    "add": "Ajouter un ticket",
+    "addTitle": "Nouveau ticket de pesée",
+    "deleteConfirmTitle": "Supprimer le ticket",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer ce ticket ? Cette action est irréversible.",
+    "noLot": "Sans lot",
+    "columns": {
+      "ticketNo": "N°",
+      "vehicle": "Véhicule",
+      "driver": "Chauffeur",
+      "product": "Produit",
+      "netWeight": "Poids net",
+      "occurredAt": "Date",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "lot": "Lot (optionnel)",
+      "vehicle": "Véhicule",
+      "driver": "Chauffeur",
+      "product": "Produit",
+      "grossWeight": "Poids brut",
+      "tareWeight": "Tare",
+      "netWeight": "Poids net (calculé)",
+      "source": "Source",
+      "destination": "Destination"
+    }
+  },
+  "transportMissions": {
+    "title": "Missions de transport",
+    "add": "Ajouter une mission",
+    "edit": "Modifier la mission",
+    "addTitle": "Nouvelle mission de transport",
+    "deleteConfirmTitle": "Supprimer la mission",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette mission ? Cette action est irréversible.",
+    "noLot": "Sans lot",
+    "columns": {
+      "vehicle": "Véhicule",
+      "driver": "Chauffeur",
+      "sourceFarm": "Ferme source",
+      "destinationFarm": "Ferme destination",
+      "status": "Statut",
+      "departure": "Départ",
+      "arrival": "Arrivée",
+      "actions": ""
+    },
+    "fields": {
+      "vehicle": "Véhicule",
+      "driver": "Chauffeur",
+      "sourceFarm": "Ferme source",
+      "destinationFarm": "Ferme destination",
+      "product": "Produit",
+      "lot": "Lot (optionnel)",
+      "quantity": "Quantité",
+      "departureTime": "Heure de départ",
+      "expectedArrival": "Arrivée prévue",
+      "actualArrival": "Arrivée réelle",
+      "distanceKm": "Distance (km)",
+      "fuelUsed": "Carburant utilisé",
+      "status": "Statut"
+    },
+    "status": {
+      "planned": "Planifiée",
+      "in_progress": "En cours",
+      "completed": "Terminée"
+    }
+  },
+  "equipment": {
+    "title": "Équipements",
+    "add": "Ajouter un équipement",
+    "edit": "Modifier l'équipement",
+    "addTitle": "Nouvel équipement",
+    "deleteConfirmTitle": "Supprimer l'équipement",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer l'équipement \"{{name}}\" ? Cette action est irréversible.",
+    "noOperator": "Sans opérateur",
+    "columns": {
+      "code": "Code",
+      "type": "Type",
+      "farm": "Ferme",
+      "operator": "Opérateur",
+      "status": "Statut",
+      "nextMaintenance": "Prochaine maintenance",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "code": "Code",
+      "type": "Type",
+      "operator": "Opérateur",
+      "workingHours": "Heures de fonctionnement",
+      "odometerKm": "Kilométrage",
+      "nextMaintenanceDate": "Date de prochaine maintenance",
+      "status": "Statut"
+    },
+    "types": {
+      "tractor": "Tracteur",
+      "pump": "Pompe",
+      "irrigation": "Irrigation",
+      "machine": "Machine",
+      "generator": "Générateur",
+      "tool": "Outil",
+      "other": "Autre"
+    },
+    "status": {
+      "available": "Disponible",
+      "in_use": "En utilisation",
+      "maintenance": "En maintenance",
+      "out_of_service": "Hors service"
+    }
+  },
+  "maintenanceRecords": {
+    "title": "Maintenance",
+    "add": "Ajouter une intervention",
+    "addTitle": "Nouvelle intervention",
+    "deleteConfirmTitle": "Supprimer l'intervention",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette intervention ? Cette action est irréversible.",
+    "targetType": "Type de cible",
+    "targetTypes": {
+      "equipment": "Équipement",
+      "vehicle": "Véhicule"
+    },
+    "columns": {
+      "target": "Cible",
+      "issue": "Problème",
+      "technician": "Technicien",
+      "cost": "Coût",
+      "nextDue": "Prochaine échéance",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "target": "Équipement/Véhicule",
+      "issue": "Problème",
+      "technicianName": "Nom du technicien",
+      "partsUsed": "Pièces utilisées",
+      "laborCost": "Coût main-d'œuvre",
+      "partsCost": "Coût pièces",
+      "downtimeHours": "Heures d'arrêt",
+      "nextDueDate": "Prochaine échéance"
+    }
+  },
+  "fuelLogs": {
+    "title": "Journal carburant",
+    "add": "Ajouter un plein",
+    "addTitle": "Nouveau plein de carburant",
+    "deleteConfirmTitle": "Supprimer l'entrée",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette entrée ? Cette action est irréversible.",
+    "autoStockNotice": "À l'enregistrement, un mouvement \"Consommation\" sera créé automatiquement dans stock_movements depuis la cuve.",
+    "targetType": "Type de cible",
+    "targetTypes": {
+      "vehicle": "Véhicule",
+      "equipment": "Équipement"
+    },
+    "columns": {
+      "target": "Cible",
+      "tank": "Cuve",
+      "quantity": "Quantité (L)",
+      "consumptionRate": "Taux de consommation",
+      "occurredAt": "Date",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "tankWarehouse": "Cuve de carburant",
+      "fuelProduct": "Produit carburant",
+      "target": "Véhicule/Équipement",
+      "operator": "Opérateur",
+      "quantityLiters": "Quantité (L)",
+      "odometerOrHours": "Compteur (km ou heures)"
+    }
+  },
+  "qualityChecks": {
+    "title": "Contrôles qualité",
+    "add": "Ajouter un contrôle",
+    "addTitle": "Nouveau contrôle qualité",
+    "deleteConfirmTitle": "Supprimer le contrôle",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer ce contrôle ? Cette action est irréversible.",
+    "columns": {
+      "lot": "Lot",
+      "stage": "Étape",
+      "inspector": "Inspecteur",
+      "result": "Résultat",
+      "checkedAt": "Date",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "lot": "Lot",
+      "stage": "Étape (ex : réception, avant expédition)",
+      "notes": "Notes des critères",
+      "result": "Résultat",
+      "rejectReason": "Motif de rejet"
+    },
+    "result": {
+      "pass": "Conforme",
+      "fail": "Non conforme"
+    }
+  },
+  "expenses": {
+    "title": "Dépenses",
+    "add": "Ajouter une dépense",
+    "addTitle": "Nouvelle dépense",
+    "deleteConfirmTitle": "Supprimer la dépense",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette dépense ? Cette action est irréversible.",
+    "allCategories": "Toutes les catégories",
+    "totalForPeriod": "Total des dépenses (période sélectionnée)",
+    "byCategory": "Par catégorie",
+    "columns": {
+      "date": "Date",
+      "category": "Catégorie",
+      "amount": "Montant",
+      "parcel": "Parcelle",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "parcel": "Parcelle (optionnel)",
+      "cropCycle": "Cycle de culture (optionnel)",
+      "lot": "Lot (optionnel)",
+      "category": "Catégorie",
+      "amount": "Montant",
+      "expenseDate": "Date de la dépense"
+    },
+    "categories": {
+      "labor": "Main-d'œuvre",
+      "fertilizer": "Engrais",
+      "treatment": "Traitement",
+      "irrigation": "Irrigation",
+      "transport": "Transport",
+      "fuel": "Carburant",
+      "maintenance": "Maintenance",
+      "packaging": "Emballage"
+    }
+  },
+  "customers": {
+    "title": "Clients",
+    "add": "Ajouter un client",
+    "edit": "Modifier le client",
+    "addTitle": "Nouveau client",
+    "deleteConfirmTitle": "Supprimer le client",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer le client \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "name": "Nom",
+      "phone": "Téléphone",
+      "email": "E-mail",
+      "actions": ""
+    },
+    "fields": {
+      "name": "Nom",
+      "phone": "Téléphone",
+      "email": "E-mail"
+    }
+  },
+  "sales": {
+    "title": "Ventes",
+    "add": "Ajouter une vente",
+    "addTitle": "Nouvelle vente",
+    "deleteConfirmTitle": "Supprimer la vente",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette vente ? Cette action est irréversible.",
+    "columns": {
+      "lot": "Lot",
+      "customer": "Client",
+      "quantity": "Quantité",
+      "unitPrice": "Prix unitaire",
+      "total": "Total",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "lot": "Lot",
+      "customer": "Client",
+      "quantity": "Quantité",
+      "unitPrice": "Prix unitaire",
+      "destination": "Destination",
+      "status": "Statut"
+    },
+    "status": {
+      "confirmed": "Confirmée",
+      "cancelled": "Annulée"
+    }
+  },
+  "profitability": {
+    "title": "Rentabilité",
+    "groupBy": "Regrouper par",
+    "levels": {
+      "parcel": "Parcelle",
+      "crop": "Culture",
+      "season": "Saison"
+    },
+    "unspecified": "Non spécifié",
+    "columns": {
+      "name": "Nom",
+      "costs": "Coûts",
+      "revenue": "Revenus",
+      "margin": "Marge",
+      "marginPct": "% de marge"
+    },
+    "totals": "Total"
+  },
+  "alerts": {
+    "title": "Alertes",
+    "allSeverities": "Tous les niveaux",
+    "noAlerts": "Aucune alerte pour l'instant — tout est normal",
+    "severity": {
+      "critical": "Critique",
+      "warning": "Avertissement"
+    },
+    "types": {
+      "stock_out": "Rupture de stock",
+      "stock_low": "Stock faible",
+      "vehicle_insurance": "Assurance véhicule",
+      "vehicle_inspection": "Contrôle technique véhicule",
+      "equipment_maintenance": "Maintenance équipement"
+    },
+    "messages": {
+      "stock_out": "Le produit \"{{product}}\" est épuisé dans l'entrepôt {{warehouse}}",
+      "stock_low": "Le produit \"{{product}}\" est faible dans l'entrepôt {{warehouse}} ({{balance}} / seuil {{threshold}})",
+      "vehicle_insurance": "L'assurance du véhicule {{plateNo}} expire le {{date}} ({{days}} j)",
+      "vehicle_inspection": "Le contrôle technique du véhicule {{plateNo}} expire le {{date}} ({{days}} j)",
+      "equipment_maintenance": "Maintenance de l'équipement {{code}} prévue le {{date}} ({{days}} j)"
+    },
+    "daysOverdue": "En retard de {{days}} j",
+    "daysLeft": "{{days}} j restants"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "emptyState": "Aucune donnée à afficher pour cette ferme et cette période.",
+    "greetingMorning": "Bonjour",
+    "greetingEvening": "Bonsoir",
+    "subtitle": "Voici un aperçu de vos fermes aujourd'hui.",
+    "weather": {
+      "title": "Météo",
+      "notConnected": "Non connecté"
+    }
+  },
+  "reports": {
+    "title": "Rapports",
+    "export": "Exporter Excel",
+    "columns": {
+      "metric": "Indicateur",
+      "value": "Valeur"
+    },
+    "metrics": {
+      "totalProduction": "Production totale",
+      "totalRevenue": "Revenu total",
+      "totalExpenses": "Dépenses totales",
+      "netMargin": "Marge nette",
+      "employeeCount": "Employés actifs",
+      "activeVehicleCount": "Véhicules actifs"
+    }
+  }
+}
