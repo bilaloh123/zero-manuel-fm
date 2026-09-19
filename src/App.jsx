@@ -44,6 +44,7 @@ import SalesPage from "./pages/SalesPage";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
 import AlertsPage from "./pages/AlertsPage";
 import ReportsPage from "./pages/ReportsPage";
+import NotificationsPage from "./pages/NotificationsPage";
 import GroupsPage from "./pages/GroupsPage";
 import TransfersPage from "./pages/TransfersPage";
 import RolesPage from "./pages/RolesPage";
@@ -122,6 +123,7 @@ function Gate() {
           <Route index element={<DashboardPage />} />
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="reports" element={<ReportsPage />} />
+          <Route path="notifications" element={<NotificationsPage />} />
           {navSections.flatMap((section) =>
             section.items.map((item) => {
               const Override = PAGE_OVERRIDES[item.key];

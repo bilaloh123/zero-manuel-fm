@@ -1464,5 +1464,30 @@
     "errors": {
       "endBeforeStart": "تاريخ النهاية خاصو يكون بعد تاريخ البداية"
     }
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "empty": "ماكاينش أي إشعار بعد",
+    "markAllRead": "علم الكل كمقروء",
+    "markRead": "علم كمقروء",
+    "severity": {
+      "info": "معلومة",
+      "warning": "تنبيه",
+      "critical": "حرج"
+    },
+    "types": {
+      "period_locked": "قفل فترة",
+      "transfer_cancelled": "إلغاء تحويل",
+      "transfer_variance": "فارق فـ الاستلام",
+      "purchase_order_confirmed": "تأكيد أمر شراء",
+      "quality_check_failed": "فحص جودة فاشل"
+    },
+    "messages": {
+      "period_locked": "تم قفل الفترة من {{start}} إلى {{end}}",
+      "transfer_cancelled": "تحويل بكمية {{quantity}} تلغى",
+      "transfer_variance": "تحويل استلم بفارق: أرسل {{sent}}، استلم {{received}} (الفارق: {{variance}})",
+      "purchase_order_confirmed": "تم تأكيد أمر الشراء",
+      "quality_check_failed": "فحص الجودة فشل فـ مرحلة \"{{stage}}\" — السبب: {{reason}}"
+    }
   }
 }

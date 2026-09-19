@@ -1464,5 +1464,30 @@
     "errors": {
       "endBeforeStart": "La date de fin doit être postérieure à la date de début"
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "Aucune notification pour le moment",
+    "markAllRead": "Tout marquer comme lu",
+    "markRead": "Marquer comme lu",
+    "severity": {
+      "info": "Info",
+      "warning": "Alerte",
+      "critical": "Critique"
+    },
+    "types": {
+      "period_locked": "Période verrouillée",
+      "transfer_cancelled": "Transfert annulé",
+      "transfer_variance": "Écart à la réception",
+      "purchase_order_confirmed": "Commande confirmée",
+      "quality_check_failed": "Contrôle qualité échoué"
+    },
+    "messages": {
+      "period_locked": "La période du {{start}} au {{end}} a été verrouillée",
+      "transfer_cancelled": "Transfert de {{quantity}} annulé",
+      "transfer_variance": "Transfert reçu avec écart : envoyé {{sent}}, reçu {{received}} (écart : {{variance}})",
+      "purchase_order_confirmed": "La commande a été confirmée",
+      "quality_check_failed": "Contrôle qualité échoué à l'étape \"{{stage}}\" — motif : {{reason}}"
+    }
   }
 }

@@ -2,9 +2,10 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import * as Icons from "lucide-react";
-import { LayoutDashboard, ChevronDown, Leaf, Bell, FileBarChart } from "lucide-react";
+import { LayoutDashboard, ChevronDown, Leaf, Bell, FileBarChart, Inbox } from "lucide-react";
 import { navSections } from "../../routes/navConfig";
 import { useAlertsContext } from "../../context/AlertsContext";
+import { useNotificationsContext } from "../../context/NotificationsContext";
 
 function SectionIcon({ name, className }) {
   const Icon = Icons[name] || Icons.Circle;
@@ -57,6 +58,7 @@ export default function Sidebar({ className = "" }) {
   const isLatinScript = i18n.language !== "ar";
   const { alerts } = useAlertsContext();
   const alertCount = alerts.length;
+  const { unreadCount } = useNotificationsContext();
 
   return (
     <aside
@@ -106,6 +108,23 @@ export default function Sidebar({ className = "" }) {
             {alertCount > 0 && (
               <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-semibold text-white">
                 {alertCount}
+              </span>
+            )}
+          </NavLink>
+
+          <NavLink
+            to="/notifications"
+            className={({ isActive }) =>
+              `mb-2 flex items-center gap-3 rounded-control px-3 py-2 text-sm font-medium transition-colors ${
+                isActive ? "bg-sidebar-active text-white" : "text-sidebar-text/90 hover:bg-sidebar-hover"
+              }`
+            }
+          >
+            <Inbox className="h-4 w-4 shrink-0" />
+            <span className="flex-1">{t("notifications.title")}</span>
+            {unreadCount > 0 && (
+              <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-blue-500 px-1 text-[11px] font-semibold text-white">
+                {unreadCount}
               </span>
             )}
           </NavLink>
