@@ -6,12 +6,14 @@ import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import DocumentsModal from "../components/ui/DocumentsModal";
+import Pagination from "../components/ui/Pagination";
 import StockMovementFormModal from "../components/stockmovements/StockMovementFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
 
 const IN_TYPES = new Set(["PURCHASE_RECEIPT", "TRANSFER_IN", "HARVEST_ENTRY", "RETURN"]);
 const OUT_TYPES = new Set(["TRANSFER_OUT", "CONSUMPTION", "LOSS", "DAMAGE", "SALE", "SHIPMENT"]);
+const PAGE_SIZE = 25;
 
 const TYPE_BADGE = (type) => {
   if (IN_TYPES.has(type)) return "bg-brand-100 text-brand-700";
@@ -23,6 +25,8 @@ export default function StockMovementsPage() {
   const { t, i18n } = useTranslation();
   const { farmId } = useFilters();
   const [movements, setMovements] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [documentsTarget, setDocumentsTarget] = useState(null);
@@ -31,22 +35,35 @@ export default function StockMovementsPage() {
 
   const loadMovements = useCallback(async () => {
     setError(null);
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     let query = supabase
       .from("stock_movements")
       .select(
-        "id, occurred_at, movement_type, quantity, reason, product_id, photo_url, products:product_id(name_ar, name_fr), source_warehouse:source_warehouse_id(name), destination_warehouse:destination_warehouse_id(name)"
+        "id, occurred_at, movement_type, quantity, reason, product_id, photo_url, products:product_id(name_ar, name_fr), source_warehouse:source_warehouse_id(name), destination_warehouse:destination_warehouse_id(name)",
+        { count: "exact" }
       )
-      .order("occurred_at", { ascending: false });
+      .order("occurred_at", { ascending: false })
+      .range(from, to);
     if (farmId !== "all") {
       query = query.eq("farm_id", farmId);
     }
-    const { data, error: fetchError } = await query;
+    const { data, count, error: fetchError } = await query;
     if (fetchError) {
       setError(fetchError.message);
       setMovements([]);
       return;
     }
+    if ((data || []).length === 0 && page > 1) {
+      setPage((p) => p - 1);
+      return;
+    }
     setMovements(data);
+    setTotal(count || 0);
+  }, [farmId, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [farmId]);
 
   useEffect(() => {
@@ -140,6 +157,9 @@ export default function StockMovementsPage() {
               </tbody>
             </table>
           </div>
+        )}
+        {movements && movements.length > 0 && (
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
         )}
       </Card>
 

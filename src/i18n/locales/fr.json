@@ -21,7 +21,13 @@
     "notifications": "Notifications",
     "searchPlaceholder": "Rechercher dans AGRIMAX...",
     "error": "Une erreur est survenue",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "pagination": {
+      "showing": "Affichage {{from}}–{{to}} sur {{total}}",
+      "previous": "Précédent",
+      "next": "Suivant",
+      "pageOf": "Page {{page}} sur {{totalPages}}"
+    }
   },
   "auth": {
     "title": "Connexion",

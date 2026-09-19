@@ -5,9 +5,12 @@ import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Modal from "../components/ui/Modal";
 import Button from "../components/ui/Button";
+import Pagination from "../components/ui/Pagination";
 import { inputClass } from "../components/ui/FormField";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
+
+const PAGE_SIZE = 25;
 
 const AUDITED_TABLES = [
   "farms",
@@ -67,28 +70,43 @@ export default function AuditLogPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [entries, setEntries] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [detailEntry, setDetailEntry] = useState(null);
 
   const loadEntries = useCallback(async () => {
     setError(null);
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     let query = supabase
       .from("audit_log")
-      .select("id, action, table_name, record_id, old_value, new_value, occurred_at, users:user_id(full_name)")
+      .select("id, action, table_name, record_id, old_value, new_value, occurred_at, users:user_id(full_name)", {
+        count: "exact",
+      })
       .order("occurred_at", { ascending: false })
-      .limit(200);
+      .range(from, to);
     if (farmId !== "all") query = query.eq("farm_id", farmId);
     if (tableFilter !== "all") query = query.eq("table_name", tableFilter);
     if (startDate) query = query.gte("occurred_at", new Date(startDate).toISOString());
     if (endDate) query = query.lte("occurred_at", new Date(`${endDate}T23:59:59`).toISOString());
 
-    const { data, error: fetchError } = await query;
+    const { data, count, error: fetchError } = await query;
     if (fetchError) {
       setError(fetchError.message);
       setEntries([]);
       return;
     }
+    if ((data || []).length === 0 && page > 1) {
+      setPage((p) => p - 1);
+      return;
+    }
     setEntries(data);
+    setTotal(count || 0);
+  }, [farmId, tableFilter, startDate, endDate, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [farmId, tableFilter, startDate, endDate]);
 
   useEffect(() => {
@@ -175,6 +193,9 @@ export default function AuditLogPage() {
               </tbody>
             </table>
           </div>
+        )}
+        {entries && entries.length > 0 && (
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
         )}
       </Card>
 

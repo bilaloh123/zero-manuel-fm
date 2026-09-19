@@ -5,9 +5,12 @@ import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import Pagination from "../components/ui/Pagination";
 import SaleFormModal from "../components/sales/SaleFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
+
+const PAGE_SIZE = 25;
 
 const STATUS_BADGE = {
   confirmed: "bg-brand-100 text-brand-700",
@@ -18,6 +21,8 @@ export default function SalesPage() {
   const { t } = useTranslation();
   const { farmId } = useFilters();
   const [sales, setSales] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -26,24 +31,37 @@ export default function SalesPage() {
   const loadSales = useCallback(async () => {
     setError(null);
     const isFarmScoped = farmId !== "all";
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     let query = supabase
       .from("sales")
       .select(
         isFarmScoped
           ? "id, quantity, unit_price, status, sold_at, lots:lot_id!inner(lot_code, parcels!inner(farm_id)), customers:customer_id(name)"
-          : "id, quantity, unit_price, status, sold_at, lots:lot_id(lot_code, parcels(farm_id)), customers:customer_id(name)"
+          : "id, quantity, unit_price, status, sold_at, lots:lot_id(lot_code, parcels(farm_id)), customers:customer_id(name)",
+        { count: "exact" }
       )
-      .order("sold_at", { ascending: false });
+      .order("sold_at", { ascending: false })
+      .range(from, to);
     if (isFarmScoped) {
       query = query.eq("lots.parcels.farm_id", farmId);
     }
-    const { data, error: fetchError } = await query;
+    const { data, count, error: fetchError } = await query;
     if (fetchError) {
       setError(fetchError.message);
       setSales([]);
       return;
     }
+    if ((data || []).length === 0 && page > 1) {
+      setPage((p) => p - 1);
+      return;
+    }
     setSales(data);
+    setTotal(count || 0);
+  }, [farmId, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [farmId]);
 
   useEffect(() => {
@@ -128,6 +146,7 @@ export default function SalesPage() {
             </table>
           </div>
         )}
+        {sales && sales.length > 0 && <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />}
       </Card>
 
       {formOpen && (

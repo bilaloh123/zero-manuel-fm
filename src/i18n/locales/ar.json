@@ -21,7 +21,13 @@
     "notifications": "التنبيهات",
     "searchPlaceholder": "بحث فـ AGRIMAX...",
     "error": "وقع خطأ",
-    "retry": "إعادة المحاولة"
+    "retry": "إعادة المحاولة",
+    "pagination": {
+      "showing": "عرض {{from}}–{{to}} من {{total}}",
+      "previous": "السابق",
+      "next": "التالي",
+      "pageOf": "صفحة {{page}} من {{totalPages}}"
+    }
   },
   "auth": {
     "title": "تسجيل الدخول",
