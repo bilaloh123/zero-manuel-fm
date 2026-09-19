@@ -27,7 +27,9 @@
       "previous": "السابق",
       "next": "التالي",
       "pageOf": "صفحة {{page}} من {{totalPages}}"
-    }
+    },
+    "yes": "نعم",
+    "no": "لا"
   },
   "auth": {
     "title": "تسجيل الدخول",
@@ -109,7 +111,8 @@
       "auditLog": "سجل التدقيق",
       "periodLocks": "قفل الفترات المحاسبية",
       "importData": "استيراد Excel",
-      "quotes": "عروض الأسعار"
+      "quotes": "عروض الأسعار",
+      "salesOrders": "طلبيات الزبناء"
     }
   },
   "farms": {
@@ -1615,6 +1618,73 @@
       "discountTotal": "مجموع التخفيض",
       "taxTotal": "مجموع الضريبة",
       "grandTotal": "المجموع الإجمالي"
+    }
+  },
+  "salesOrders": {
+    "title": "طلبيات الزبناء (Commandes)",
+    "add": "إضافة طلبية",
+    "edit": "تعديل الطلبية",
+    "addTitle": "طلبية جديدة",
+    "deleteConfirmTitle": "حذف الطلبية",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الطلبية؟ هاد العملية ما ترجعش.",
+    "manageItems": "الأصناف",
+    "noLinkedQuote": "بلا عرض سعر مرتبط",
+    "confirmAction": "تأكيد الطلبية",
+    "cancelAction": "إلغاء الطلبية",
+    "confirmDialogTitle": "تأكيد الطلبية",
+    "confirmDialogMessage": "غادي نتحقق من الكمية المتاحة (ATP) ونحجز المخزون لطلبية {{no}}. متأكد؟",
+    "cancelDialogTitle": "إلغاء الطلبية",
+    "cancelDialogMessage": "غادي نلغي طلبية {{no}} ونحرر أي حجز مرتبط بيها. متأكد؟",
+    "allowBackorderHint": "السماح بالحجز حتى إذا فاقت الكمية المتاح (backorder)",
+    "columns": {
+      "orderNo": "الرقم",
+      "customer": "الزبون",
+      "status": "الحالة",
+      "backorder": "Backorder",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "customer": "الزبون",
+      "linkedQuote": "عرض السعر المرتبط",
+      "discountPct": "التخفيض (%)",
+      "allowBackorder": "السماح بالـ Backorder",
+      "notes": "ملاحظات"
+    },
+    "status": {
+      "draft": "مسودة",
+      "confirmed": "مؤكدة",
+      "in_preparation": "قيد التحضير",
+      "partially_delivered": "تسليم جزئي",
+      "delivered": "تم التسليم",
+      "invoiced": "تمت الفوترة",
+      "paid": "مؤداة",
+      "closed": "مغلقة",
+      "cancelled": "ملغاة"
+    },
+    "items": {
+      "title": "أصناف طلبية {{no}}",
+      "addItem": "إضافة صنف",
+      "noItems": "ماكاينش أي صنف بعد",
+      "lockedNotice": "الطلبية مؤكدة — الأصناف ماعادش قابلة للتعديل هنا.",
+      "product": "المنتج",
+      "selectProduct": "اختر المنتج",
+      "warehouse": "المستودع",
+      "selectWarehouse": "اختر المستودع",
+      "quantity": "الكمية",
+      "reserved": "محجوز",
+      "delivered": "مسلّم",
+      "unitPrice": "سعر الوحدة",
+      "discountPct": "التخفيض (%)",
+      "taxRate": "الضريبة (%)",
+      "lineTotal": "المجموع",
+      "subtotal": "المجموع الفرعي",
+      "discountTotal": "مجموع التخفيض",
+      "taxTotal": "مجموع الضريبة",
+      "grandTotal": "المجموع الإجمالي",
+      "atpHint": "الكمية المتاحة للوعد (ATP): {{atp}}",
+      "atpBlockedHint": "التأكيد غادي يترفض إلا فعّلت السماح بالـ backorder",
+      "atpBackorderHint": "غادي يتسجل كـ backorder (فاق المتاح)"
     }
   }
 }

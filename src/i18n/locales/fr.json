@@ -27,7 +27,9 @@
       "previous": "Précédent",
       "next": "Suivant",
       "pageOf": "Page {{page}} sur {{totalPages}}"
-    }
+    },
+    "yes": "Oui",
+    "no": "Non"
   },
   "auth": {
     "title": "Connexion",
@@ -109,7 +111,8 @@
       "auditLog": "Journal d'audit",
       "periodLocks": "Verrouillage des périodes",
       "importData": "Import Excel",
-      "quotes": "Devis"
+      "quotes": "Devis",
+      "salesOrders": "Commandes clients"
     }
   },
   "farms": {
@@ -1615,6 +1618,73 @@
       "discountTotal": "Total remise",
       "taxTotal": "Total taxe",
       "grandTotal": "Total général"
+    }
+  },
+  "salesOrders": {
+    "title": "Commandes clients",
+    "add": "Ajouter une commande",
+    "edit": "Modifier la commande",
+    "addTitle": "Nouvelle commande",
+    "deleteConfirmTitle": "Supprimer la commande",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette commande ? Cette action est irréversible.",
+    "manageItems": "Articles",
+    "noLinkedQuote": "Aucun devis lié",
+    "confirmAction": "Confirmer la commande",
+    "cancelAction": "Annuler la commande",
+    "confirmDialogTitle": "Confirmer la commande",
+    "confirmDialogMessage": "La disponibilité (ATP) sera vérifiée et le stock réservé pour la commande {{no}}. Confirmer ?",
+    "cancelDialogTitle": "Annuler la commande",
+    "cancelDialogMessage": "La commande {{no}} sera annulée et toute réservation associée sera libérée. Confirmer ?",
+    "allowBackorderHint": "Autoriser la réservation même au-delà du stock disponible (backorder)",
+    "columns": {
+      "orderNo": "N°",
+      "customer": "Client",
+      "status": "Statut",
+      "backorder": "Backorder",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "customer": "Client",
+      "linkedQuote": "Devis lié",
+      "discountPct": "Remise (%)",
+      "allowBackorder": "Autoriser le backorder",
+      "notes": "Notes"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "confirmed": "Confirmée",
+      "in_preparation": "En préparation",
+      "partially_delivered": "Livraison partielle",
+      "delivered": "Livrée",
+      "invoiced": "Facturée",
+      "paid": "Payée",
+      "closed": "Clôturée",
+      "cancelled": "Annulée"
+    },
+    "items": {
+      "title": "Articles de la commande {{no}}",
+      "addItem": "Ajouter un article",
+      "noItems": "Aucun article pour l'instant",
+      "lockedNotice": "Commande confirmée — les articles ne sont plus modifiables ici.",
+      "product": "Produit",
+      "selectProduct": "Choisir un produit",
+      "warehouse": "Entrepôt",
+      "selectWarehouse": "Choisir un entrepôt",
+      "quantity": "Quantité",
+      "reserved": "Réservé",
+      "delivered": "Livré",
+      "unitPrice": "Prix unitaire",
+      "discountPct": "Remise (%)",
+      "taxRate": "Taxe (%)",
+      "lineTotal": "Total",
+      "subtotal": "Sous-total",
+      "discountTotal": "Total remise",
+      "taxTotal": "Total taxe",
+      "grandTotal": "Total général",
+      "atpHint": "Disponible à la promesse (ATP) : {{atp}}",
+      "atpBlockedHint": "la confirmation sera refusée sauf si le backorder est autorisé",
+      "atpBackorderHint": "sera enregistré comme backorder (dépasse le disponible)"
     }
   }
 }
