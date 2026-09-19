@@ -1248,14 +1248,14 @@
   },
   "dashboard": {
     "title": "Tableau de bord",
-    "emptyState": "Aucune donnée à afficher pour cette ferme et cette période.",
     "greetingMorning": "Bonjour",
     "greetingEvening": "Bonsoir",
     "subtitle": "Voici un aperçu de vos fermes aujourd'hui.",
     "weather": {
       "title": "Météo",
       "notConnected": "Non connecté"
-    }
+    },
+    "recentAlerts": "Dernières alertes actives"
   },
   "reports": {
     "title": "Rapports",

@@ -1248,14 +1248,14 @@
   },
   "dashboard": {
     "title": "لوحة القيادة",
-    "emptyState": "لا توجد بيانات لعرضها بعد لهذه المزرعة والفترة المختارة.",
     "greetingMorning": "صباح الخير",
     "greetingEvening": "مساء الخير",
     "subtitle": "هذه نظرة عامة على مزارعك اليوم.",
     "weather": {
       "title": "الطقس",
       "notConnected": "غير مربوط بعد"
-    }
+    },
+    "recentAlerts": "آخر التنبيهات النشيطة"
   },
   "reports": {
     "title": "التقارير",

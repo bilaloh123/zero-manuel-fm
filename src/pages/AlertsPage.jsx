@@ -1,16 +1,11 @@
 import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertTriangle, AlertOctagon } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import { useAlertsContext } from "../context/AlertsContext";
 import { useFilters } from "../context/FiltersContext";
 import { inputClass } from "../components/ui/FormField";
-
-const SEVERITY_STYLE = {
-  critical: { badge: "bg-red-100 text-red-700", icon: AlertOctagon },
-  warning: { badge: "bg-amber-100 text-amber-700", icon: AlertTriangle },
-};
+import { SEVERITY_STYLE, alertMessage } from "../lib/alertDisplay";
 
 export default function AlertsPage() {
   const { t, i18n } = useTranslation();
@@ -22,30 +17,6 @@ export default function AlertsPage() {
     () => (farmId === "all" ? allAlerts : allAlerts.filter((a) => a.farm_id === farmId)),
     [allAlerts, farmId]
   );
-
-  const productLabel = (p) => (!p ? "" : i18n.language === "ar" ? p.name_ar || p.name_fr : p.name_fr || p.name_ar);
-
-  const messageFor = (alert) => {
-    const p = alert.params;
-    switch (alert.type) {
-      case "stock_out":
-        return t("alerts.messages.stock_out", { product: productLabel(p.product), warehouse: p.warehouseName });
-      case "stock_low":
-        return t("alerts.messages.stock_low", {
-          product: productLabel(p.product),
-          warehouse: p.warehouseName,
-          balance: p.balance,
-          threshold: p.threshold,
-        });
-      case "vehicle_insurance":
-      case "vehicle_inspection":
-        return t(`alerts.messages.${alert.type}`, { plateNo: p.plateNo, date: p.date, days: p.days });
-      case "equipment_maintenance":
-        return t("alerts.messages.equipment_maintenance", { code: p.code, date: p.date, days: p.days });
-      default:
-        return "";
-    }
-  };
 
   const filtered = severityFilter === "all" ? alerts : alerts.filter((a) => a.severity === severityFilter);
 
@@ -90,7 +61,7 @@ export default function AlertsPage() {
                         {t(`alerts.severity.${alert.severity}`)}
                       </span>
                     </div>
-                    <p className="text-sm text-ink-muted">{messageFor(alert)}</p>
+                    <p className="text-sm text-ink-muted">{alertMessage(alert, t, i18n.language)}</p>
                   </div>
                 </li>
               );
