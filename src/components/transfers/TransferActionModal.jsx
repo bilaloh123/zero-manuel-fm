@@ -45,42 +45,19 @@ export default function TransferActionModal({ open, transfer, nextStatus, onClos
     setSaving(true);
     try {
       if (isReceive) {
-        const sent = Number(sentQuantity);
-        const received = Number(receivedQuantity);
-
-        const { error: transferError } = await supabase
-          .from("transfers")
-          .update({
-            status: "received",
-            arrival_time: new Date(arrivalTime).toISOString(),
-            sent_quantity: sent,
-            received_quantity: received,
-            variance: received - sent,
-          })
-          .eq("id", transfer.id);
-        if (transferError) throw transferError;
-
-        const { error: outError } = await supabase.from("stock_movements").insert({
-          farm_id: transfer.source_farm_id,
-          movement_type: "TRANSFER_OUT",
-          product_id: transfer.product_id,
-          quantity: sent,
-          source_warehouse_id: sourceWarehouseId,
-          user_id: user.id,
-          reason: `Transfert vers ${transfer.destination_farm_id}`,
+        // Runs as a single DB transaction (receive_transfer RPC): the transfer
+        // update and both stock movements either all commit or all roll back,
+        // instead of three separate client-side writes that could leave a
+        // TRANSFER_OUT with no matching TRANSFER_IN if one step failed.
+        const { error: rpcError } = await supabase.rpc("receive_transfer", {
+          p_transfer_id: transfer.id,
+          p_source_warehouse_id: sourceWarehouseId,
+          p_destination_warehouse_id: destinationWarehouseId,
+          p_sent_quantity: Number(sentQuantity),
+          p_received_quantity: Number(receivedQuantity),
+          p_arrival_time: new Date(arrivalTime).toISOString(),
         });
-        if (outError) throw outError;
-
-        const { error: inError } = await supabase.from("stock_movements").insert({
-          farm_id: transfer.destination_farm_id,
-          movement_type: "TRANSFER_IN",
-          product_id: transfer.product_id,
-          quantity: received,
-          destination_warehouse_id: destinationWarehouseId,
-          user_id: user.id,
-          reason: `Transfert depuis ${transfer.source_farm_id}`,
-        });
-        if (inError) throw inError;
+        if (rpcError) throw rpcError;
       } else {
         const payload = { status: nextStatus };
         if (nextStatus === "approved") payload.approved_by = user.id;
