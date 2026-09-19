@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Plus, Trash2 } from "lucide-react";
 import Card from "../components/ui/Card";
@@ -6,10 +6,13 @@ import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import StatTile from "../components/ui/StatTile";
+import Pagination from "../components/ui/Pagination";
 import ExpenseFormModal from "../components/expenses/ExpenseFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
 import { inputClass } from "../components/ui/FormField";
+
+const PAGE_SIZE = 25;
 
 const CATEGORY_OPTIONS = [
   "labor",
@@ -32,35 +35,70 @@ export default function ExpensesPage() {
   const { farmId, periodRange } = useFilters();
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [expenses, setExpenses] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
+  const [kpi, setKpi] = useState({ total: 0, byCategory: {} });
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
+  const applyFilters = useCallback(
+    (query) => {
+      let q = query;
+      if (farmId !== "all") q = q.eq("farm_id", farmId);
+      if (categoryFilter !== "all") q = q.eq("category", categoryFilter);
+      if (periodRange.start) q = q.gte("expense_date", dateStr(periodRange.start));
+      q = q.lte("expense_date", dateStr(periodRange.end));
+      return q;
+    },
+    [farmId, categoryFilter, periodRange]
+  );
+
+  // KPI tiles must reflect the full filtered set, not just the current page,
+  // so they're computed from a separate lightweight (amount, category only)
+  // unpaginated query rather than from the paginated table rows.
   const loadExpenses = useCallback(async () => {
     setError(null);
-    let query = supabase
-      .from("expenses")
-      .select("id, category, amount, expense_date, farm_id, parcels:parcel_id(name, code)")
-      .order("expense_date", { ascending: false });
-    if (farmId !== "all") {
-      query = query.eq("farm_id", farmId);
-    }
-    if (categoryFilter !== "all") {
-      query = query.eq("category", categoryFilter);
-    }
-    if (periodRange.start) {
-      query = query.gte("expense_date", dateStr(periodRange.start));
-    }
-    query = query.lte("expense_date", dateStr(periodRange.end));
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
 
-    const { data, error: fetchError } = await query;
-    if (fetchError) {
-      setError(fetchError.message);
+    const listQuery = applyFilters(
+      supabase
+        .from("expenses")
+        .select("id, category, amount, expense_date, farm_id, parcels:parcel_id(name, code)", { count: "exact" })
+    )
+      .order("expense_date", { ascending: false })
+      .range(from, to);
+    const kpiQuery = applyFilters(supabase.from("expenses").select("amount, category"));
+
+    const [listRes, kpiRes] = await Promise.all([listQuery, kpiQuery]);
+
+    if (listRes.error) {
+      setError(listRes.error.message);
       setExpenses([]);
       return;
     }
-    setExpenses(data);
+    if ((listRes.data || []).length === 0 && page > 1) {
+      setPage((p) => p - 1);
+      return;
+    }
+    setExpenses(listRes.data);
+    setTotal(listRes.count || 0);
+
+    if (!kpiRes.error) {
+      const sums = {};
+      let sum = 0;
+      (kpiRes.data || []).forEach((e) => {
+        sum += Number(e.amount);
+        sums[e.category] = (sums[e.category] || 0) + Number(e.amount);
+      });
+      setKpi({ total: sum, byCategory: sums });
+    }
+  }, [applyFilters, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [farmId, categoryFilter, periodRange]);
 
   useEffect(() => {
@@ -82,17 +120,6 @@ export default function ExpensesPage() {
     }
   };
 
-  const { total, byCategory } = useMemo(() => {
-    const list = expenses || [];
-    const sums = {};
-    let sum = 0;
-    list.forEach((e) => {
-      sum += Number(e.amount);
-      sums[e.category] = (sums[e.category] || 0) + Number(e.amount);
-    });
-    return { total: sum, byCategory: sums };
-  }, [expenses]);
-
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -104,9 +131,9 @@ export default function ExpensesPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <StatTile label={t("expenses.totalForPeriod")} value={total.toFixed(2)} accent />
-        {CATEGORY_OPTIONS.filter((c) => byCategory[c]).map((c) => (
-          <StatTile key={c} label={t(`expenses.categories.${c}`)} value={byCategory[c].toFixed(2)} />
+        <StatTile label={t("expenses.totalForPeriod")} value={kpi.total.toFixed(2)} accent />
+        {CATEGORY_OPTIONS.filter((c) => kpi.byCategory[c]).map((c) => (
+          <StatTile key={c} label={t(`expenses.categories.${c}`)} value={kpi.byCategory[c].toFixed(2)} />
         ))}
       </div>
 
@@ -167,6 +194,9 @@ export default function ExpensesPage() {
               </tbody>
             </table>
           </div>
+        )}
+        {expenses && expenses.length > 0 && (
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
         )}
       </Card>
 

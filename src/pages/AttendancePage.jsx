@@ -5,10 +5,13 @@ import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import Pagination from "../components/ui/Pagination";
 import AttendanceFormModal from "../components/attendance/AttendanceFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
 import { inputClass } from "../components/ui/FormField";
+
+const PAGE_SIZE = 25;
 
 const STATUS_BADGE = {
   present: "bg-brand-100 text-brand-700",
@@ -34,6 +37,8 @@ export default function AttendancePage() {
   const { farmId } = useFilters();
   const [date, setDate] = useState(todayStr());
   const [records, setRecords] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [formState, setFormState] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -41,24 +46,39 @@ export default function AttendancePage() {
 
   const loadRecords = useCallback(async () => {
     setError(null);
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     const dayStart = new Date(`${date}T00:00:00`).toISOString();
     const dayEnd = new Date(`${date}T23:59:59.999`).toISOString();
     let query = supabase
       .from("attendance")
-      .select("id, farm_id, employee_id, check_in, check_out, hours_worked, status, employees:employee_id(full_name)")
+      .select(
+        "id, farm_id, employee_id, check_in, check_out, hours_worked, status, employees:employee_id(full_name)",
+        { count: "exact" }
+      )
       .gte("check_in", dayStart)
       .lte("check_in", dayEnd)
-      .order("check_in", { ascending: true });
+      .order("check_in", { ascending: true })
+      .range(from, to);
     if (farmId !== "all") {
       query = query.eq("farm_id", farmId);
     }
-    const { data, error: fetchError } = await query;
+    const { data, count, error: fetchError } = await query;
     if (fetchError) {
       setError(fetchError.message);
       setRecords([]);
       return;
     }
+    if ((data || []).length === 0 && page > 1) {
+      setPage((p) => p - 1);
+      return;
+    }
     setRecords(data);
+    setTotal(count || 0);
+  }, [farmId, date, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [farmId, date]);
 
   useEffect(() => {
@@ -160,6 +180,9 @@ export default function AttendancePage() {
               </tbody>
             </table>
           </div>
+        )}
+        {records && records.length > 0 && (
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
         )}
       </Card>
 

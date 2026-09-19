@@ -6,14 +6,19 @@ import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import DocumentsModal from "../components/ui/DocumentsModal";
+import Pagination from "../components/ui/Pagination";
 import MaintenanceRecordFormModal from "../components/maintenance/MaintenanceRecordFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
+
+const PAGE_SIZE = 25;
 
 export default function MaintenanceRecordsPage() {
   const { t } = useTranslation();
   const { farmId } = useFilters();
   const [records, setRecords] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [documentsTarget, setDocumentsTarget] = useState(null);
@@ -22,13 +27,17 @@ export default function MaintenanceRecordsPage() {
 
   const loadRecords = useCallback(async () => {
     setError(null);
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
 
     let query = supabase
       .from("maintenance_records")
       .select(
-        "id, issue, technician_name, labor_cost, parts_cost, next_due_date, photos, equipment:equipment_id(code), vehicles:vehicle_id(plate_no)"
+        "id, issue, technician_name, labor_cost, parts_cost, next_due_date, photos, equipment:equipment_id(code), vehicles:vehicle_id(plate_no)",
+        { count: "exact" }
       )
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(from, to);
 
     if (farmId !== "all") {
       const [{ data: eq }, { data: veh }] = await Promise.all([
@@ -39,6 +48,7 @@ export default function MaintenanceRecordsPage() {
       const vehicleIds = (veh || []).map((v) => v.id);
       if (equipmentIds.length === 0 && vehicleIds.length === 0) {
         setRecords([]);
+        setTotal(0);
         return;
       }
       const orParts = [];
@@ -47,13 +57,22 @@ export default function MaintenanceRecordsPage() {
       query = query.or(orParts.join(","));
     }
 
-    const { data, error: fetchError } = await query;
+    const { data, count, error: fetchError } = await query;
     if (fetchError) {
       setError(fetchError.message);
       setRecords([]);
       return;
     }
+    if ((data || []).length === 0 && page > 1) {
+      setPage((p) => p - 1);
+      return;
+    }
     setRecords(data);
+    setTotal(count || 0);
+  }, [farmId, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [farmId]);
 
   useEffect(() => {
@@ -142,6 +161,9 @@ export default function MaintenanceRecordsPage() {
               </tbody>
             </table>
           </div>
+        )}
+        {records && records.length > 0 && (
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
         )}
       </Card>
 

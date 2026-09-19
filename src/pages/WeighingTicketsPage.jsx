@@ -6,14 +6,19 @@ import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import DocumentsModal from "../components/ui/DocumentsModal";
+import Pagination from "../components/ui/Pagination";
 import WeighingTicketFormModal from "../components/weighingtickets/WeighingTicketFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
+
+const PAGE_SIZE = 25;
 
 export default function WeighingTicketsPage() {
   const { t, i18n } = useTranslation();
   const { farmId } = useFilters();
   const [tickets, setTickets] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [documentsTarget, setDocumentsTarget] = useState(null);
@@ -22,22 +27,35 @@ export default function WeighingTicketsPage() {
 
   const loadTickets = useCallback(async () => {
     setError(null);
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     let query = supabase
       .from("weighing_tickets")
       .select(
-        "id, ticket_no, net_weight, occurred_at, farm_id, pdf_url, vehicles:vehicle_id(plate_no), drivers:driver_id(full_name), products:product_id(name_ar, name_fr)"
+        "id, ticket_no, net_weight, occurred_at, farm_id, pdf_url, vehicles:vehicle_id(plate_no), drivers:driver_id(full_name), products:product_id(name_ar, name_fr)",
+        { count: "exact" }
       )
-      .order("occurred_at", { ascending: false });
+      .order("occurred_at", { ascending: false })
+      .range(from, to);
     if (farmId !== "all") {
       query = query.eq("farm_id", farmId);
     }
-    const { data, error: fetchError } = await query;
+    const { data, count, error: fetchError } = await query;
     if (fetchError) {
       setError(fetchError.message);
       setTickets([]);
       return;
     }
+    if ((data || []).length === 0 && page > 1) {
+      setPage((p) => p - 1);
+      return;
+    }
     setTickets(data);
+    setTotal(count || 0);
+  }, [farmId, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [farmId]);
 
   useEffect(() => {
@@ -125,6 +143,9 @@ export default function WeighingTicketsPage() {
               </tbody>
             </table>
           </div>
+        )}
+        {tickets && tickets.length > 0 && (
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
         )}
       </Card>
 

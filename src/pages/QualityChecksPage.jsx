@@ -6,9 +6,12 @@ import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import DocumentsModal from "../components/ui/DocumentsModal";
+import Pagination from "../components/ui/Pagination";
 import QualityCheckFormModal from "../components/qualitychecks/QualityCheckFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
+
+const PAGE_SIZE = 25;
 
 const RESULT_BADGE = {
   pass: "bg-brand-100 text-brand-700",
@@ -19,6 +22,8 @@ export default function QualityChecksPage() {
   const { t } = useTranslation();
   const { farmId } = useFilters();
   const [checks, setChecks] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [documentsTarget, setDocumentsTarget] = useState(null);
@@ -27,21 +32,40 @@ export default function QualityChecksPage() {
 
   const loadChecks = useCallback(async () => {
     setError(null);
+    const isFarmScoped = farmId !== "all";
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    // Previously filtered by farm client-side after fetching the whole
+    // table; switched to server-side !inner scoping (same fix as Sales)
+    // since range()/count() must operate on the already-filtered set.
     let query = supabase
       .from("quality_checks")
       .select(
-        "id, stage, result, reject_reason, checked_at, photos, lots:lot_id(lot_code, parcels:parcel_id(farm_id)), app_users:inspector_id(full_name)"
+        isFarmScoped
+          ? "id, stage, result, reject_reason, checked_at, photos, lots:lot_id!inner(lot_code, parcels:parcel_id!inner(farm_id)), app_users:inspector_id(full_name)"
+          : "id, stage, result, reject_reason, checked_at, photos, lots:lot_id(lot_code, parcels:parcel_id(farm_id)), app_users:inspector_id(full_name)",
+        { count: "exact" }
       )
-      .order("checked_at", { ascending: false });
-    const { data, error: fetchError } = await query;
+      .order("checked_at", { ascending: false })
+      .range(from, to);
+    if (isFarmScoped) query = query.eq("lots.parcels.farm_id", farmId);
+
+    const { data, count, error: fetchError } = await query;
     if (fetchError) {
       setError(fetchError.message);
       setChecks([]);
       return;
     }
-    const filtered =
-      farmId === "all" ? data : (data || []).filter((c) => c.lots?.parcels?.farm_id === farmId);
-    setChecks(filtered);
+    if ((data || []).length === 0 && page > 1) {
+      setPage((p) => p - 1);
+      return;
+    }
+    setChecks(data);
+    setTotal(count || 0);
+  }, [farmId, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [farmId]);
 
   useEffect(() => {
@@ -131,6 +155,9 @@ export default function QualityChecksPage() {
               </tbody>
             </table>
           </div>
+        )}
+        {checks && checks.length > 0 && (
+          <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
         )}
       </Card>
 

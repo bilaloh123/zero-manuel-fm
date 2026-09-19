@@ -5,14 +5,19 @@ import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import Pagination from "../components/ui/Pagination";
 import FuelLogFormModal from "../components/fuellogs/FuelLogFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
+
+const PAGE_SIZE = 25;
 
 export default function FuelLogsPage() {
   const { t } = useTranslation();
   const { farmId } = useFilters();
   const [logs, setLogs] = useState(null);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(1);
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -20,17 +25,27 @@ export default function FuelLogsPage() {
 
   const loadLogs = useCallback(async () => {
     setError(null);
+    const from = (page - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
     let query = supabase
       .from("fuel_logs")
-      .select("id, target_type, target_id, quantity_liters, consumption_rate, occurred_at, warehouses:tank_warehouse_id(name)")
-      .order("occurred_at", { ascending: false });
+      .select(
+        "id, target_type, target_id, quantity_liters, consumption_rate, occurred_at, warehouses:tank_warehouse_id(name)",
+        { count: "exact" }
+      )
+      .order("occurred_at", { ascending: false })
+      .range(from, to);
     if (farmId !== "all") {
       query = query.eq("farm_id", farmId);
     }
-    const { data, error: fetchError } = await query;
+    const { data, count, error: fetchError } = await query;
     if (fetchError) {
       setError(fetchError.message);
       setLogs([]);
+      return;
+    }
+    if ((data || []).length === 0 && page > 1) {
+      setPage((p) => p - 1);
       return;
     }
 
@@ -53,6 +68,11 @@ export default function FuelLogsPage() {
         targetLabel: log.target_type === "vehicle" ? vehicleMap[log.target_id] : equipmentMap[log.target_id],
       }))
     );
+    setTotal(count || 0);
+  }, [farmId, page]);
+
+  useEffect(() => {
+    setPage(1);
   }, [farmId]);
 
   useEffect(() => {
@@ -131,6 +151,7 @@ export default function FuelLogsPage() {
             </table>
           </div>
         )}
+        {logs && logs.length > 0 && <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />}
       </Card>
 
       {formOpen && (
