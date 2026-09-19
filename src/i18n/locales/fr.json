@@ -108,7 +108,8 @@
       "users": "Utilisateurs",
       "auditLog": "Journal d'audit",
       "periodLocks": "Verrouillage des périodes",
-      "importData": "Import Excel"
+      "importData": "Import Excel",
+      "quotes": "Devis"
     }
   },
   "farms": {
@@ -1567,5 +1568,53 @@
       "farm": "Ferme (par code ou nom)"
     },
     "validating": "Validation en cours..."
+  },
+  "quotes": {
+    "title": "Devis",
+    "add": "Ajouter un devis",
+    "edit": "Modifier le devis",
+    "addTitle": "Nouveau devis",
+    "deleteConfirmTitle": "Supprimer le devis",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer ce devis ? Cette action est irréversible.",
+    "manageItems": "Articles",
+    "columns": {
+      "quoteNo": "N°",
+      "customer": "Client",
+      "validUntil": "Valide jusqu'au",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "customer": "Client",
+      "status": "Statut",
+      "validUntil": "Valide jusqu'au",
+      "discountPct": "Remise (%)",
+      "notes": "Notes"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "sent": "Envoyé",
+      "accepted": "Accepté",
+      "rejected": "Refusé",
+      "expired": "Expiré",
+      "converted": "Converti en commande"
+    },
+    "items": {
+      "title": "Articles du devis {{no}}",
+      "addItem": "Ajouter un article",
+      "noItems": "Aucun article pour l'instant",
+      "product": "Produit",
+      "selectProduct": "Choisir un produit",
+      "quantity": "Quantité",
+      "unitPrice": "Prix unitaire",
+      "discountPct": "Remise (%)",
+      "taxRate": "Taxe (%)",
+      "lineTotal": "Total",
+      "subtotal": "Sous-total",
+      "discountTotal": "Total remise",
+      "taxTotal": "Total taxe",
+      "grandTotal": "Total général"
+    }
   }
 }

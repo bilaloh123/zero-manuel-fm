@@ -108,7 +108,8 @@
       "users": "المستخدمون",
       "auditLog": "سجل التدقيق",
       "periodLocks": "قفل الفترات المحاسبية",
-      "importData": "استيراد Excel"
+      "importData": "استيراد Excel",
+      "quotes": "عروض الأسعار"
     }
   },
   "farms": {
@@ -1567,5 +1568,53 @@
       "farm": "المزرعة (بالرمز أو الاسم)"
     },
     "validating": "جاري التحقق..."
+  },
+  "quotes": {
+    "title": "عروض الأسعار (Devis)",
+    "add": "إضافة عرض سعر",
+    "edit": "تعديل عرض السعر",
+    "addTitle": "عرض سعر جديد",
+    "deleteConfirmTitle": "حذف عرض السعر",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد عرض السعر؟ هاد العملية ما ترجعش.",
+    "manageItems": "الأصناف",
+    "columns": {
+      "quoteNo": "الرقم",
+      "customer": "الزبون",
+      "validUntil": "صالح حتى",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "customer": "الزبون",
+      "status": "الحالة",
+      "validUntil": "صالح حتى",
+      "discountPct": "التخفيض (%)",
+      "notes": "ملاحظات"
+    },
+    "status": {
+      "draft": "مسودة",
+      "sent": "مرسل",
+      "accepted": "مقبول",
+      "rejected": "مرفوض",
+      "expired": "منتهي الصلاحية",
+      "converted": "تحول لطلبية"
+    },
+    "items": {
+      "title": "أصناف عرض السعر {{no}}",
+      "addItem": "إضافة صنف",
+      "noItems": "ماكاينش أي صنف بعد",
+      "product": "المنتج",
+      "selectProduct": "اختر المنتج",
+      "quantity": "الكمية",
+      "unitPrice": "سعر الوحدة",
+      "discountPct": "التخفيض (%)",
+      "taxRate": "الضريبة (%)",
+      "lineTotal": "المجموع",
+      "subtotal": "المجموع الفرعي",
+      "discountTotal": "مجموع التخفيض",
+      "taxTotal": "مجموع الضريبة",
+      "grandTotal": "المجموع الإجمالي"
+    }
   }
 }

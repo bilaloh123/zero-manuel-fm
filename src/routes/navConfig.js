@@ -65,6 +65,7 @@ export const navSections = [
     icon: "Wallet",
     items: [
       { key: "customers", path: "/customers" },
+      { key: "quotes", path: "/quotes" },
       { key: "sales", path: "/sales" },
       { key: "invoices", path: "/invoices" },
       { key: "expenses", path: "/expenses" },
