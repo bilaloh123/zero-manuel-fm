@@ -42,6 +42,7 @@ import ExpensesPage from "./pages/ExpensesPage";
 import CustomersPage from "./pages/CustomersPage";
 import QuotesPage from "./pages/QuotesPage";
 import SalesOrdersPage from "./pages/SalesOrdersPage";
+import DeliveriesPage from "./pages/DeliveriesPage";
 import SalesPage from "./pages/SalesPage";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
 import AlertsPage from "./pages/AlertsPage";
@@ -92,6 +93,7 @@ const PAGE_OVERRIDES = {
   customers: CustomersPage,
   quotes: QuotesPage,
   salesOrders: SalesOrdersPage,
+  deliveries: DeliveriesPage,
   sales: SalesPage,
   profitability: ProfitabilityPage,
   groups: GroupsPage,

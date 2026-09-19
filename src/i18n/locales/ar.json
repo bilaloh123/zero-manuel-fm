@@ -112,7 +112,8 @@
       "periodLocks": "قفل الفترات المحاسبية",
       "importData": "استيراد Excel",
       "quotes": "عروض الأسعار",
-      "salesOrders": "طلبيات الزبناء"
+      "salesOrders": "طلبيات الزبناء",
+      "deliveries": "التسليمات (BL)"
     }
   },
   "farms": {
@@ -1685,6 +1686,52 @@
       "atpHint": "الكمية المتاحة للوعد (ATP): {{atp}}",
       "atpBlockedHint": "التأكيد غادي يترفض إلا فعّلت السماح بالـ backorder",
       "atpBackorderHint": "غادي يتسجل كـ backorder (فاق المتاح)"
+    }
+  },
+  "deliveries": {
+    "title": "التسليمات (Bon de Livraison)",
+    "add": "إضافة تسليم",
+    "addTitle": "تسليم جديد",
+    "deleteConfirmTitle": "حذف التسليم",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد التسليم؟ هاد العملية ما ترجعش.",
+    "manageItems": "الأصناف",
+    "noVehicle": "بلا مركبة",
+    "noDriver": "بلا سائق",
+    "confirmAction": "تأكيد التسليم",
+    "confirmDialogTitle": "تأكيد التسليم",
+    "confirmDialogMessage": "غادي نسجل حركة مخزون حقيقية، نحرر الحجز، ونحدث حالة الطلبية لتسليم {{no}}. متأكد؟",
+    "columns": {
+      "deliveryNo": "الرقم",
+      "order": "الطلبية",
+      "customer": "الزبون",
+      "deliveredAt": "تاريخ التسليم",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "salesOrder": "الطلبية",
+      "vehicle": "المركبة",
+      "driver": "السائق",
+      "deliveredAt": "تاريخ التسليم",
+      "notes": "ملاحظات"
+    },
+    "status": {
+      "draft": "مسودة",
+      "confirmed": "مؤكد"
+    },
+    "items": {
+      "title": "أصناف تسليم {{no}}",
+      "addItem": "إضافة صنف",
+      "noItems": "ماكاينش أي صنف بعد",
+      "lockedNotice": "التسليم مؤكد — الأصناف ماعادش قابلة للتعديل هنا.",
+      "orderItem": "صنف الطلبية",
+      "selectOrderItem": "اختر صنف من الطلبية",
+      "remaining": "متبقي: {{qty}}",
+      "remainingHint": "الكمية المتبقية فهاد الصنف: {{qty}}",
+      "lot": "الدفعة (Lot)",
+      "noLot": "بلا دفعة",
+      "product": "المنتج",
+      "quantity": "الكمية"
     }
   }
 }

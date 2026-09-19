@@ -112,7 +112,8 @@
       "periodLocks": "Verrouillage des périodes",
       "importData": "Import Excel",
       "quotes": "Devis",
-      "salesOrders": "Commandes clients"
+      "salesOrders": "Commandes clients",
+      "deliveries": "Livraisons (BL)"
     }
   },
   "farms": {
@@ -1685,6 +1686,52 @@
       "atpHint": "Disponible à la promesse (ATP) : {{atp}}",
       "atpBlockedHint": "la confirmation sera refusée sauf si le backorder est autorisé",
       "atpBackorderHint": "sera enregistré comme backorder (dépasse le disponible)"
+    }
+  },
+  "deliveries": {
+    "title": "Livraisons (Bon de Livraison)",
+    "add": "Ajouter une livraison",
+    "addTitle": "Nouvelle livraison",
+    "deleteConfirmTitle": "Supprimer la livraison",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette livraison ? Cette action est irréversible.",
+    "manageItems": "Articles",
+    "noVehicle": "Aucun véhicule",
+    "noDriver": "Aucun chauffeur",
+    "confirmAction": "Confirmer la livraison",
+    "confirmDialogTitle": "Confirmer la livraison",
+    "confirmDialogMessage": "Un mouvement de stock réel sera enregistré, la réservation libérée, et le statut de la commande mis à jour pour la livraison {{no}}. Confirmer ?",
+    "columns": {
+      "deliveryNo": "N°",
+      "order": "Commande",
+      "customer": "Client",
+      "deliveredAt": "Date de livraison",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "salesOrder": "Commande",
+      "vehicle": "Véhicule",
+      "driver": "Chauffeur",
+      "deliveredAt": "Date de livraison",
+      "notes": "Notes"
+    },
+    "status": {
+      "draft": "Brouillon",
+      "confirmed": "Confirmée"
+    },
+    "items": {
+      "title": "Articles de la livraison {{no}}",
+      "addItem": "Ajouter un article",
+      "noItems": "Aucun article pour l'instant",
+      "lockedNotice": "Livraison confirmée — les articles ne sont plus modifiables ici.",
+      "orderItem": "Article de la commande",
+      "selectOrderItem": "Choisir un article de la commande",
+      "remaining": "restant : {{qty}}",
+      "remainingHint": "Quantité restante pour cet article : {{qty}}",
+      "lot": "Lot",
+      "noLot": "Aucun lot",
+      "product": "Produit",
+      "quantity": "Quantité"
     }
   }
 }
