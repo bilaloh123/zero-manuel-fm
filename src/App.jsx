@@ -49,6 +49,7 @@ import TransfersPage from "./pages/TransfersPage";
 import RolesPage from "./pages/RolesPage";
 import UsersPage from "./pages/UsersPage";
 import AuditLogPage from "./pages/AuditLogPage";
+import PeriodLocksPage from "./pages/PeriodLocksPage";
 import { navSections } from "./routes/navConfig";
 
 const PAGE_OVERRIDES = {
@@ -92,6 +93,7 @@ const PAGE_OVERRIDES = {
   roles: RolesPage,
   users: UsersPage,
   auditLog: AuditLogPage,
+  periodLocks: PeriodLocksPage,
 };
 
 function FullScreenLoader() {

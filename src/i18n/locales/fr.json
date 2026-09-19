@@ -100,7 +100,8 @@
       "groups": "Groupes d'utilisateurs",
       "roles": "Rôles et permissions",
       "users": "Utilisateurs",
-      "auditLog": "Journal d'audit"
+      "auditLog": "Journal d'audit",
+      "periodLocks": "Verrouillage des périodes"
     }
   },
   "farms": {
@@ -1439,6 +1440,29 @@
     "errors": {
       "unsupportedType": "Type de fichier non pris en charge (jpg, png, webp, pdf uniquement)",
       "tooLarge": "Fichier trop volumineux (5 Mo max)"
+    }
+  },
+  "periodLocks": {
+    "title": "Verrouillage des périodes",
+    "add": "Verrouiller une période",
+    "addTitle": "Nouveau verrouillage",
+    "warning": "Attention : une fois verrouillée, aucune modification directe des dépenses/ventes/mouvements de stock/paie n'est possible pour cette période et cette ferme. Toute correction doit passer par une nouvelle écriture datée d'aujourd'hui. Le déverrouillage n'est pas possible depuis l'interface.",
+    "noUnlockNotice": "Le déverrouillage est une opération manuelle en base uniquement — pas de bouton ici (protection supplémentaire).",
+    "columns": {
+      "farm": "Ferme",
+      "period": "Période verrouillée",
+      "reason": "Motif",
+      "lockedBy": "Verrouillé par",
+      "lockedAt": "Date de verrouillage"
+    },
+    "fields": {
+      "farm": "Ferme",
+      "periodStart": "Du",
+      "periodEnd": "Au",
+      "reason": "Motif"
+    },
+    "errors": {
+      "endBeforeStart": "La date de fin doit être postérieure à la date de début"
     }
   }
 }
