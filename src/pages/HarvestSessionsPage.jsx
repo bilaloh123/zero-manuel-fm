@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, Trash2, Package } from "lucide-react";
+import { Plus, Pencil, Trash2, Package, Paperclip } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import DocumentsModal from "../components/ui/DocumentsModal";
 import HarvestSessionFormModal from "../components/harvestsessions/HarvestSessionFormModal";
 import CreateLotFromSessionModal from "../components/lots/CreateLotFromSessionModal";
 import { supabase } from "../lib/supabaseClient";
@@ -18,6 +19,7 @@ export default function HarvestSessionsPage() {
   const [error, setError] = useState(null);
   const [formState, setFormState] = useState(null);
   const [lotSession, setLotSession] = useState(null);
+  const [documentsTarget, setDocumentsTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -26,7 +28,7 @@ export default function HarvestSessionsPage() {
     let query = supabase
       .from("harvest_sessions")
       .select(
-        "id, farm_id, crop_cycle_id, parcel_id, team_id, responsible_id, start_time, end_time, boxes_count, weight_kg, quality_grade, farms:farm_id(code), parcels:parcel_id(name, code), crop_cycles:crop_cycle_id(crop_id, variety_id, season_id, crops:crop_id(name_ar, name_fr)), teams:team_id(name)"
+        "id, farm_id, crop_cycle_id, parcel_id, team_id, responsible_id, start_time, end_time, boxes_count, weight_kg, quality_grade, photos, farms:farm_id(code), parcels:parcel_id(name, code), crop_cycles:crop_cycle_id(crop_id, variety_id, season_id, crops:crop_id(name_ar, name_fr)), teams:team_id(name)"
       )
       .order("start_time", { ascending: false });
     if (farmId !== "all") {
@@ -145,6 +147,14 @@ export default function HarvestSessionsPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
+                          onClick={() => setDocumentsTarget(session)}
+                          className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                          title={t("documents.title")}
+                        >
+                          <Paperclip className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setFormState({ session })}
                           className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
                         >
@@ -183,6 +193,22 @@ export default function HarvestSessionsPage() {
           session={lotSession}
           onClose={() => setLotSession(null)}
           onCreated={loadSessions}
+        />
+      )}
+
+      {documentsTarget && (
+        <DocumentsModal
+          open
+          table="harvest_sessions"
+          record={documentsTarget}
+          column="photos"
+          mode="gallery"
+          accept="image/jpeg,image/png,image/webp"
+          title={t("documents.title")}
+          onClose={() => {
+            setDocumentsTarget(null);
+            loadSessions();
+          }}
         />
       )}
 

@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Paperclip } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import DocumentsModal from "../components/ui/DocumentsModal";
 import MaintenanceRecordFormModal from "../components/maintenance/MaintenanceRecordFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
@@ -15,6 +16,7 @@ export default function MaintenanceRecordsPage() {
   const [records, setRecords] = useState(null);
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [documentsTarget, setDocumentsTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -24,7 +26,7 @@ export default function MaintenanceRecordsPage() {
     let query = supabase
       .from("maintenance_records")
       .select(
-        "id, issue, technician_name, labor_cost, parts_cost, next_due_date, equipment:equipment_id(code), vehicles:vehicle_id(plate_no)"
+        "id, issue, technician_name, labor_cost, parts_cost, next_due_date, photos, equipment:equipment_id(code), vehicles:vehicle_id(plate_no)"
       )
       .order("created_at", { ascending: false });
 
@@ -119,6 +121,14 @@ export default function MaintenanceRecordsPage() {
                         <div className="flex items-center justify-end gap-1">
                           <button
                             type="button"
+                            onClick={() => setDocumentsTarget(record)}
+                            className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                            title={t("documents.title")}
+                          >
+                            <Paperclip className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => setDeleteTarget(record)}
                             className="flex h-8 w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
                           >
@@ -141,6 +151,22 @@ export default function MaintenanceRecordsPage() {
           defaultFarmId={farmId !== "all" ? farmId : undefined}
           onClose={() => setFormOpen(false)}
           onSaved={loadRecords}
+        />
+      )}
+
+      {documentsTarget && (
+        <DocumentsModal
+          open
+          table="maintenance_records"
+          record={documentsTarget}
+          column="photos"
+          mode="gallery"
+          accept="image/jpeg,image/png,image/webp"
+          title={t("documents.title")}
+          onClose={() => {
+            setDocumentsTarget(null);
+            loadRecords();
+          }}
         />
       )}
 

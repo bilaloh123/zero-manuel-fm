@@ -1429,5 +1429,16 @@
       "oldValue": "Avant",
       "newValue": "Après"
     }
+  },
+  "documents": {
+    "title": "Pièces jointes",
+    "noDocuments": "Aucun fichier joint pour le moment",
+    "upload": "Téléverser un fichier",
+    "uploading": "Téléversement...",
+    "hint": "jpg, png, webp, pdf uniquement — 5 Mo max par fichier",
+    "errors": {
+      "unsupportedType": "Type de fichier non pris en charge (jpg, png, webp, pdf uniquement)",
+      "tooLarge": "Fichier trop volumineux (5 Mo max)"
+    }
   }
 }

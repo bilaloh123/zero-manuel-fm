@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Paperclip } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import DocumentsModal from "../components/ui/DocumentsModal";
 import WeighingTicketFormModal from "../components/weighingtickets/WeighingTicketFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
@@ -15,6 +16,7 @@ export default function WeighingTicketsPage() {
   const [tickets, setTickets] = useState(null);
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [documentsTarget, setDocumentsTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -23,7 +25,7 @@ export default function WeighingTicketsPage() {
     let query = supabase
       .from("weighing_tickets")
       .select(
-        "id, ticket_no, net_weight, occurred_at, farm_id, vehicles:vehicle_id(plate_no), drivers:driver_id(full_name), products:product_id(name_ar, name_fr)"
+        "id, ticket_no, net_weight, occurred_at, farm_id, pdf_url, vehicles:vehicle_id(plate_no), drivers:driver_id(full_name), products:product_id(name_ar, name_fr)"
       )
       .order("occurred_at", { ascending: false });
     if (farmId !== "all") {
@@ -103,6 +105,14 @@ export default function WeighingTicketsPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
+                          onClick={() => setDocumentsTarget(ticket)}
+                          className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                          title={t("documents.title")}
+                        >
+                          <Paperclip className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setDeleteTarget(ticket)}
                           className="flex h-8 w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
                         >
@@ -124,6 +134,22 @@ export default function WeighingTicketsPage() {
           defaultFarmId={farmId !== "all" ? farmId : undefined}
           onClose={() => setFormOpen(false)}
           onSaved={loadTickets}
+        />
+      )}
+
+      {documentsTarget && (
+        <DocumentsModal
+          open
+          table="weighing_tickets"
+          record={documentsTarget}
+          column="pdf_url"
+          mode="single"
+          accept="application/pdf,image/jpeg,image/png,image/webp"
+          title={t("documents.title")}
+          onClose={() => {
+            setDocumentsTarget(null);
+            loadTickets();
+          }}
         />
       )}
 

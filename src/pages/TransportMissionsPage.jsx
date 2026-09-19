@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Paperclip } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import DocumentsModal from "../components/ui/DocumentsModal";
 import TransportMissionFormModal from "../components/transportmissions/TransportMissionFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
@@ -21,6 +22,7 @@ export default function TransportMissionsPage() {
   const [missions, setMissions] = useState(null);
   const [error, setError] = useState(null);
   const [formState, setFormState] = useState(null);
+  const [documentsTarget, setDocumentsTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -29,7 +31,7 @@ export default function TransportMissionsPage() {
     let query = supabase
       .from("transport_missions")
       .select(
-        "id, status, vehicle_id, driver_id, product_id, lot_id, quantity, departure_time, expected_arrival, actual_arrival, distance_km, fuel_used, source_farm_id, destination_farm_id, vehicles:vehicle_id(plate_no), drivers:driver_id(full_name), source_farm:source_farm_id(name), destination_farm:destination_farm_id(name)"
+        "id, status, vehicle_id, driver_id, product_id, lot_id, quantity, departure_time, expected_arrival, actual_arrival, distance_km, fuel_used, photos, source_farm_id, destination_farm_id, vehicles:vehicle_id(plate_no), drivers:driver_id(full_name), source_farm:source_farm_id(name), destination_farm:destination_farm_id(name)"
       )
       .order("departure_time", { ascending: false });
     if (farmId !== "all") {
@@ -119,6 +121,14 @@ export default function TransportMissionsPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
+                          onClick={() => setDocumentsTarget(mission)}
+                          className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                          title={t("documents.title")}
+                        >
+                          <Paperclip className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setFormState({ mission })}
                           className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
                         >
@@ -148,6 +158,22 @@ export default function TransportMissionsPage() {
           defaultFarmId={farmId !== "all" ? farmId : undefined}
           onClose={() => setFormState(null)}
           onSaved={loadMissions}
+        />
+      )}
+
+      {documentsTarget && (
+        <DocumentsModal
+          open
+          table="transport_missions"
+          record={documentsTarget}
+          column="photos"
+          mode="gallery"
+          accept="image/jpeg,image/png,image/webp"
+          title={t("documents.title")}
+          onClose={() => {
+            setDocumentsTarget(null);
+            loadMissions();
+          }}
         />
       )}
 

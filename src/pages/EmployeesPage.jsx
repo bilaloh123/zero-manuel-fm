@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Paperclip } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import DocumentsModal from "../components/ui/DocumentsModal";
 import StatTile from "../components/ui/StatTile";
 import EmployeeFormModal from "../components/employees/EmployeeFormModal";
 import { supabase } from "../lib/supabaseClient";
@@ -21,6 +22,7 @@ export default function EmployeesPage() {
   const [employees, setEmployees] = useState(null);
   const [error, setError] = useState(null);
   const [formState, setFormState] = useState(null);
+  const [documentsTarget, setDocumentsTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -29,7 +31,7 @@ export default function EmployeesPage() {
     let query = supabase
       .from("employees")
       .select(
-        "id, farm_id, employee_no, cin, full_name, phone, address, job_title, hire_date, cnss_no, employment_type, status"
+        "id, farm_id, employee_no, cin, full_name, phone, address, job_title, hire_date, cnss_no, employment_type, status, photo_url"
       )
       .order("full_name", { ascending: true });
     if (farmId !== "all") {
@@ -132,6 +134,14 @@ export default function EmployeesPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
+                          onClick={() => setDocumentsTarget(employee)}
+                          className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                          title={t("documents.title")}
+                        >
+                          <Paperclip className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setFormState({ employee })}
                           className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
                         >
@@ -161,6 +171,22 @@ export default function EmployeesPage() {
           defaultFarmId={farmId !== "all" ? farmId : undefined}
           onClose={() => setFormState(null)}
           onSaved={loadEmployees}
+        />
+      )}
+
+      {documentsTarget && (
+        <DocumentsModal
+          open
+          table="employees"
+          record={documentsTarget}
+          column="photo_url"
+          mode="single"
+          accept="image/jpeg,image/png,image/webp"
+          title={t("documents.title")}
+          onClose={() => {
+            setDocumentsTarget(null);
+            loadEmployees();
+          }}
         />
       )}
 

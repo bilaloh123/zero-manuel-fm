@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Paperclip } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import DocumentsModal from "../components/ui/DocumentsModal";
 import ReceptionFormModal from "../components/receptions/ReceptionFormModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
@@ -21,6 +22,7 @@ export default function ReceptionsPage() {
   const [receptions, setReceptions] = useState(null);
   const [error, setError] = useState(null);
   const [formOpen, setFormOpen] = useState(false);
+  const [documentsTarget, setDocumentsTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -29,7 +31,7 @@ export default function ReceptionsPage() {
     let query = supabase
       .from("receptions")
       .select(
-        "id, received_quantity, quality_status, received_at, delivery_farm_id, farms:delivery_farm_id(name), purchase_orders:purchase_order_id(suppliers:supplier_id(company_name)), app_users:received_by(full_name)"
+        "id, received_quantity, quality_status, received_at, delivery_farm_id, photos, farms:delivery_farm_id(name), purchase_orders:purchase_order_id(suppliers:supplier_id(company_name)), app_users:received_by(full_name)"
       )
       .order("received_at", { ascending: false });
     if (farmId !== "all") {
@@ -113,6 +115,19 @@ export default function ReceptionsPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
+                          onClick={() => setDocumentsTarget(r)}
+                          className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                          title={t("documents.title")}
+                        >
+                          <Paperclip className="h-4 w-4" />
+                          {(r.photos || []).length > 0 && (
+                            <span className="ms-0.5 text-[10px] font-semibold text-brand-600">
+                              {r.photos.length}
+                            </span>
+                          )}
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setDeleteTarget(r)}
                           className="flex h-8 w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
                         >
@@ -130,6 +145,22 @@ export default function ReceptionsPage() {
 
       {formOpen && (
         <ReceptionFormModal open onClose={() => setFormOpen(false)} onSaved={loadReceptions} />
+      )}
+
+      {documentsTarget && (
+        <DocumentsModal
+          open
+          table="receptions"
+          record={documentsTarget}
+          column="photos"
+          mode="gallery"
+          accept="image/jpeg,image/png,image/webp,application/pdf"
+          title={t("documents.title")}
+          onClose={() => {
+            setDocumentsTarget(null);
+            loadReceptions();
+          }}
+        />
       )}
 
       {deleteTarget && (

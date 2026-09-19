@@ -1429,5 +1429,16 @@
       "oldValue": "قبل",
       "newValue": "بعد"
     }
+  },
+  "documents": {
+    "title": "المرفقات",
+    "noDocuments": "ماكاينش أي ملف مرفق بعد",
+    "upload": "رفع ملف",
+    "uploading": "كيتصعد...",
+    "hint": "jpg, png, webp, pdf غير — 5MB أقصى للملف",
+    "errors": {
+      "unsupportedType": "نوع الملف غير مدعوم (jpg, png, webp, pdf غير)",
+      "tooLarge": "حجم الملف كبير بزاف (5MB أقصى)"
+    }
   }
 }

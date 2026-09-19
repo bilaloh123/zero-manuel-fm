@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, Trash2, ShoppingCart } from "lucide-react";
+import { Plus, Pencil, Trash2, ShoppingCart, Paperclip } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import DocumentsModal from "../components/ui/DocumentsModal";
 import PurchaseOrderFormModal from "../components/purchaseorders/PurchaseOrderFormModal";
 import PurchaseOrderLinesModal from "../components/purchaseorders/PurchaseOrderLinesModal";
 import { supabase } from "../lib/supabaseClient";
@@ -27,6 +28,7 @@ export default function PurchaseOrdersPage() {
   const [error, setError] = useState(null);
   const [formState, setFormState] = useState(null);
   const [linesTarget, setLinesTarget] = useState(null);
+  const [documentsTarget, setDocumentsTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -35,7 +37,7 @@ export default function PurchaseOrdersPage() {
     let query = supabase
       .from("purchase_orders")
       .select(
-        "id, purchase_request_id, supplier_id, status, expected_delivery_date, requesting_farm_id, delivery_farm_id, paying_farm_id, suppliers:supplier_id(company_name), requesting_farm:requesting_farm_id(name), delivery_farm:delivery_farm_id(name), paying_farm:paying_farm_id(name)"
+        "id, purchase_request_id, supplier_id, status, expected_delivery_date, requesting_farm_id, delivery_farm_id, paying_farm_id, pdf_url, suppliers:supplier_id(company_name), requesting_farm:requesting_farm_id(name), delivery_farm:delivery_farm_id(name), paying_farm:paying_farm_id(name)"
       )
       .order("created_at", { ascending: false });
     if (farmId !== "all") {
@@ -130,6 +132,14 @@ export default function PurchaseOrdersPage() {
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
+                          onClick={() => setDocumentsTarget(order)}
+                          className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                          title={t("documents.title")}
+                        >
+                          <Paperclip className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setFormState({ order })}
                           className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
                         >
@@ -164,6 +174,22 @@ export default function PurchaseOrdersPage() {
 
       {linesTarget && (
         <PurchaseOrderLinesModal open order={linesTarget} onClose={() => setLinesTarget(null)} />
+      )}
+
+      {documentsTarget && (
+        <DocumentsModal
+          open
+          table="purchase_orders"
+          record={documentsTarget}
+          column="pdf_url"
+          mode="single"
+          accept="application/pdf,image/jpeg,image/png,image/webp"
+          title={t("documents.title")}
+          onClose={() => {
+            setDocumentsTarget(null);
+            loadOrders();
+          }}
+        />
       )}
 
       {deleteTarget && (

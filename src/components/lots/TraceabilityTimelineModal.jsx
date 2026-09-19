@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Sprout, Truck, ShieldCheck, PackageCheck, Circle } from "lucide-react";
+import { Sprout, Truck, ShieldCheck, PackageCheck, Circle, Paperclip } from "lucide-react";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
+import DocumentsModal from "../ui/DocumentsModal";
 import { supabase } from "../../lib/supabaseClient";
 
 const EVENT_ICONS = {
@@ -16,27 +17,25 @@ export default function TraceabilityTimelineModal({ open, lot, onClose }) {
   const { t } = useTranslation();
   const [events, setEvents] = useState(null);
   const [error, setError] = useState(null);
+  const [documentsTarget, setDocumentsTarget] = useState(null);
+
+  const loadEvents = useCallback(async () => {
+    const { data, error: fetchError } = await supabase
+      .from("traceability_events")
+      .select("id, event_type, occurred_at, location, photos, app_users:actor_id(full_name)")
+      .eq("lot_id", lot.id)
+      .order("occurred_at", { ascending: true });
+    if (fetchError) {
+      setError(fetchError.message);
+      setEvents([]);
+      return;
+    }
+    setEvents(data);
+  }, [lot.id]);
 
   useEffect(() => {
-    let cancelled = false;
-    supabase
-      .from("traceability_events")
-      .select("id, event_type, occurred_at, location, app_users:actor_id(full_name)")
-      .eq("lot_id", lot.id)
-      .order("occurred_at", { ascending: true })
-      .then(({ data, error: fetchError }) => {
-        if (cancelled) return;
-        if (fetchError) {
-          setError(fetchError.message);
-          setEvents([]);
-          return;
-        }
-        setEvents(data);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [lot.id]);
+    loadEvents();
+  }, [loadEvents]);
 
   return (
     <Modal
@@ -61,9 +60,22 @@ export default function TraceabilityTimelineModal({ open, lot, onClose }) {
                   <Icon className="h-3.5 w-3.5" />
                 </span>
                 <span className="absolute -start-[19px] top-7 h-full w-px bg-border last:hidden" />
-                <p className="text-sm font-semibold text-ink">
-                  {t(`traceability.eventTypes.${event.event_type}`, event.event_type)}
-                </p>
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-ink">
+                    {t(`traceability.eventTypes.${event.event_type}`, event.event_type)}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setDocumentsTarget(event)}
+                    className="flex h-6 w-6 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                    title={t("documents.title")}
+                  >
+                    <Paperclip className="h-3.5 w-3.5" />
+                    {(event.photos || []).length > 0 && (
+                      <span className="ms-0.5 text-[10px] font-semibold text-brand-600">{event.photos.length}</span>
+                    )}
+                  </button>
+                </div>
                 <p className="text-xs text-ink-muted">{new Date(event.occurred_at).toLocaleString()}</p>
                 {event.app_users?.full_name && (
                   <p className="text-xs text-ink-muted">{t("traceability.by", { name: event.app_users.full_name })}</p>
@@ -75,6 +87,22 @@ export default function TraceabilityTimelineModal({ open, lot, onClose }) {
             );
           })}
         </ol>
+      )}
+
+      {documentsTarget && (
+        <DocumentsModal
+          open
+          table="traceability_events"
+          record={documentsTarget}
+          column="photos"
+          mode="gallery"
+          accept="image/jpeg,image/png,image/webp"
+          title={t("documents.title")}
+          onClose={() => {
+            setDocumentsTarget(null);
+            loadEvents();
+          }}
+        />
       )}
     </Modal>
   );

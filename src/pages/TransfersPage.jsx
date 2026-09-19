@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, ArrowRight, XCircle } from "lucide-react";
+import { Plus, Pencil, ArrowRight, XCircle, Paperclip } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
+import DocumentsModal from "../components/ui/DocumentsModal";
 import TransferFormModal from "../components/transfers/TransferFormModal";
 import TransferActionModal from "../components/transfers/TransferActionModal";
 import { supabase } from "../lib/supabaseClient";
@@ -40,13 +41,14 @@ export default function TransfersPage() {
   const [error, setError] = useState(null);
   const [formState, setFormState] = useState(null);
   const [actionState, setActionState] = useState(null);
+  const [documentsTarget, setDocumentsTarget] = useState(null);
 
   const loadTransfers = useCallback(async () => {
     setError(null);
     let query = supabase
       .from("transfers")
       .select(
-        "id, product_id, quantity, sent_quantity, received_quantity, variance, status, source_farm_id, destination_farm_id, products:product_id(name_ar, name_fr, unit), source:source_farm_id(name), destination:destination_farm_id(name)"
+        "id, product_id, quantity, sent_quantity, received_quantity, variance, status, source_farm_id, destination_farm_id, photos, products:product_id(name_ar, name_fr, unit), source:source_farm_id(name), destination:destination_farm_id(name)"
       )
       .order("created_at", { ascending: false });
     if (farmId !== "all") {
@@ -128,6 +130,14 @@ export default function TransfersPage() {
                       </td>
                       <td className="px-3 py-3">
                         <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setDocumentsTarget(tr)}
+                            className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                            title={t("documents.title")}
+                          >
+                            <Paperclip className="h-4 w-4" />
+                          </button>
                           {tr.status === "requested" && (
                             <button
                               type="button"
@@ -184,6 +194,22 @@ export default function TransfersPage() {
           nextStatus={actionState.nextStatus}
           onClose={() => setActionState(null)}
           onSaved={loadTransfers}
+        />
+      )}
+
+      {documentsTarget && (
+        <DocumentsModal
+          open
+          table="transfers"
+          record={documentsTarget}
+          column="photos"
+          mode="gallery"
+          accept="image/jpeg,image/png,image/webp,application/pdf"
+          title={t("documents.title")}
+          onClose={() => {
+            setDocumentsTarget(null);
+            loadTransfers();
+          }}
         />
       )}
     </div>
