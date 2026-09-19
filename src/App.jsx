@@ -44,6 +44,11 @@ import SalesPage from "./pages/SalesPage";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
 import AlertsPage from "./pages/AlertsPage";
 import ReportsPage from "./pages/ReportsPage";
+import GroupsPage from "./pages/GroupsPage";
+import TransfersPage from "./pages/TransfersPage";
+import RolesPage from "./pages/RolesPage";
+import UsersPage from "./pages/UsersPage";
+import AuditLogPage from "./pages/AuditLogPage";
 import { navSections } from "./routes/navConfig";
 
 const PAGE_OVERRIDES = {
@@ -82,6 +87,11 @@ const PAGE_OVERRIDES = {
   customers: CustomersPage,
   sales: SalesPage,
   profitability: ProfitabilityPage,
+  groups: GroupsPage,
+  transfers: TransfersPage,
+  roles: RolesPage,
+  users: UsersPage,
+  auditLog: AuditLogPage,
 };
 
 function FullScreenLoader() {

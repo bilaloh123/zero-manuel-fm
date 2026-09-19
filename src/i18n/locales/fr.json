@@ -1272,5 +1272,162 @@
       "employeeCount": "Employés actifs",
       "activeVehicleCount": "Véhicules actifs"
     }
+  },
+  "groups": {
+    "title": "Groupes",
+    "add": "Ajouter un groupe",
+    "edit": "Modifier le groupe",
+    "addTitle": "Nouveau groupe",
+    "deleteConfirmTitle": "Supprimer le groupe",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer le groupe \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "name": "Nom",
+      "actions": ""
+    },
+    "fields": {
+      "name": "Nom"
+    }
+  },
+  "transfers": {
+    "title": "Transferts inter-fermes",
+    "add": "Ajouter un transfert",
+    "edit": "Modifier le transfert",
+    "addTitle": "Nouveau transfert",
+    "columns": {
+      "product": "Produit",
+      "quantity": "Quantité",
+      "route": "De → Vers",
+      "status": "Statut",
+      "variance": "Envoyé → Reçu",
+      "actions": ""
+    },
+    "fields": {
+      "product": "Produit",
+      "quantity": "Quantité",
+      "sourceFarm": "Ferme source",
+      "destinationFarm": "Ferme destination",
+      "vehicle": "Véhicule",
+      "driver": "Chauffeur",
+      "departureTime": "Heure de départ",
+      "arrivalTime": "Heure d'arrivée",
+      "sourceWarehouse": "Entrepôt source",
+      "destinationWarehouse": "Entrepôt destination",
+      "sentQuantity": "Quantité envoyée",
+      "receivedQuantity": "Quantité reçue"
+    },
+    "status": {
+      "requested": "Demandé",
+      "approved": "Approuvé",
+      "reserved": "Réservé",
+      "preparing": "En préparation",
+      "out_for_delivery": "Parti en livraison",
+      "in_transit": "En transit",
+      "received": "Reçu",
+      "closed": "Clôturé",
+      "cancelled": "Annulé"
+    },
+    "actions": {
+      "approved": "Approuver le transfert",
+      "reserved": "Réserver la quantité",
+      "preparing": "Démarrer la préparation",
+      "out_for_delivery": "Enregistrer le départ",
+      "in_transit": "Confirmer en transit",
+      "received": "Enregistrer la réception",
+      "closed": "Clôturer le transfert",
+      "cancelled": "Annuler le transfert"
+    },
+    "confirmMessages": {
+      "approved": "Confirmer l'approbation de ce transfert ?",
+      "reserved": "Confirmer la réservation de la quantité ?",
+      "preparing": "Démarrer la préparation de ce transfert ?",
+      "in_transit": "Confirmer que le transfert est en transit ?",
+      "closed": "Clôturer définitivement ce transfert ?",
+      "cancelled": "Annuler ce transfert ? Cette action est irréversible."
+    },
+    "errors": {
+      "sameFarm": "La ferme source et destination doivent être différentes"
+    }
+  },
+  "roles": {
+    "title": "Rôles et permissions",
+    "add": "Ajouter un rôle",
+    "edit": "Modifier le rôle",
+    "addTitle": "Nouveau rôle",
+    "deleteConfirmTitle": "Supprimer le rôle",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer le rôle \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "code": "Code",
+      "labelAr": "Libellé (arabe)",
+      "labelFr": "Libellé (français)",
+      "actions": ""
+    },
+    "fields": {
+      "code": "Code",
+      "labelAr": "Libellé (arabe)",
+      "labelFr": "Libellé (français)"
+    },
+    "permissionsModal": {
+      "title": "Permissions : {{role}}",
+      "noPermissions": "Aucune permission définie pour le moment"
+    },
+    "permissionsPanel": {
+      "title": "Catalogue des permissions",
+      "newCode": "Nouveau code de permission"
+    }
+  },
+  "users": {
+    "title": "Utilisateurs",
+    "edit": "Modifier l'utilisateur",
+    "creationNotice": "La création d'un nouveau compte utilisateur se fait manuellement par l'administrateur technique (hors interface). Cette page permet de modifier les utilisateurs existants et de gérer leur accès aux fermes et rôles.",
+    "columns": {
+      "fullName": "Nom complet",
+      "phone": "Téléphone",
+      "status": "Statut",
+      "superAdmin": "Super admin",
+      "actions": ""
+    },
+    "fields": {
+      "fullName": "Nom complet",
+      "phone": "Téléphone",
+      "status": "Statut",
+      "isSuperAdmin": "Super admin (accès total)"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif"
+    },
+    "farmAccessModal": {
+      "title": "Fermes et rôles : {{name}}",
+      "selectFarm": "Choisir une ferme",
+      "selectRole": "Choisir un rôle (optionnel)",
+      "addAccess": "Ajouter",
+      "noAccess": "Aucun accès à une ferme pour l'instant"
+    }
+  },
+  "auditLog": {
+    "title": "Journal d'audit",
+    "filters": {
+      "allTables": "Toutes les tables",
+      "startDate": "Du",
+      "endDate": "Au"
+    },
+    "columns": {
+      "occurredAt": "Date et heure",
+      "user": "Utilisateur",
+      "action": "Action",
+      "table": "Table",
+      "record": "Enregistrement",
+      "actions": ""
+    },
+    "actions": {
+      "INSERT": "Ajout",
+      "UPDATE": "Modification",
+      "DELETE": "Suppression"
+    },
+    "detailModal": {
+      "title": "Détails de l'opération",
+      "oldValue": "Avant",
+      "newValue": "Après"
+    }
   }
 }

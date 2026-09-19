@@ -1272,5 +1272,162 @@
       "employeeCount": "عدد الأجراء النشيطين",
       "activeVehicleCount": "عدد السيارات النشيطة"
     }
+  },
+  "groups": {
+    "title": "المجموعات",
+    "add": "إضافة مجموعة",
+    "edit": "تعديل المجموعة",
+    "addTitle": "مجموعة جديدة",
+    "deleteConfirmTitle": "حذف المجموعة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف المجموعة \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "name": "الاسم",
+      "actions": ""
+    },
+    "fields": {
+      "name": "الاسم"
+    }
+  },
+  "transfers": {
+    "title": "التحويلات بين المزارع",
+    "add": "إضافة تحويل",
+    "edit": "تعديل التحويل",
+    "addTitle": "تحويل جديد",
+    "columns": {
+      "product": "المنتج",
+      "quantity": "الكمية",
+      "route": "من ← إلى",
+      "status": "الحالة",
+      "variance": "المرسل ← المستلم",
+      "actions": ""
+    },
+    "fields": {
+      "product": "المنتج",
+      "quantity": "الكمية",
+      "sourceFarm": "مزرعة المصدر",
+      "destinationFarm": "مزرعة الوجهة",
+      "vehicle": "المركبة",
+      "driver": "السائق",
+      "departureTime": "وقت المغادرة",
+      "arrivalTime": "وقت الوصول",
+      "sourceWarehouse": "مستودع المصدر",
+      "destinationWarehouse": "مستودع الوجهة",
+      "sentQuantity": "الكمية المرسلة",
+      "receivedQuantity": "الكمية المستلمة"
+    },
+    "status": {
+      "requested": "مطلوب",
+      "approved": "موافق عليه",
+      "reserved": "محجوز",
+      "preparing": "قيد التحضير",
+      "out_for_delivery": "خارج للتسليم",
+      "in_transit": "فالطريق",
+      "received": "مستلم",
+      "closed": "مغلق",
+      "cancelled": "ملغى"
+    },
+    "actions": {
+      "approved": "الموافقة على التحويل",
+      "reserved": "حجز الكمية",
+      "preparing": "بدء التحضير",
+      "out_for_delivery": "تسجيل المغادرة",
+      "in_transit": "تأكيد فالطريق",
+      "received": "تسجيل الاستلام",
+      "closed": "إغلاق التحويل",
+      "cancelled": "إلغاء التحويل"
+    },
+    "confirmMessages": {
+      "approved": "واش متأكد بغيتي توافق على هاد التحويل؟",
+      "reserved": "واش متأكد بغيتي تحجز الكمية ديال هاد التحويل؟",
+      "preparing": "واش متأكد بغيتي تبدا تحضير هاد التحويل؟",
+      "in_transit": "واش متأكد بغيتي تأكد بلي التحويل فالطريق؟",
+      "closed": "واش متأكد بغيتي تسد هاد التحويل نهائيا؟",
+      "cancelled": "واش متأكد بغيتي تلغي هاد التحويل؟ هاد العملية ما ترجعش."
+    },
+    "errors": {
+      "sameFarm": "مزرعة المصدر والوجهة خاصهم يكونو مختلفين"
+    }
+  },
+  "roles": {
+    "title": "الأدوار والصلاحيات",
+    "add": "إضافة دور",
+    "edit": "تعديل الدور",
+    "addTitle": "دور جديد",
+    "deleteConfirmTitle": "حذف الدور",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف دور \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "code": "الرمز",
+      "labelAr": "التسمية (عربية)",
+      "labelFr": "التسمية (فرنسية)",
+      "actions": ""
+    },
+    "fields": {
+      "code": "الرمز",
+      "labelAr": "التسمية (عربية)",
+      "labelFr": "التسمية (فرنسية)"
+    },
+    "permissionsModal": {
+      "title": "صلاحيات: {{role}}",
+      "noPermissions": "ماكاينش صلاحيات معرّفة بعد"
+    },
+    "permissionsPanel": {
+      "title": "كتالوج الصلاحيات",
+      "newCode": "رمز صلاحية جديدة"
+    }
+  },
+  "users": {
+    "title": "المستخدمون",
+    "edit": "تعديل المستخدم",
+    "creationNotice": "إنشاء حساب مستخدم جديد كيتصاوب يدويا من طرف المدير التقني (خارج الواجهة). هاد الصفحة كتسمح بتعديل المستخدمين الموجودين وربطهم بالمزارع والأدوار غير.",
+    "columns": {
+      "fullName": "الاسم الكامل",
+      "phone": "الهاتف",
+      "status": "الحالة",
+      "superAdmin": "مدير عام",
+      "actions": ""
+    },
+    "fields": {
+      "fullName": "الاسم الكامل",
+      "phone": "الهاتف",
+      "status": "الحالة",
+      "isSuperAdmin": "مدير عام (صلاحية كاملة على كل شيء)"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط"
+    },
+    "farmAccessModal": {
+      "title": "مزارع وأدوار: {{name}}",
+      "selectFarm": "اختر مزرعة",
+      "selectRole": "اختر دور (اختياري)",
+      "addAccess": "إضافة",
+      "noAccess": "ماعندوش وصول لأي مزرعة بعد"
+    }
+  },
+  "auditLog": {
+    "title": "سجل العمليات",
+    "filters": {
+      "allTables": "كل الجداول",
+      "startDate": "من تاريخ",
+      "endDate": "إلى تاريخ"
+    },
+    "columns": {
+      "occurredAt": "التاريخ والوقت",
+      "user": "المستخدم",
+      "action": "العملية",
+      "table": "الجدول",
+      "record": "السجل",
+      "actions": ""
+    },
+    "actions": {
+      "INSERT": "إضافة",
+      "UPDATE": "تعديل",
+      "DELETE": "حذف"
+    },
+    "detailModal": {
+      "title": "تفاصيل العملية",
+      "oldValue": "قبل",
+      "newValue": "بعد"
+    }
   }
 }
