@@ -107,7 +107,8 @@
       "roles": "الأدوار والصلاحيات",
       "users": "المستخدمون",
       "auditLog": "سجل التدقيق",
-      "periodLocks": "قفل الفترات المحاسبية"
+      "periodLocks": "قفل الفترات المحاسبية",
+      "importData": "استيراد Excel"
     }
   },
   "farms": {
@@ -1494,6 +1495,51 @@
       "transfer_variance": "تحويل استلم بفارق: أرسل {{sent}}، استلم {{received}} (الفارق: {{variance}})",
       "purchase_order_confirmed": "تم تأكيد أمر الشراء",
       "quality_check_failed": "فحص الجودة فشل فـ مرحلة \"{{stage}}\" — السبب: {{reason}}"
+    }
+  },
+  "import": {
+    "title": "استيراد Excel",
+    "subtitle": "استورد بيانات دفعة واحدة من ملف Excel (المنتجات، الموردين، الزبناء...)",
+    "entityLabel": "الجدول",
+    "entities": {
+      "products": "المنتجات",
+      "suppliers": "الموردون",
+      "customers": "الزبناء"
+    },
+    "steps": {
+      "upload": "رفع الملف",
+      "mapping": "مطابقة الأعمدة",
+      "preview": "معاينة الأخطاء",
+      "result": "النتيجة"
+    },
+    "uploadHint": "اختر ملف Excel (.xlsx) يحتوي على صف عناوين فأول سطر",
+    "downloadTemplate": "تحميل نموذج فارغ",
+    "mappingTitle": "مطابقة أعمدة: {{file}}",
+    "noColumn": "— بلا عمود —",
+    "validate": "تحقق من البيانات",
+    "previewTitle": "معاينة قبل الاستيراد",
+    "validRows": "{{count}} سطر صحيح",
+    "invalidRows": "{{count}} سطر فيه خطأ",
+    "columns": {
+      "row": "السطر",
+      "errors": "الأخطاء"
+    },
+    "backToMapping": "رجوع للمطابقة",
+    "confirmImport": "استيراد {{count}} سطر",
+    "importing": "جاري الاستيراد...",
+    "importingProgress": "{{done}} من {{total}}",
+    "resultTitle": "نتيجة الاستيراد",
+    "succeeded": "{{count}} تم استيراده بنجاح",
+    "failed": "{{count}} فشل",
+    "downloadErrorReport": "تحميل تقرير الأخطاء",
+    "importAnother": "استيراد ملف آخر",
+    "errors": {
+      "required": "هاد الحقل خاصو يكون معمر",
+      "invalidNumber": "خاص يكون رقم صحيح",
+      "invalidEmail": "بريد إلكتروني غير صحيح",
+      "invalidEnum": "القيمة خاصها تكون وحدة من: {{options}}",
+      "emptyFile": "الملف فارغ أو ماكاينش صف عناوين",
+      "parseFailed": "تعذرت قراءة الملف، تأكد أنه ملف Excel صحيح"
     }
   }
 }

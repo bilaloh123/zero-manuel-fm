@@ -107,7 +107,8 @@
       "roles": "Rôles et permissions",
       "users": "Utilisateurs",
       "auditLog": "Journal d'audit",
-      "periodLocks": "Verrouillage des périodes"
+      "periodLocks": "Verrouillage des périodes",
+      "importData": "Import Excel"
     }
   },
   "farms": {
@@ -1494,6 +1495,51 @@
       "transfer_variance": "Transfert reçu avec écart : envoyé {{sent}}, reçu {{received}} (écart : {{variance}})",
       "purchase_order_confirmed": "La commande a été confirmée",
       "quality_check_failed": "Contrôle qualité échoué à l'étape \"{{stage}}\" — motif : {{reason}}"
+    }
+  },
+  "import": {
+    "title": "Import Excel",
+    "subtitle": "Importez des données en masse depuis un fichier Excel (produits, fournisseurs, clients...)",
+    "entityLabel": "Table",
+    "entities": {
+      "products": "Produits",
+      "suppliers": "Fournisseurs",
+      "customers": "Clients"
+    },
+    "steps": {
+      "upload": "Téléverser",
+      "mapping": "Correspondance des colonnes",
+      "preview": "Aperçu des erreurs",
+      "result": "Résultat"
+    },
+    "uploadHint": "Choisissez un fichier Excel (.xlsx) avec une ligne d'en-têtes en premier",
+    "downloadTemplate": "Télécharger un modèle vide",
+    "mappingTitle": "Correspondance des colonnes : {{file}}",
+    "noColumn": "— Aucune colonne —",
+    "validate": "Valider les données",
+    "previewTitle": "Aperçu avant import",
+    "validRows": "{{count}} ligne(s) valide(s)",
+    "invalidRows": "{{count}} ligne(s) en erreur",
+    "columns": {
+      "row": "Ligne",
+      "errors": "Erreurs"
+    },
+    "backToMapping": "Retour au mapping",
+    "confirmImport": "Importer {{count}} ligne(s)",
+    "importing": "Import en cours...",
+    "importingProgress": "{{done}} sur {{total}}",
+    "resultTitle": "Résultat de l'import",
+    "succeeded": "{{count}} importée(s) avec succès",
+    "failed": "{{count}} échouée(s)",
+    "downloadErrorReport": "Télécharger le rapport d'erreurs",
+    "importAnother": "Importer un autre fichier",
+    "errors": {
+      "required": "Ce champ est obligatoire",
+      "invalidNumber": "Doit être un nombre valide",
+      "invalidEmail": "Adresse e-mail invalide",
+      "invalidEnum": "La valeur doit être l'une de : {{options}}",
+      "emptyFile": "Fichier vide ou sans ligne d'en-têtes",
+      "parseFailed": "Impossible de lire le fichier, vérifiez qu'il s'agit d'un fichier Excel valide"
     }
   }
 }
