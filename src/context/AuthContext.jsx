@@ -77,10 +77,13 @@ export function AuthProvider({ children }) {
     return () => subscription.subscription.unsubscribe();
   }, []);
 
+  const userId = session?.user?.id ?? null;
+
   useEffect(() => {
     if (session === undefined) return;
-    refreshProfile(session?.user?.id ?? null);
-  }, [session, refreshProfile]);
+    refreshProfile(userId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId, refreshProfile]);
 
   const signIn = useCallback(async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });

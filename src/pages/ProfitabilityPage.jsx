@@ -63,13 +63,16 @@ export default function ProfitabilityPage() {
     if (periodRange.start) expQuery = expQuery.gte("expense_date", dateStr(periodRange.start));
     expQuery = expQuery.lte("expense_date", dateStr(periodRange.end));
 
+    const isFarmScoped = farmId !== "all";
     let salesQuery = supabase
       .from("sales")
       .select(
-        "id, quantity, unit_price, status, sold_at, lots:lot_id(parcel_id, crop_id, season_id, parcels!inner(name, farm_id), crops:crop_id(name_ar, name_fr), seasons:season_id(label))"
+        isFarmScoped
+          ? "id, quantity, unit_price, status, sold_at, lots:lot_id!inner(parcel_id, crop_id, season_id, parcels!inner(name, farm_id), crops:crop_id(name_ar, name_fr), seasons:season_id(label))"
+          : "id, quantity, unit_price, status, sold_at, lots:lot_id(parcel_id, crop_id, season_id, parcels(name, farm_id), crops:crop_id(name_ar, name_fr), seasons:season_id(label))"
       )
       .eq("status", "confirmed");
-    if (farmId !== "all") salesQuery = salesQuery.eq("lots.parcels.farm_id", farmId);
+    if (isFarmScoped) salesQuery = salesQuery.eq("lots.parcels.farm_id", farmId);
     salesQuery = salesQuery.gte("sold_at", periodRange.start ? periodRange.start.toISOString() : "1970-01-01");
     salesQuery = salesQuery.lte("sold_at", periodRange.end.toISOString());
 

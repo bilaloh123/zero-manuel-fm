@@ -47,33 +47,17 @@ export default function HarvestPlansPage() {
     setError(null);
     const { start, end } = getDateRange(dateFilter);
 
-    let cropCycleIds = null;
-    if (farmId !== "all") {
-      const { data: parcelRows } = await supabase.from("parcels").select("id").eq("farm_id", farmId);
-      const parcelIds = (parcelRows || []).map((p) => p.id);
-      if (parcelIds.length === 0) {
-        setPlans([]);
-        return;
-      }
-      const { data: cycleRows } = await supabase.from("crop_cycles").select("id").in("parcel_id", parcelIds);
-      cropCycleIds = (cycleRows || []).map((c) => c.id);
-      if (cropCycleIds.length === 0) {
-        setPlans([]);
-        return;
-      }
-    }
-
     let query = supabase
       .from("harvest_plans")
       .select(
-        "id, crop_cycle_id, planned_date, expected_quantity, team_id, crop_cycles:crop_cycle_id(parcels:parcel_id(name, code, farm_id), crops:crop_id(name_ar, name_fr)), teams:team_id(name)"
+        "id, crop_cycle_id, planned_date, expected_quantity, team_id, crop_cycles:crop_cycle_id!inner(parcels:parcel_id!inner(name, code, farm_id), crops:crop_id(name_ar, name_fr)), teams:team_id(name)"
       )
       .gte("planned_date", start)
       .lte("planned_date", end)
       .order("planned_date", { ascending: true });
 
-    if (cropCycleIds) {
-      query = query.in("crop_cycle_id", cropCycleIds);
+    if (farmId !== "all") {
+      query = query.eq("crop_cycles.parcels.farm_id", farmId);
     }
 
     const { data, error: fetchError } = await query;

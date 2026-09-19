@@ -1,26 +1,9 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useSupabaseOptions } from "./useSupabaseOptions";
 
 export function useCropOptions() {
-  const [crops, setCrops] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    supabase
-      .from("crops")
-      .select("id, name_ar, name_fr, category")
-      .order("name_fr", { ascending: true })
-      .then(({ data }) => {
-        if (!cancelled) {
-          setCrops(data || []);
-          setLoading(false);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return { crops, loading };
+  const { data, loading } = useSupabaseOptions("crops", {
+    select: "id, name_ar, name_fr, category",
+    orderBy: "name_fr",
+  });
+  return { crops: data, loading };
 }

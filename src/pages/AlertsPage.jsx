@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertTriangle, AlertOctagon } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
-import { useAlerts } from "../hooks/useAlerts";
+import { useAlertsContext } from "../context/AlertsContext";
 import { useFilters } from "../context/FiltersContext";
 import { inputClass } from "../components/ui/FormField";
 
@@ -15,8 +15,13 @@ const SEVERITY_STYLE = {
 export default function AlertsPage() {
   const { t, i18n } = useTranslation();
   const { farmId } = useFilters();
-  const { alerts, loading } = useAlerts(farmId);
+  const { alerts: allAlerts, loading } = useAlertsContext();
   const [severityFilter, setSeverityFilter] = useState("all");
+
+  const alerts = useMemo(
+    () => (farmId === "all" ? allAlerts : allAlerts.filter((a) => a.farm_id === farmId)),
+    [allAlerts, farmId]
+  );
 
   const productLabel = (p) => (!p ? "" : i18n.language === "ar" ? p.name_ar || p.name_fr : p.name_fr || p.name_ar);
 

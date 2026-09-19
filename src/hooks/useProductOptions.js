@@ -1,26 +1,9 @@
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { useSupabaseOptions } from "./useSupabaseOptions";
 
 export function useProductOptions() {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    let cancelled = false;
-    supabase
-      .from("products")
-      .select("id, name_ar, name_fr, unit")
-      .order("name_fr", { ascending: true })
-      .then(({ data }) => {
-        if (!cancelled) {
-          setProducts(data || []);
-          setLoading(false);
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  return { products, loading };
+  const { data, loading } = useSupabaseOptions("products", {
+    select: "id, name_ar, name_fr, unit",
+    orderBy: "name_fr",
+  });
+  return { products: data, loading };
 }

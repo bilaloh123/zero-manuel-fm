@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import * as Icons from "lucide-react";
 import { LayoutDashboard, ChevronDown, Leaf, Bell, FileBarChart } from "lucide-react";
 import { navSections } from "../../routes/navConfig";
-import { useAlerts } from "../../hooks/useAlerts";
+import { useAlertsContext } from "../../context/AlertsContext";
 
 function SectionIcon({ name, className }) {
   const Icon = Icons[name] || Icons.Circle;
@@ -55,7 +55,7 @@ function NavSection({ section, defaultOpen }) {
 export default function Sidebar({ className = "" }) {
   const { t, i18n } = useTranslation();
   const isLatinScript = i18n.language !== "ar";
-  const { alerts } = useAlerts("all");
+  const { alerts } = useAlertsContext();
   const alertCount = alerts.length;
 
   return (

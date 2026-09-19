@@ -25,13 +25,16 @@ export default function SalesPage() {
 
   const loadSales = useCallback(async () => {
     setError(null);
+    const isFarmScoped = farmId !== "all";
     let query = supabase
       .from("sales")
       .select(
-        "id, quantity, unit_price, status, sold_at, lots:lot_id(lot_code, parcels!inner(farm_id)), customers:customer_id(name)"
+        isFarmScoped
+          ? "id, quantity, unit_price, status, sold_at, lots:lot_id!inner(lot_code, parcels!inner(farm_id)), customers:customer_id(name)"
+          : "id, quantity, unit_price, status, sold_at, lots:lot_id(lot_code, parcels(farm_id)), customers:customer_id(name)"
       )
       .order("sold_at", { ascending: false });
-    if (farmId !== "all") {
+    if (isFarmScoped) {
       query = query.eq("lots.parcels.farm_id", farmId);
     }
     const { data, error: fetchError } = await query;

@@ -11,7 +11,7 @@ function severityForDays(days) {
   return null;
 }
 
-export function useAlerts(farmId) {
+export function useAlerts() {
   const [alerts, setAlerts] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,9 +23,12 @@ export function useAlerts(farmId) {
       const result = [];
 
       // 1 + 2: stock balances vs thresholds (out-of-stock / low-stock)
-      let balQuery = supabase.from("stock_balances").select("product_id, warehouse_id, farm_id, balance");
-      if (farmId && farmId !== "all") balQuery = balQuery.eq("farm_id", farmId);
-      const { data: balances } = await balQuery;
+      // Fetched unscoped (all farms) and shared via AlertsContext — consumers
+      // filter by farm_id client-side so the badge and the page never issue
+      // duplicate network requests.
+      const { data: balances } = await supabase
+        .from("stock_balances")
+        .select("product_id, warehouse_id, farm_id, balance");
 
       if (balances && balances.length > 0) {
         const { data: thresholds } = await supabase
@@ -75,9 +78,9 @@ export function useAlerts(farmId) {
       }
 
       // 3: vehicle insurance / inspection expiry
-      let vehQuery = supabase.from("vehicles").select("id, plate_no, farm_id, insurance_expiry, inspection_expiry");
-      if (farmId && farmId !== "all") vehQuery = vehQuery.eq("farm_id", farmId);
-      const { data: vehicles } = await vehQuery;
+      const { data: vehicles } = await supabase
+        .from("vehicles")
+        .select("id, plate_no, farm_id, insurance_expiry, inspection_expiry");
       (vehicles || []).forEach((v) => {
         [
           { field: "insurance_expiry", type: "vehicle_insurance" },
@@ -100,9 +103,9 @@ export function useAlerts(farmId) {
       });
 
       // 4: equipment next maintenance
-      let eqQuery = supabase.from("equipment").select("id, code, farm_id, next_maintenance_date");
-      if (farmId && farmId !== "all") eqQuery = eqQuery.eq("farm_id", farmId);
-      const { data: equipmentRows } = await eqQuery;
+      const { data: equipmentRows } = await supabase
+        .from("equipment")
+        .select("id, code, farm_id, next_maintenance_date");
       (equipmentRows || []).forEach((e) => {
         if (!e.next_maintenance_date) return;
         const days = daysUntil(e.next_maintenance_date);
@@ -131,7 +134,7 @@ export function useAlerts(farmId) {
     return () => {
       cancelled = true;
     };
-  }, [farmId]);
+  }, []);
 
   return { alerts: alerts || [], loading };
 }
