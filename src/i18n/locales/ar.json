@@ -1504,7 +1504,11 @@
     "entities": {
       "products": "المنتجات",
       "suppliers": "الموردون",
-      "customers": "الزبناء"
+      "customers": "الزبناء",
+      "farms": "المزارع",
+      "employees": "الموظفون",
+      "vehicles": "المركبات",
+      "equipment": "المعدات"
     },
     "steps": {
       "upload": "رفع الملف",
@@ -1539,7 +1543,13 @@
       "invalidEmail": "بريد إلكتروني غير صحيح",
       "invalidEnum": "القيمة خاصها تكون وحدة من: {{options}}",
       "emptyFile": "الملف فارغ أو ماكاينش صف عناوين",
-      "parseFailed": "تعذرت قراءة الملف، تأكد أنه ملف Excel صحيح"
-    }
+      "parseFailed": "تعذرت قراءة الملف، تأكد أنه ملف Excel صحيح",
+      "invalidDate": "تاريخ غير صحيح",
+      "lookupNotFound": "ماكايناش '{{value}}' فقاعدة البيانات"
+    },
+    "fields": {
+      "farm": "المزرعة (بالرمز أو الاسم)"
+    },
+    "validating": "جاري التحقق..."
   }
 }

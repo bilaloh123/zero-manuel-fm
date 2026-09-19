@@ -11,6 +11,7 @@ import {
   importValidRows,
   downloadTemplate,
   downloadErrorReport,
+  fetchLookups,
 } from "../../lib/excelImport";
 
 const STEPS = ["upload", "mapping", "preview", "result"];
@@ -19,7 +20,9 @@ function fieldErrorMessage(t, err) {
   if (err.code === "required") return t("import.errors.required");
   if (err.code === "invalidNumber") return t("import.errors.invalidNumber");
   if (err.code === "invalidEmail") return t("import.errors.invalidEmail");
+  if (err.code === "invalidDate") return t("import.errors.invalidDate");
   if (err.code === "invalidEnum") return t("import.errors.invalidEnum", { options: err.detail });
+  if (err.code === "lookupNotFound") return t("import.errors.lookupNotFound", { value: err.detail });
   return err.code;
 }
 
@@ -35,6 +38,7 @@ export default function ImportWizard({ schema }) {
   const [progress, setProgress] = useState({ done: 0, total: 0 });
   const [resultRows, setResultRows] = useState([]);
   const [parseError, setParseError] = useState(null);
+  const [validating, setValidating] = useState(false);
 
   const stepIndex = STEPS.indexOf(step);
 
@@ -77,10 +81,19 @@ export default function ImportWizard({ schema }) {
     setMapping((m) => ({ ...m, [fieldKey]: value === "" ? "" : Number(value) }));
   };
 
-  const runValidation = () => {
-    const results = validateRows(dataRows, mapping, schema.fields);
-    setValidatedRows(results);
-    setStep("preview");
+  const runValidation = async () => {
+    setValidating(true);
+    setParseError(null);
+    try {
+      const lookups = await fetchLookups(schema);
+      const results = validateRows(dataRows, mapping, schema.fields, lookups);
+      setValidatedRows(results);
+      setStep("preview");
+    } catch (err) {
+      setParseError(err.message);
+    } finally {
+      setValidating(false);
+    }
   };
 
   const runImport = async () => {
@@ -172,11 +185,14 @@ export default function ImportWizard({ schema }) {
                 </select>
               </div>
             ))}
+            {parseError && <p className="text-sm text-red-600">{parseError}</p>}
             <div className="mt-2 flex justify-end gap-2">
-              <Button variant="secondary" onClick={reset}>
+              <Button variant="secondary" onClick={reset} disabled={validating}>
                 {t("common.cancel")}
               </Button>
-              <Button onClick={runValidation}>{t("import.validate")}</Button>
+              <Button onClick={runValidation} disabled={validating}>
+                {validating ? t("import.validating") : t("import.validate")}
+              </Button>
             </div>
           </div>
         </Card>

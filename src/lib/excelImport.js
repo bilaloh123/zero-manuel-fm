@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
 import { supabase } from "./supabaseClient";
-import { buildInsertPayload } from "./importSchemas";
+import { buildInsertPayload, requiresInsertedId, afterInsert } from "./importSchemas";
 
 function normalizeHeader(value) {
   return String(value ?? "")
@@ -18,7 +18,7 @@ export function parseWorkbookFile(file) {
     reader.onload = () => {
       try {
         const data = new Uint8Array(reader.result);
-        const workbook = XLSX.read(data, { type: "array" });
+        const workbook = XLSX.read(data, { type: "array", cellDates: true });
         const sheetName = workbook.SheetNames[0];
         const sheet = workbook.Sheets[sheetName];
         const rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "", blankrows: false });
@@ -48,10 +48,11 @@ export function autoDetectMapping(headers, fields) {
   return mapping;
 }
 
-function validateField(field, rawValue) {
-  const value = String(rawValue ?? "").trim();
+function validateField(field, rawValue, lookups) {
+  const isDateObject = rawValue instanceof Date;
+  const value = isDateObject ? String(rawValue) : String(rawValue ?? "").trim();
 
-  if (!value) {
+  if (!isDateObject && !value) {
     if (field.required) return { error: "required" };
     return { value: null };
   }
@@ -71,19 +72,46 @@ function validateField(field, rawValue) {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return { error: "invalidEmail" };
       return { value };
     }
+    case "date": {
+      const d = isDateObject ? rawValue : new Date(value);
+      if (Number.isNaN(d.getTime())) return { error: "invalidDate" };
+      const pad = (n) => String(n).padStart(2, "0");
+      return { value: `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}` };
+    }
+    case "lookup": {
+      const list = (lookups && lookups[field.lookupKey]) || [];
+      const norm = value.trim().toLowerCase();
+      const match = list.find((item) =>
+        field.matchColumns.some((col) => String(item[col] ?? "").trim().toLowerCase() === norm)
+      );
+      if (!match) return { error: "lookupNotFound", detail: value };
+      return { value: match.id };
+    }
     default:
       return { value };
   }
 }
 
-export function validateRows(dataRows, mapping, fields) {
+export async function fetchLookups(schema) {
+  if (!schema.lookups || schema.lookups.length === 0) return {};
+  const entries = await Promise.all(
+    schema.lookups.map(async (lookup) => {
+      const { data, error } = await supabase.from(lookup.table).select(["id", ...lookup.columns].join(", "));
+      if (error) throw error;
+      return [lookup.key, data || []];
+    })
+  );
+  return Object.fromEntries(entries);
+}
+
+export function validateRows(dataRows, mapping, fields, lookups = {}) {
   return dataRows.map((row, index) => {
     const record = {};
     const errors = [];
     fields.forEach((field) => {
       const colIndex = mapping[field.key];
       const rawValue = colIndex === "" || colIndex === undefined ? "" : row[colIndex];
-      const result = validateField(field, rawValue);
+      const result = validateField(field, rawValue, lookups);
       if (result.error) {
         errors.push({ field: field.key, code: result.error, detail: result.detail });
       } else {
@@ -102,14 +130,29 @@ export function validateRows(dataRows, mapping, fields) {
 
 export async function importValidRows(schemaKey, table, rows, onProgress) {
   const results = [];
+  let userId = null;
+  if (requiresInsertedId(schemaKey)) {
+    const { data } = await supabase.auth.getUser();
+    userId = data?.user?.id ?? null;
+  }
   for (let i = 0; i < rows.length; i += 1) {
     const row = rows[i];
     const payload = buildInsertPayload(schemaKey, row.record);
-    const { error } = await supabase.from(table).insert(payload);
-    if (error) {
-      results.push({ ...row, valid: false, importError: error.message });
+    if (requiresInsertedId(schemaKey)) {
+      const { data: inserted, error } = await supabase.from(table).insert(payload).select().single();
+      if (error) {
+        results.push({ ...row, valid: false, importError: error.message });
+      } else {
+        await afterInsert(schemaKey, inserted, { supabase, userId });
+        results.push({ ...row, imported: true });
+      }
     } else {
-      results.push({ ...row, imported: true });
+      const { error } = await supabase.from(table).insert(payload);
+      if (error) {
+        results.push({ ...row, valid: false, importError: error.message });
+      } else {
+        results.push({ ...row, imported: true });
+      }
     }
     if (onProgress) onProgress(i + 1, rows.length);
   }

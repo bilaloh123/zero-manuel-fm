@@ -1504,7 +1504,11 @@
     "entities": {
       "products": "Produits",
       "suppliers": "Fournisseurs",
-      "customers": "Clients"
+      "customers": "Clients",
+      "farms": "Fermes",
+      "employees": "Employés",
+      "vehicles": "Véhicules",
+      "equipment": "Équipements"
     },
     "steps": {
       "upload": "Téléverser",
@@ -1539,7 +1543,13 @@
       "invalidEmail": "Adresse e-mail invalide",
       "invalidEnum": "La valeur doit être l'une de : {{options}}",
       "emptyFile": "Fichier vide ou sans ligne d'en-têtes",
-      "parseFailed": "Impossible de lire le fichier, vérifiez qu'il s'agit d'un fichier Excel valide"
-    }
+      "parseFailed": "Impossible de lire le fichier, vérifiez qu'il s'agit d'un fichier Excel valide",
+      "invalidDate": "Date invalide",
+      "lookupNotFound": "'{{value}}' introuvable dans la base de données"
+    },
+    "fields": {
+      "farm": "Ferme (par code ou nom)"
+    },
+    "validating": "Validation en cours..."
   }
 }
