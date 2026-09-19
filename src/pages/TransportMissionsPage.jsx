@@ -29,7 +29,7 @@ export default function TransportMissionsPage() {
     let query = supabase
       .from("transport_missions")
       .select(
-        "id, status, departure_time, actual_arrival, source_farm_id, destination_farm_id, vehicles:vehicle_id(plate_no), drivers:driver_id(full_name), source_farm:source_farm_id(name), destination_farm:destination_farm_id(name)"
+        "id, status, vehicle_id, driver_id, product_id, lot_id, quantity, departure_time, expected_arrival, actual_arrival, distance_km, fuel_used, source_farm_id, destination_farm_id, vehicles:vehicle_id(plate_no), drivers:driver_id(full_name), source_farm:source_farm_id(name), destination_farm:destination_farm_id(name)"
       )
       .order("departure_time", { ascending: false });
     if (farmId !== "all") {

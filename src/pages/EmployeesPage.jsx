@@ -28,7 +28,9 @@ export default function EmployeesPage() {
     setError(null);
     let query = supabase
       .from("employees")
-      .select("id, farm_id, employee_no, full_name, phone, job_title, employment_type, status")
+      .select(
+        "id, farm_id, employee_no, cin, full_name, phone, address, job_title, hire_date, cnss_no, employment_type, status"
+      )
       .order("full_name", { ascending: true });
     if (farmId !== "all") {
       query = query.eq("farm_id", farmId);

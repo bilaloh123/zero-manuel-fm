@@ -35,7 +35,7 @@ export default function PurchaseOrdersPage() {
     let query = supabase
       .from("purchase_orders")
       .select(
-        "id, status, expected_delivery_date, requesting_farm_id, delivery_farm_id, paying_farm_id, suppliers:supplier_id(company_name), requesting_farm:requesting_farm_id(name), delivery_farm:delivery_farm_id(name), paying_farm:paying_farm_id(name)"
+        "id, purchase_request_id, supplier_id, status, expected_delivery_date, requesting_farm_id, delivery_farm_id, paying_farm_id, suppliers:supplier_id(company_name), requesting_farm:requesting_farm_id(name), delivery_farm:delivery_farm_id(name), paying_farm:paying_farm_id(name)"
       )
       .order("created_at", { ascending: false });
     if (farmId !== "all") {

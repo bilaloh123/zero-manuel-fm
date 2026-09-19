@@ -23,7 +23,7 @@ export default function DriversPage() {
     let query = supabase
       .from("drivers")
       .select(
-        "id, full_name, farm_id, phone, license_no, license_categories, current_vehicle_id, vehicles:current_vehicle_id(plate_no)"
+        "id, full_name, cin, farm_id, phone, license_no, license_categories, license_expiry, current_vehicle_id, vehicles:current_vehicle_id(plate_no)"
       )
       .order("full_name", { ascending: true });
     if (farmId !== "all") {

@@ -30,7 +30,9 @@ export default function EquipmentPage() {
     setError(null);
     let query = supabase
       .from("equipment")
-      .select("id, code, type, farm_id, status, next_maintenance_date, farms:farm_id(name), employees:operator_id(full_name)")
+      .select(
+        "id, code, type, farm_id, status, operator_id, working_hours, odometer_km, next_maintenance_date, farms:farm_id(name), employees:operator_id(full_name)"
+      )
       .order("code", { ascending: true });
     if (farmId !== "all") {
       query = query.eq("farm_id", farmId);

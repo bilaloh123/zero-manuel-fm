@@ -31,7 +31,7 @@ export default function ParcelsPage() {
     let query = supabase
       .from("parcels")
       .select(
-        "id, code, name, total_area_ha, usable_area_ha, farm_id, site_id, sites:site_id(name)"
+        "id, code, name, total_area_ha, usable_area_ha, gps_lat, gps_lng, farm_id, site_id, sites:site_id(name)"
       )
       .order("name", { ascending: true });
     if (farmId !== "all") {

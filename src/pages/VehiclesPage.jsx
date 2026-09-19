@@ -30,7 +30,9 @@ export default function VehiclesPage() {
     setError(null);
     let query = supabase
       .from("vehicles")
-      .select("id, plate_no, brand, model, farm_id, status, insurance_expiry, inspection_expiry, farms:farm_id(name)")
+      .select(
+        "id, plate_no, brand, model, type, capacity, odometer_km, farm_id, status, insurance_expiry, inspection_expiry, farms:farm_id(name)"
+      )
       .order("plate_no", { ascending: true });
     if (farmId !== "all") {
       query = query.eq("farm_id", farmId);

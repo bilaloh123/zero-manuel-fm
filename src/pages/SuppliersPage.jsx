@@ -20,7 +20,7 @@ export default function SuppliersPage() {
     setError(null);
     const { data, error: fetchError } = await supabase
       .from("suppliers")
-      .select("id, company_name, contact_name, phone, lead_time_days")
+      .select("id, company_name, ice, if_no, rc, address, contact_name, phone, email, payment_terms, lead_time_days")
       .order("company_name", { ascending: true });
     if (fetchError) {
       setError(fetchError.message);

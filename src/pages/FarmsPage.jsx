@@ -27,7 +27,7 @@ export default function FarmsPage() {
     setError(null);
     const { data, error: fetchError } = await supabase
       .from("farms")
-      .select("id, code, name, phone, total_area_ha, cultivated_area_ha, status")
+      .select("id, code, name, phone, total_area_ha, cultivated_area_ha, gps_lat, gps_lng, status")
       .order("created_at", { ascending: false });
     if (fetchError) {
       setError(fetchError.message);
