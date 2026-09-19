@@ -1174,12 +1174,28 @@
       "name": "Nom",
       "phone": "Téléphone",
       "email": "E-mail",
-      "actions": ""
+      "actions": "",
+      "code": "Code",
+      "status": "Statut"
     },
     "fields": {
       "name": "Nom",
       "phone": "Téléphone",
-      "email": "E-mail"
+      "email": "E-mail",
+      "code": "Code",
+      "ice": "ICE",
+      "ifNo": "IF",
+      "rc": "RC",
+      "paymentTerms": "Conditions de paiement",
+      "creditLimit": "Plafond de crédit",
+      "paymentDelayDays": "Délai de paiement (jours)",
+      "currency": "Devise",
+      "status": "Statut"
+    },
+    "status": {
+      "active": "Actif",
+      "inactive": "Inactif",
+      "blocked": "Bloqué"
     }
   },
   "sales": {

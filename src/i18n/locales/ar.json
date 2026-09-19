@@ -1174,12 +1174,28 @@
       "name": "الاسم",
       "phone": "الهاتف",
       "email": "البريد الإلكتروني",
-      "actions": ""
+      "actions": "",
+      "code": "الرمز",
+      "status": "الحالة"
     },
     "fields": {
       "name": "الاسم",
       "phone": "الهاتف",
-      "email": "البريد الإلكتروني"
+      "email": "البريد الإلكتروني",
+      "code": "الرمز",
+      "ice": "ICE",
+      "ifNo": "IF",
+      "rc": "RC",
+      "paymentTerms": "شروط الأداء",
+      "creditLimit": "سقف الائتمان",
+      "paymentDelayDays": "أجل الأداء (أيام)",
+      "currency": "العملة",
+      "status": "الحالة"
+    },
+    "status": {
+      "active": "نشط",
+      "inactive": "غير نشط",
+      "blocked": "محظور"
     }
   },
   "sales": {

@@ -8,6 +8,12 @@ import ConfirmDialog from "../components/ui/ConfirmDialog";
 import CustomerFormModal from "../components/customers/CustomerFormModal";
 import { supabase } from "../lib/supabaseClient";
 
+const STATUS_BADGE = {
+  active: "bg-brand-100 text-brand-700",
+  inactive: "bg-cream-soft text-ink-muted",
+  blocked: "bg-red-100 text-red-700",
+};
+
 export default function CustomersPage() {
   const { t } = useTranslation();
   const [customers, setCustomers] = useState(null);
@@ -20,7 +26,7 @@ export default function CustomersPage() {
     setError(null);
     const { data, error: fetchError } = await supabase
       .from("customers")
-      .select("id, name, contact_info")
+      .select("id, name, code, contact_info, status")
       .order("name", { ascending: true });
     if (fetchError) {
       setError(fetchError.message);
@@ -71,8 +77,10 @@ export default function CustomersPage() {
               <thead>
                 <tr className="border-b border-border text-ink-muted">
                   <th className="px-3 py-2 text-start font-medium">{t("customers.columns.name")}</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("customers.columns.code")}</th>
                   <th className="px-3 py-2 text-start font-medium">{t("customers.columns.phone")}</th>
                   <th className="px-3 py-2 text-start font-medium">{t("customers.columns.email")}</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("customers.columns.status")}</th>
                   <th className="px-3 py-2 text-end font-medium">{t("customers.columns.actions")}</th>
                 </tr>
               </thead>
@@ -80,8 +88,16 @@ export default function CustomersPage() {
                 {customers.map((customer) => (
                   <tr key={customer.id} className="border-b border-border last:border-0">
                     <td className="px-3 py-3 font-medium text-ink">{customer.name}</td>
+                    <td className="px-3 py-3 text-ink-muted">{customer.code || "—"}</td>
                     <td className="px-3 py-3 text-ink-muted">{customer.contact_info?.phone || "—"}</td>
                     <td className="px-3 py-3 text-ink-muted">{customer.contact_info?.email || "—"}</td>
+                    <td className="px-3 py-3">
+                      <span
+                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[customer.status] || STATUS_BADGE.active}`}
+                      >
+                        {t(`customers.status.${customer.status}`, customer.status)}
+                      </span>
+                    </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-1">
                         <button
