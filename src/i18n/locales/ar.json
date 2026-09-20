@@ -2161,5 +2161,23 @@
         "outbound": "صادر"
       }
     }
+  },
+  "search": {
+    "noResults": "ماكاينش أي نتيجة",
+    "categories": {
+      "farms": "المزارع",
+      "parcels": "القطع",
+      "employees": "العمال",
+      "suppliers": "الموردون",
+      "customers": "الزبناء",
+      "products": "المنتجات",
+      "lots": "الدفعات (Lots)",
+      "vehicles": "المركبات",
+      "drivers": "السائقون",
+      "purchaseOrders": "أوامر الشراء",
+      "transfers": "التحويلات",
+      "invoices": "فواتير الموردين",
+      "deliveries": "التسليمات"
+    }
   }
 }

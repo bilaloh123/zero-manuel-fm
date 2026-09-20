@@ -2161,5 +2161,23 @@
         "outbound": "Sortant"
       }
     }
+  },
+  "search": {
+    "noResults": "Aucun résultat",
+    "categories": {
+      "farms": "Fermes",
+      "parcels": "Parcelles",
+      "employees": "Employés",
+      "suppliers": "Fournisseurs",
+      "customers": "Clients",
+      "products": "Produits",
+      "lots": "Lots",
+      "vehicles": "Véhicules",
+      "drivers": "Chauffeurs",
+      "purchaseOrders": "Commandes d'achat",
+      "transfers": "Transferts",
+      "invoices": "Factures fournisseurs",
+      "deliveries": "Livraisons"
+    }
   }
 }

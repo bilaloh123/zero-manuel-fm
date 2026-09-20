@@ -1,14 +1,13 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { LogOut, Globe, Search, Bell } from "lucide-react";
+import { LogOut, Globe, Bell } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useFilters, PERIOD_OPTIONS } from "../../context/FiltersContext";
+import GlobalSearch from "./GlobalSearch";
 
 export default function Topbar() {
   const { t, i18n } = useTranslation();
   const { appUser, signOut } = useAuth();
   const { farms, farmId, setFarmId, period, setPeriod } = useFilters();
-  const [search, setSearch] = useState("");
 
   const toggleLanguage = () => {
     const next = i18n.language === "ar" ? "fr" : "ar";
@@ -17,16 +16,7 @@ export default function Topbar() {
 
   return (
     <header className="flex h-16 items-center gap-3 border-b border-border bg-cream/80 px-6 backdrop-blur">
-      <div className="relative max-w-sm flex-1">
-        <Search className="pointer-events-none absolute top-1/2 h-4 w-4 -translate-y-1/2 text-ink-faint start-3" />
-        <input
-          type="search"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={t("common.searchPlaceholder")}
-          className="w-full rounded-control border border-border bg-white py-2 text-sm text-ink shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-300 ps-9 pe-3"
-        />
-      </div>
+      <GlobalSearch />
 
       <div className="flex items-center gap-3">
         <select
