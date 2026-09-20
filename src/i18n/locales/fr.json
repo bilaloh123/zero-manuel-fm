@@ -114,7 +114,8 @@
       "quotes": "Devis",
       "salesOrders": "Commandes clients",
       "deliveries": "Livraisons (BL)",
-      "customerInvoices": "Factures clients"
+      "customerInvoices": "Factures clients",
+      "budgets": "Budget"
     }
   },
   "farms": {
@@ -1166,7 +1167,9 @@
       "transport": "Transport",
       "fuel": "Carburant",
       "maintenance": "Maintenance",
-      "packaging": "Emballage"
+      "packaging": "Emballage",
+      "equipment": "Matériel",
+      "other": "Autres"
     }
   },
   "customers": {
@@ -1801,5 +1804,43 @@
     "invoices": "Factures",
     "ledger": "Paiements et avoirs",
     "payment": "Paiement"
+  },
+  "budgets": {
+    "title": "Budget vs Réel",
+    "add": "Ajouter un budget",
+    "addTitle": "Nouveau budget",
+    "deleteConfirmTitle": "Supprimer le budget",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer ce budget ? Cette action est irréversible.",
+    "engageNA": "N/A (niveau autre que Farm)",
+    "columns": {
+      "level": "Niveau",
+      "scope": "Portée",
+      "category": "Catégorie",
+      "period": "Période",
+      "budget": "Budget",
+      "realise": "Réalisé",
+      "engage": "Engagé",
+      "disponible": "Disponible",
+      "ecart": "Écart",
+      "ecartPct": "Écart %",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "level": "Niveau",
+      "scope": "Portée",
+      "category": "Catégorie",
+      "periodStart": "Début de période",
+      "periodEnd": "Fin de période",
+      "amount": "Montant",
+      "notes": "Notes"
+    },
+    "levels": {
+      "farm": "Ferme",
+      "site": "Site",
+      "parcel": "Parcelle",
+      "crop_cycle": "Cycle de culture",
+      "season": "Saison"
+    }
   }
 }

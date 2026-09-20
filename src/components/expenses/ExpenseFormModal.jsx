@@ -18,6 +18,8 @@ const CATEGORY_OPTIONS = [
   "fuel",
   "maintenance",
   "packaging",
+  "equipment",
+  "other",
 ];
 
 function todayStr() {

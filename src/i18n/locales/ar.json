@@ -114,7 +114,8 @@
       "quotes": "عروض الأسعار",
       "salesOrders": "طلبيات الزبناء",
       "deliveries": "التسليمات (BL)",
-      "customerInvoices": "فواتير الزبناء"
+      "customerInvoices": "فواتير الزبناء",
+      "budgets": "الميزانية"
     }
   },
   "farms": {
@@ -1166,7 +1167,9 @@
       "transport": "نقل",
       "fuel": "وقود",
       "maintenance": "صيانة",
-      "packaging": "تعبئة"
+      "packaging": "تعبئة",
+      "equipment": "معدات",
+      "other": "أخرى"
     }
   },
   "customers": {
@@ -1801,5 +1804,43 @@
     "invoices": "الفواتير",
     "ledger": "الدفعات والأفوار",
     "payment": "دفعة"
+  },
+  "budgets": {
+    "title": "الميزانية مقابل المصروف الفعلي (Budget vs Réel)",
+    "add": "إضافة ميزانية",
+    "addTitle": "ميزانية جديدة",
+    "deleteConfirmTitle": "حذف الميزانية",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الميزانية؟ هاد العملية ما ترجعش.",
+    "engageNA": "غير متاح (المستوى ماشي Farm)",
+    "columns": {
+      "level": "المستوى",
+      "scope": "النطاق",
+      "category": "الفئة",
+      "period": "الفترة",
+      "budget": "الميزانية",
+      "realise": "المنجز",
+      "engage": "الملتزم",
+      "disponible": "المتاح",
+      "ecart": "الانحراف",
+      "ecartPct": "الانحراف %",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "level": "المستوى",
+      "scope": "النطاق",
+      "category": "الفئة",
+      "periodStart": "بداية الفترة",
+      "periodEnd": "نهاية الفترة",
+      "amount": "المبلغ",
+      "notes": "ملاحظات"
+    },
+    "levels": {
+      "farm": "المزرعة",
+      "site": "الموقع",
+      "parcel": "القطعة",
+      "crop_cycle": "دورة المحصول",
+      "season": "الموسم"
+    }
   }
 }

@@ -72,6 +72,7 @@ export const navSections = [
       { key: "customerInvoices", path: "/customer-invoices" },
       { key: "invoices", path: "/invoices" },
       { key: "expenses", path: "/expenses" },
+      { key: "budgets", path: "/budgets" },
       { key: "profitability", path: "/profitability" },
     ],
   },
