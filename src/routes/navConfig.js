@@ -27,6 +27,7 @@ export const navSections = [
       { key: "lots", path: "/lots" },
       { key: "qualityChecks", path: "/quality-checks" },
       { key: "weighingTickets", path: "/weighing-tickets" },
+      { key: "packingRuns", path: "/packing-runs" },
     ],
   },
   {

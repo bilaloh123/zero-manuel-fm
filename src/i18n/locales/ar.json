@@ -117,7 +117,8 @@
       "customerInvoices": "فواتير الزبناء",
       "budgets": "الميزانية",
       "approvalRules": "قواعد الموافقة",
-      "approvalRequests": "طلبات الموافقة"
+      "approvalRequests": "طلبات الموافقة",
+      "packingRuns": "دفعات التعبئة (Packhouse)"
     }
   },
   "farms": {
@@ -1921,6 +1922,51 @@
       "title": "سجل القرارات",
       "noDecisions": "ماكاينش أي قرار بعد",
       "step": "الخطوة {{step}}"
+    }
+  },
+  "packingRuns": {
+    "title": "دفعات التعبئة والتصنيف (Packhouse)",
+    "add": "دفعة جديدة",
+    "addTitle": "دفعة تعبئة جديدة",
+    "completeAction": "إغلاق الدفعة",
+    "columns": {
+      "warehouse": "المحطة",
+      "startedAt": "تاريخ البداية",
+      "status": "الحالة",
+      "rendement": "المردود",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "warehouse": "المحطة (Warehouse)",
+      "notes": "ملاحظات"
+    },
+    "status": {
+      "in_progress": "جارية",
+      "completed": "مغلقة"
+    },
+    "items": {
+      "title": "دخل وخرج الدفعة",
+      "manage": "الدخل/الخرج",
+      "completedNotice": "الدفعة مغلقة — ماعادش ممكن تزيد دخل أو خرج.",
+      "totalIn": "المجموع الداخل (kg)",
+      "totalOut": "المجموع الخارج (kg)",
+      "waste": "الفاقد (kg)",
+      "rendement": "المردود (Rendement)",
+      "inputs": "الدخل (من اللوطات)",
+      "addInput": "إضافة دخل",
+      "noInputs": "ماكاينش أي دخل بعد",
+      "lot": "اللوط",
+      "selectLot": "اختر لوط",
+      "product": "المنتج",
+      "selectProduct": "اختر منتج",
+      "quantityKg": "الكمية (kg)",
+      "outputs": "الخرج (المنتج المصنّف)",
+      "addOutput": "إضافة خرج",
+      "noOutputs": "ماكاينش أي خرج بعد",
+      "caliber": "الكاليبر",
+      "qualityGrade": "درجة الجودة",
+      "boxesCount": "عدد الصناديق"
     }
   }
 }

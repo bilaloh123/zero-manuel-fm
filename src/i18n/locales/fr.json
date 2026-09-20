@@ -117,7 +117,8 @@
       "customerInvoices": "Factures clients",
       "budgets": "Budget",
       "approvalRules": "Règles d'approbation",
-      "approvalRequests": "Demandes d'approbation"
+      "approvalRequests": "Demandes d'approbation",
+      "packingRuns": "Lots de conditionnement"
     }
   },
   "farms": {
@@ -1921,6 +1922,51 @@
       "title": "Historique des décisions",
       "noDecisions": "Aucune décision pour l'instant",
       "step": "Étape {{step}}"
+    }
+  },
+  "packingRuns": {
+    "title": "Lots de conditionnement (Packhouse)",
+    "add": "Nouveau lot",
+    "addTitle": "Nouveau lot de conditionnement",
+    "completeAction": "Clôturer le lot",
+    "columns": {
+      "warehouse": "Station",
+      "startedAt": "Début",
+      "status": "Statut",
+      "rendement": "Rendement",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "warehouse": "Station (Warehouse)",
+      "notes": "Notes"
+    },
+    "status": {
+      "in_progress": "En cours",
+      "completed": "Clôturé"
+    },
+    "items": {
+      "title": "Entrées et sorties du lot",
+      "manage": "Entrées/Sorties",
+      "completedNotice": "Lot clôturé — plus d'ajout d'entrée ou de sortie possible.",
+      "totalIn": "Total entrant (kg)",
+      "totalOut": "Total sortant (kg)",
+      "waste": "Perte (kg)",
+      "rendement": "Rendement",
+      "inputs": "Entrées (depuis les lots)",
+      "addInput": "Ajouter une entrée",
+      "noInputs": "Aucune entrée pour l'instant",
+      "lot": "Lot",
+      "selectLot": "Choisir un lot",
+      "product": "Produit",
+      "selectProduct": "Choisir un produit",
+      "quantityKg": "Quantité (kg)",
+      "outputs": "Sorties (produit conditionné)",
+      "addOutput": "Ajouter une sortie",
+      "noOutputs": "Aucune sortie pour l'instant",
+      "caliber": "Calibre",
+      "qualityGrade": "Grade de qualité",
+      "boxesCount": "Nombre de caisses"
     }
   }
 }
