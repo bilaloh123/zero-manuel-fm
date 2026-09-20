@@ -46,6 +46,8 @@ import DeliveriesPage from "./pages/DeliveriesPage";
 import SalesPage from "./pages/SalesPage";
 import CustomerInvoicesPage from "./pages/CustomerInvoicesPage";
 import BudgetsPage from "./pages/BudgetsPage";
+import ApprovalRulesPage from "./pages/ApprovalRulesPage";
+import ApprovalRequestsPage from "./pages/ApprovalRequestsPage";
 import CustomerHistoryPage from "./pages/CustomerHistoryPage";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
 import AlertsPage from "./pages/AlertsPage";
@@ -100,6 +102,8 @@ const PAGE_OVERRIDES = {
   sales: SalesPage,
   customerInvoices: CustomerInvoicesPage,
   budgets: BudgetsPage,
+  approvalRules: ApprovalRulesPage,
+  approvalRequests: ApprovalRequestsPage,
   profitability: ProfitabilityPage,
   groups: GroupsPage,
   transfers: TransfersPage,

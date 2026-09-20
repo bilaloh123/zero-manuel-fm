@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, Trash2, ShoppingCart, Paperclip } from "lucide-react";
+import { Plus, Pencil, Trash2, ShoppingCart, Paperclip, Send } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
+import Modal from "../components/ui/Modal";
 import DocumentsModal from "../components/ui/DocumentsModal";
 import PurchaseOrderFormModal from "../components/purchaseorders/PurchaseOrderFormModal";
 import PurchaseOrderLinesModal from "../components/purchaseorders/PurchaseOrderLinesModal";
@@ -13,6 +14,7 @@ import { useFilters } from "../context/FiltersContext";
 
 const STATUS_BADGE = {
   draft: "bg-gray-100 text-gray-600",
+  pending_approval: "bg-amber-100 text-amber-700",
   approved: "bg-amber-100 text-amber-700",
   confirmed: "bg-amber-100 text-amber-700",
   delivered: "bg-brand-100 text-brand-700",
@@ -31,6 +33,9 @@ export default function PurchaseOrdersPage() {
   const [documentsTarget, setDocumentsTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [submitTarget, setSubmitTarget] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const loadOrders = useCallback(async () => {
     setError(null);
@@ -70,6 +75,23 @@ export default function PurchaseOrdersPage() {
       setError(err.message);
     } finally {
       setDeleting(false);
+    }
+  };
+
+  const handleSubmitForApproval = async () => {
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      const { error: rpcError } = await supabase.rpc("submit_purchase_order_for_approval", {
+        p_order_id: submitTarget.id,
+      });
+      if (rpcError) throw rpcError;
+      setSubmitTarget(null);
+      await loadOrders();
+    } catch (err) {
+      setSubmitError(err.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -130,6 +152,16 @@ export default function PurchaseOrdersPage() {
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-1">
+                        {order.status === "draft" && (
+                          <button
+                            type="button"
+                            onClick={() => setSubmitTarget(order)}
+                            className="flex h-8 w-8 items-center justify-center rounded-control text-brand-700 hover:bg-brand-100"
+                            title={t("purchaseOrders.submitForApproval")}
+                          >
+                            <Send className="h-4 w-4" />
+                          </button>
+                        )}
                         <button
                           type="button"
                           onClick={() => setDocumentsTarget(order)}
@@ -201,6 +233,36 @@ export default function PurchaseOrdersPage() {
           onCancel={() => setDeleteTarget(null)}
           onConfirm={handleDelete}
         />
+      )}
+
+      {submitTarget && (
+        <Modal
+          open
+          onClose={() => {
+            setSubmitTarget(null);
+            setSubmitError(null);
+          }}
+          title={t("purchaseOrders.submitDialogTitle")}
+          footer={
+            <>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setSubmitTarget(null);
+                  setSubmitError(null);
+                }}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button onClick={handleSubmitForApproval} disabled={submitting}>
+                {t("purchaseOrders.submitForApproval")}
+              </Button>
+            </>
+          }
+        >
+          <p className="text-sm text-ink-muted">{t("purchaseOrders.submitDialogMessage")}</p>
+          {submitError && <p className="mt-3 text-sm text-red-600">{submitError}</p>}
+        </Modal>
       )}
     </div>
   );

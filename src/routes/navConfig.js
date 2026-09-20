@@ -58,6 +58,7 @@ export const navSections = [
       { key: "purchaseRequests", path: "/purchase-requests" },
       { key: "purchaseOrders", path: "/purchase-orders" },
       { key: "receptions", path: "/receptions" },
+      { key: "approvalRequests", path: "/approval-requests" },
     ],
   },
   {
@@ -98,6 +99,7 @@ export const navSections = [
       { key: "auditLog", path: "/admin/audit-log" },
       { key: "periodLocks", path: "/admin/period-locks" },
       { key: "importData", path: "/admin/import" },
+      { key: "approvalRules", path: "/admin/approval-rules" },
     ],
   },
 ];

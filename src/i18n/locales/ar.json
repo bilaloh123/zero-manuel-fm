@@ -115,7 +115,9 @@
       "salesOrders": "طلبيات الزبناء",
       "deliveries": "التسليمات (BL)",
       "customerInvoices": "فواتير الزبناء",
-      "budgets": "الميزانية"
+      "budgets": "الميزانية",
+      "approvalRules": "قواعد الموافقة",
+      "approvalRequests": "طلبات الموافقة"
     }
   },
   "farms": {
@@ -669,7 +671,8 @@
       "delivered": "تم التسليم",
       "invoiced": "تمت الفوترة",
       "paid": "مؤدى",
-      "cancelled": "ملغى"
+      "cancelled": "ملغى",
+      "pending_approval": "بانتظار الموافقة"
     },
     "lines": {
       "title": "منتجات أمر الشراء",
@@ -680,7 +683,10 @@
       "addLine": "إضافة سطر",
       "noLines": "ماكاين حتى سطر بعد",
       "selectProduct": "اختر منتج"
-    }
+    },
+    "submitForApproval": "تقديم للموافقة",
+    "submitDialogTitle": "تقديم للموافقة",
+    "submitDialogMessage": "غادي نحسب المبلغ الإجمالي ونبحث عن قاعدة موافقة مطابقة. إذا كان المبلغ صغير بلا قاعدة تتطلب خطوات، غادي يتوافق عليه تلقائياً."
   },
   "receptions": {
     "title": "الاستلامات",
@@ -1841,6 +1847,80 @@
       "parcel": "القطعة",
       "crop_cycle": "دورة المحصول",
       "season": "الموسم"
+    }
+  },
+  "approvalRules": {
+    "title": "قواعد الموافقة (Approval Engine)",
+    "add": "إضافة قاعدة",
+    "addTitle": "قاعدة موافقة جديدة",
+    "deleteConfirmTitle": "حذف القاعدة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد القاعدة؟ هاد العملية ما ترجعش.",
+    "globalRule": "عامة (كل المزارع)",
+    "noLimit": "بلا سقف",
+    "operationTypes": {
+      "purchase_order": "أمر شراء"
+    },
+    "columns": {
+      "operationType": "نوع العملية",
+      "farm": "المزرعة",
+      "range": "المجال (من - إلى)",
+      "active": "نشطة",
+      "actions": ""
+    },
+    "fields": {
+      "operationType": "نوع العملية",
+      "farm": "المزرعة",
+      "minAmount": "من مبلغ",
+      "maxAmount": "إلى مبلغ",
+      "active": "نشطة"
+    },
+    "steps": {
+      "title": "خطوات الموافقة",
+      "manage": "الخطوات",
+      "addStep": "إضافة خطوة",
+      "noSteps": "بلا خطوات — موافقة تلقائية فورية",
+      "zeroStepsHint": "إذا بقات هاد القاعدة بلا خطوات، أي طلب يطابقها غادي يتوافق عليه تلقائياً وفورياً (بلا انتظار حد).",
+      "stepOrder": "الترتيب",
+      "approverRole": "الصلاحية المطلوبة",
+      "selectRole": "اختر صلاحية",
+      "label": "وصف (اختياري)"
+    }
+  },
+  "approvalRequests": {
+    "title": "طلبات الموافقة",
+    "noMatchingRule": "بلا قاعدة مطابقة — super_admin غير",
+    "approveAction": "موافقة",
+    "rejectAction": "رفض",
+    "returnAction": "إرجاع للتصحيح",
+    "comment": "تعليق (اختياري)",
+    "columns": {
+      "operation": "العملية",
+      "farm": "المزرعة",
+      "amount": "المبلغ",
+      "status": "الحالة",
+      "waitingOn": "بانتظار",
+      "requestedAt": "تاريخ الطلب",
+      "actions": ""
+    },
+    "status": {
+      "pending": "معلق",
+      "approved": "موافق عليه",
+      "rejected": "مرفوض",
+      "returned_for_correction": "أُرجع للتصحيح",
+      "cancelled": "ملغى"
+    },
+    "decisions": {
+      "approved": "موافقة",
+      "rejected": "رفض",
+      "returned_for_correction": "إرجاع للتصحيح"
+    },
+    "operationTypes": {
+      "purchase_order": "أمر شراء"
+    },
+    "history": {
+      "title": "سجل القرارات",
+      "noDecisions": "ماكاينش أي قرار بعد",
+      "step": "الخطوة {{step}}"
     }
   }
 }

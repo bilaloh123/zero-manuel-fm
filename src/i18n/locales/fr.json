@@ -115,7 +115,9 @@
       "salesOrders": "Commandes clients",
       "deliveries": "Livraisons (BL)",
       "customerInvoices": "Factures clients",
-      "budgets": "Budget"
+      "budgets": "Budget",
+      "approvalRules": "Règles d'approbation",
+      "approvalRequests": "Demandes d'approbation"
     }
   },
   "farms": {
@@ -669,7 +671,8 @@
       "delivered": "Livré",
       "invoiced": "Facturé",
       "paid": "Payé",
-      "cancelled": "Annulé"
+      "cancelled": "Annulé",
+      "pending_approval": "En attente d'approbation"
     },
     "lines": {
       "title": "Produits du bon de commande",
@@ -680,7 +683,10 @@
       "addLine": "Ajouter une ligne",
       "noLines": "Aucune ligne pour l'instant",
       "selectProduct": "Choisir un produit"
-    }
+    },
+    "submitForApproval": "Soumettre pour approbation",
+    "submitDialogTitle": "Soumettre pour approbation",
+    "submitDialogMessage": "Le montant total sera calculé et comparé aux règles d'approbation. Si le montant est faible et qu'aucune étape n'est requise, la commande sera approuvée automatiquement."
   },
   "receptions": {
     "title": "Réceptions",
@@ -1841,6 +1847,80 @@
       "parcel": "Parcelle",
       "crop_cycle": "Cycle de culture",
       "season": "Saison"
+    }
+  },
+  "approvalRules": {
+    "title": "Règles d'approbation (Approval Engine)",
+    "add": "Ajouter une règle",
+    "addTitle": "Nouvelle règle d'approbation",
+    "deleteConfirmTitle": "Supprimer la règle",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette règle ? Cette action est irréversible.",
+    "globalRule": "Globale (toutes les fermes)",
+    "noLimit": "Sans limite",
+    "operationTypes": {
+      "purchase_order": "Commande d'achat"
+    },
+    "columns": {
+      "operationType": "Type d'opération",
+      "farm": "Ferme",
+      "range": "Plage (de - à)",
+      "active": "Active",
+      "actions": ""
+    },
+    "fields": {
+      "operationType": "Type d'opération",
+      "farm": "Ferme",
+      "minAmount": "Montant min",
+      "maxAmount": "Montant max",
+      "active": "Active"
+    },
+    "steps": {
+      "title": "Étapes d'approbation",
+      "manage": "Étapes",
+      "addStep": "Ajouter une étape",
+      "noSteps": "Aucune étape — approbation automatique immédiate",
+      "zeroStepsHint": "Si cette règle reste sans étape, toute demande qui la correspond sera approuvée automatiquement et immédiatement (sans attendre personne).",
+      "stepOrder": "Ordre",
+      "approverRole": "Rôle requis",
+      "selectRole": "Choisir un rôle",
+      "label": "Description (optionnel)"
+    }
+  },
+  "approvalRequests": {
+    "title": "Demandes d'approbation",
+    "noMatchingRule": "Aucune règle correspondante — super_admin uniquement",
+    "approveAction": "Approuver",
+    "rejectAction": "Refuser",
+    "returnAction": "Renvoyer pour correction",
+    "comment": "Commentaire (optionnel)",
+    "columns": {
+      "operation": "Opération",
+      "farm": "Ferme",
+      "amount": "Montant",
+      "status": "Statut",
+      "waitingOn": "En attente de",
+      "requestedAt": "Date de la demande",
+      "actions": ""
+    },
+    "status": {
+      "pending": "En attente",
+      "approved": "Approuvée",
+      "rejected": "Refusée",
+      "returned_for_correction": "Renvoyée pour correction",
+      "cancelled": "Annulée"
+    },
+    "decisions": {
+      "approved": "Approuvé",
+      "rejected": "Refusé",
+      "returned_for_correction": "Renvoyé pour correction"
+    },
+    "operationTypes": {
+      "purchase_order": "Commande d'achat"
+    },
+    "history": {
+      "title": "Historique des décisions",
+      "noDecisions": "Aucune décision pour l'instant",
+      "step": "Étape {{step}}"
     }
   }
 }
