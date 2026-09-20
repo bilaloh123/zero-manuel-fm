@@ -118,7 +118,9 @@
       "budgets": "Budget",
       "approvalRules": "Règles d'approbation",
       "approvalRequests": "Demandes d'approbation",
-      "packingRuns": "Lots de conditionnement"
+      "packingRuns": "Lots de conditionnement",
+      "coldStorageUnits": "Chambres froides",
+      "pallets": "Palettes"
     }
   },
   "farms": {
@@ -1967,6 +1969,104 @@
       "caliber": "Calibre",
       "qualityGrade": "Grade de qualité",
       "boxesCount": "Nombre de caisses"
+    }
+  },
+  "coldStorageUnits": {
+    "title": "Chambres froides",
+    "add": "Ajouter une chambre",
+    "addTitle": "Nouvelle chambre froide",
+    "deleteConfirmTitle": "Supprimer la chambre froide",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette chambre ? Cette action est irréversible.",
+    "columns": {
+      "name": "Nom",
+      "warehouse": "Entrepôt",
+      "capacity": "Capacité (Palettes)",
+      "temperature": "Température cible",
+      "active": "Active",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "warehouse": "Entrepôt",
+      "code": "Code",
+      "name": "Nom",
+      "capacity": "Capacité (Palettes)",
+      "temperature": "Température cible (°C)",
+      "humidity": "Humidité cible (%)"
+    }
+  },
+  "pallets": {
+    "title": "Palettes",
+    "add": "Créer une palette",
+    "addTitle": "Nouvelle palette",
+    "moveAction": "Déplacer en chambre froide",
+    "reserveAction": "Réserver",
+    "releaseAction": "Libérer la réservation",
+    "blockAction": "Bloquer",
+    "unblockAction": "Débloquer",
+    "columns": {
+      "code": "Code",
+      "product": "Produit",
+      "caliberGrade": "Calibre/Grade",
+      "location": "Emplacement",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "Ferme",
+      "product": "Produit",
+      "caliber": "Calibre",
+      "qualityGrade": "Grade de qualité",
+      "boxesCount": "Nombre de caisses",
+      "netWeight": "Poids net (kg)",
+      "grossWeight": "Poids brut (kg)"
+    },
+    "status": {
+      "created": "Créée",
+      "in_cold_storage": "En chambre froide",
+      "reserved": "Réservée",
+      "loading": "En chargement",
+      "shipped": "Expédiée",
+      "delivered": "Livrée",
+      "blocked": "Bloquée"
+    },
+    "movementTypes": {
+      "created": "Création",
+      "moved_to_cold_storage": "Déplacement en chambre froide",
+      "reserved": "Réservation",
+      "released": "Libération",
+      "loading": "Chargement",
+      "shipped": "Expédition",
+      "delivered": "Livraison",
+      "blocked": "Blocage",
+      "unblocked": "Déblocage"
+    },
+    "items": {
+      "manage": "Composants",
+      "title": "Composants de la palette {{code}}",
+      "totalAllocated": "Total alloué : {{total}} kg",
+      "addFromOutput": "Ajouter depuis un lot de conditionnement",
+      "noCandidates": "Aucune sortie compatible (même produit/calibre/grade) avec du disponible",
+      "output": "Sortie",
+      "selectOutput": "Choisir une sortie",
+      "remainingHint": "restant : {{qty}} kg",
+      "quantityKg": "Quantité (kg)",
+      "noItems": "Aucun composant pour l'instant"
+    },
+    "detail": {
+      "title": "Détails de la palette",
+      "history": "Historique des mouvements",
+      "noHistory": "Aucun mouvement pour l'instant"
+    },
+    "moveDialog": {
+      "title": "Déplacer en chambre froide",
+      "confirm": "Déplacer",
+      "unit": "Chambre froide",
+      "selectUnit": "Choisir une chambre"
+    },
+    "blockDialog": {
+      "title": "Bloquer la palette",
+      "reason": "Motif"
     }
   }
 }

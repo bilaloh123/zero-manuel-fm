@@ -49,6 +49,8 @@ import BudgetsPage from "./pages/BudgetsPage";
 import ApprovalRulesPage from "./pages/ApprovalRulesPage";
 import ApprovalRequestsPage from "./pages/ApprovalRequestsPage";
 import PackingRunsPage from "./pages/PackingRunsPage";
+import ColdStorageUnitsPage from "./pages/ColdStorageUnitsPage";
+import PalletsPage from "./pages/PalletsPage";
 import CustomerHistoryPage from "./pages/CustomerHistoryPage";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
 import AlertsPage from "./pages/AlertsPage";
@@ -106,6 +108,8 @@ const PAGE_OVERRIDES = {
   approvalRules: ApprovalRulesPage,
   approvalRequests: ApprovalRequestsPage,
   packingRuns: PackingRunsPage,
+  coldStorageUnits: ColdStorageUnitsPage,
+  pallets: PalletsPage,
   profitability: ProfitabilityPage,
   groups: GroupsPage,
   transfers: TransfersPage,

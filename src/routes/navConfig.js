@@ -28,6 +28,8 @@ export const navSections = [
       { key: "qualityChecks", path: "/quality-checks" },
       { key: "weighingTickets", path: "/weighing-tickets" },
       { key: "packingRuns", path: "/packing-runs" },
+      { key: "coldStorageUnits", path: "/cold-storage-units" },
+      { key: "pallets", path: "/pallets" },
     ],
   },
   {

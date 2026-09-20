@@ -118,7 +118,9 @@
       "budgets": "الميزانية",
       "approvalRules": "قواعد الموافقة",
       "approvalRequests": "طلبات الموافقة",
-      "packingRuns": "دفعات التعبئة (Packhouse)"
+      "packingRuns": "دفعات التعبئة (Packhouse)",
+      "coldStorageUnits": "غرف التبريد",
+      "pallets": "الپاليتات (Palettes)"
     }
   },
   "farms": {
@@ -1967,6 +1969,104 @@
       "caliber": "الكاليبر",
       "qualityGrade": "درجة الجودة",
       "boxesCount": "عدد الصناديق"
+    }
+  },
+  "coldStorageUnits": {
+    "title": "غرف التبريد (Chambre Froide)",
+    "add": "إضافة غرفة",
+    "addTitle": "غرفة تبريد جديدة",
+    "deleteConfirmTitle": "حذف غرفة التبريد",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الغرفة؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "name": "الاسم",
+      "warehouse": "المخزن",
+      "capacity": "السعة (Palettes)",
+      "temperature": "الحرارة المستهدفة",
+      "active": "نشطة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "warehouse": "المخزن",
+      "code": "الرمز",
+      "name": "الاسم",
+      "capacity": "السعة (Palettes)",
+      "temperature": "الحرارة المستهدفة (°C)",
+      "humidity": "الرطوبة المستهدفة (%)"
+    }
+  },
+  "pallets": {
+    "title": "الپاليتات (Palettes)",
+    "add": "إنشاء Palette",
+    "addTitle": "Palette جديدة",
+    "moveAction": "نقل لغرفة التبريد",
+    "reserveAction": "حجز",
+    "releaseAction": "تحرير الحجز",
+    "blockAction": "حجب",
+    "unblockAction": "رفع الحجب",
+    "columns": {
+      "code": "الرمز",
+      "product": "المنتج",
+      "caliberGrade": "الكاليبر/الجودة",
+      "location": "الموقع",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "farm": "المزرعة",
+      "product": "المنتج",
+      "caliber": "الكاليبر",
+      "qualityGrade": "درجة الجودة",
+      "boxesCount": "عدد الصناديق",
+      "netWeight": "الوزن الصافي (kg)",
+      "grossWeight": "الوزن الإجمالي (kg)"
+    },
+    "status": {
+      "created": "أُنشئت",
+      "in_cold_storage": "فغرفة التبريد",
+      "reserved": "محجوزة",
+      "loading": "قيد التحميل",
+      "shipped": "شُحنت",
+      "delivered": "تم التسليم",
+      "blocked": "محجوبة"
+    },
+    "movementTypes": {
+      "created": "إنشاء",
+      "moved_to_cold_storage": "نقل لغرفة التبريد",
+      "reserved": "حجز",
+      "released": "تحرير الحجز",
+      "loading": "تحميل",
+      "shipped": "شحن",
+      "delivered": "تسليم",
+      "blocked": "حجب",
+      "unblocked": "رفع الحجب"
+    },
+    "items": {
+      "manage": "المكونات",
+      "title": "مكونات Palette {{code}}",
+      "totalAllocated": "المجموع المخصص: {{total}} kg",
+      "addFromOutput": "إضافة من دفعة تعبئة",
+      "noCandidates": "ماكاينش أي خرج متوافق (نفس المنتج/الكاليبر/الجودة) بكمية متبقية",
+      "output": "الخرج",
+      "selectOutput": "اختر خرج",
+      "remainingHint": "متبقي: {{qty}} kg",
+      "quantityKg": "الكمية (kg)",
+      "noItems": "ماكاينش أي مكون بعد"
+    },
+    "detail": {
+      "title": "تفاصيل Palette",
+      "history": "سجل الحركات",
+      "noHistory": "ماكاينش أي حركة بعد"
+    },
+    "moveDialog": {
+      "title": "نقل لغرفة التبريد",
+      "confirm": "نقل",
+      "unit": "غرفة التبريد",
+      "selectUnit": "اختر غرفة"
+    },
+    "blockDialog": {
+      "title": "حجب Palette",
+      "reason": "السبب"
     }
   }
 }
