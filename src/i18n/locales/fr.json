@@ -121,7 +121,8 @@
       "packingRuns": "Lots de conditionnement",
       "coldStorageUnits": "Chambres froides",
       "pallets": "Palettes",
-      "legalCompanies": "Sociétés juridiques"
+      "legalCompanies": "Sociétés juridiques",
+      "integrations": "Intégrations (API)"
     }
   },
   "farms": {
@@ -2101,6 +2102,64 @@
       "bankRib": "RIB",
       "defaultCurrency": "Devise par défaut",
       "defaultPaymentTerms": "Conditions de paiement par défaut"
+    }
+  },
+  "integrations": {
+    "title": "Couche d'intégrations API",
+    "add": "Ajouter une intégration",
+    "edit": "Modifier l'intégration",
+    "addTitle": "Nouvelle intégration",
+    "deleteConfirmTitle": "Supprimer l'intégration",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer \"{{name}}\" ? Cette action est irréversible.",
+    "allFarms": "Toutes les fermes",
+    "invalidJson": "La configuration doit être un JSON valide",
+    "configHint": "Paramètres non sensibles uniquement (endpoint, identifiant de compte...) — pas de clés API/secrets réels ici.",
+    "pageHint": "Registre pour les intégrations futures (SMS, WhatsApp, comptabilité, banques, GPS, météo, IoT...) — aucune intégration réelle active actuellement.",
+    "categories": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "E-mail",
+      "accounting": "Comptabilité",
+      "banking": "Banque",
+      "gps": "GPS",
+      "weather": "Météo",
+      "iot": "IoT",
+      "other": "Autre"
+    },
+    "status": {
+      "planned": "Prévue",
+      "configured": "Configurée",
+      "active": "Active",
+      "disabled": "Désactivée"
+    },
+    "columns": {
+      "category": "Catégorie",
+      "providerName": "Fournisseur",
+      "farm": "Ferme",
+      "status": "Statut",
+      "actions": ""
+    },
+    "fields": {
+      "category": "Catégorie",
+      "providerName": "Nom du fournisseur",
+      "farm": "Ferme",
+      "status": "Statut",
+      "webhookUrl": "Webhook URL",
+      "config": "Configuration (JSON)",
+      "notes": "Notes"
+    },
+    "events": {
+      "title": "Historique de {{name}}",
+      "noEvents": "Aucun événement pour l'instant",
+      "status": {
+        "success": "Réussi",
+        "failed": "Échoué",
+        "pending": "En attente"
+      },
+      "direction": {
+        "inbound": "Entrant",
+        "outbound": "Sortant"
+      }
     }
   }
 }

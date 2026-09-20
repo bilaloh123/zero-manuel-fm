@@ -98,6 +98,7 @@ export const navSections = [
     items: [
       { key: "groups", path: "/admin/groups" },
       { key: "legalCompanies", path: "/admin/legal-companies" },
+      { key: "integrations", path: "/admin/integrations" },
       { key: "roles", path: "/admin/roles" },
       { key: "users", path: "/admin/users" },
       { key: "auditLog", path: "/admin/audit-log" },

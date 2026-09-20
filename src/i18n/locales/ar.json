@@ -121,7 +121,8 @@
       "packingRuns": "دفعات التعبئة (Packhouse)",
       "coldStorageUnits": "غرف التبريد",
       "pallets": "الپاليتات (Palettes)",
-      "legalCompanies": "الشركات القانونية"
+      "legalCompanies": "الشركات القانونية",
+      "integrations": "التكاملات (API)"
     }
   },
   "farms": {
@@ -2101,6 +2102,64 @@
       "bankRib": "RIB",
       "defaultCurrency": "العملة الافتراضية",
       "defaultPaymentTerms": "شروط الأداء الافتراضية"
+    }
+  },
+  "integrations": {
+    "title": "طبقة التكاملات (API Integrations)",
+    "add": "إضافة تكامل",
+    "edit": "تعديل التكامل",
+    "addTitle": "تكامل جديد",
+    "deleteConfirmTitle": "حذف التكامل",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "allFarms": "كل المزارع",
+    "invalidJson": "الإعدادات (config) خاصها تكون JSON صحيح",
+    "configHint": "إعدادات غير حساسة غير (endpoint، معرف حساب...) — بلا مفاتيح API/أسرار حقيقية هنا.",
+    "pageHint": "سجل تسجيل للتكاملات المستقبلية (SMS, WhatsApp, محاسبة, بنوك, GPS, طقس, IoT...) — بلا أي تكامل فعلي حالياً.",
+    "categories": {
+      "sms": "SMS",
+      "whatsapp": "WhatsApp",
+      "email": "بريد إلكتروني",
+      "accounting": "محاسبة",
+      "banking": "بنوك",
+      "gps": "GPS",
+      "weather": "الطقس",
+      "iot": "IoT",
+      "other": "أخرى"
+    },
+    "status": {
+      "planned": "مخطط له",
+      "configured": "مهيأ",
+      "active": "نشط",
+      "disabled": "معطل"
+    },
+    "columns": {
+      "category": "الفئة",
+      "providerName": "المزود",
+      "farm": "المزرعة",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "fields": {
+      "category": "الفئة",
+      "providerName": "اسم المزود",
+      "farm": "المزرعة",
+      "status": "الحالة",
+      "webhookUrl": "Webhook URL",
+      "config": "الإعدادات (JSON)",
+      "notes": "ملاحظات"
+    },
+    "events": {
+      "title": "سجل أحداث {{name}}",
+      "noEvents": "ماكاينش أي حدث بعد",
+      "status": {
+        "success": "نجح",
+        "failed": "فشل",
+        "pending": "معلق"
+      },
+      "direction": {
+        "inbound": "وارد",
+        "outbound": "صادر"
+      }
     }
   }
 }

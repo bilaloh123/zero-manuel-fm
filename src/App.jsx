@@ -64,6 +64,7 @@ import UsersPage from "./pages/UsersPage";
 import AuditLogPage from "./pages/AuditLogPage";
 import PeriodLocksPage from "./pages/PeriodLocksPage";
 import ImportPage from "./pages/ImportPage";
+import IntegrationsPage from "./pages/IntegrationsPage";
 import { navSections } from "./routes/navConfig";
 
 const PAGE_OVERRIDES = {
@@ -120,6 +121,7 @@ const PAGE_OVERRIDES = {
   auditLog: AuditLogPage,
   periodLocks: PeriodLocksPage,
   importData: ImportPage,
+  integrations: IntegrationsPage,
 };
 
 function FullScreenLoader() {
