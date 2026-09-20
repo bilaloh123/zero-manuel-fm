@@ -113,7 +113,8 @@
       "importData": "استيراد Excel",
       "quotes": "عروض الأسعار",
       "salesOrders": "طلبيات الزبناء",
-      "deliveries": "التسليمات (BL)"
+      "deliveries": "التسليمات (BL)",
+      "customerInvoices": "فواتير الزبناء"
     }
   },
   "farms": {
@@ -1732,6 +1733,45 @@
       "noLot": "بلا دفعة",
       "product": "المنتج",
       "quantity": "الكمية"
+    }
+  },
+  "customerInvoices": {
+    "title": "فواتير الزبناء",
+    "generateAction": "توليد فاتورة",
+    "managePayments": "الدفعات",
+    "deleteConfirmTitle": "حذف الفاتورة",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف هاد الفاتورة؟ الأصناف غادي ترجع قابلة للفوترة من جديد.",
+    "columns": {
+      "invoiceNo": "الرقم",
+      "order": "الطلبية",
+      "customer": "الزبون",
+      "invoiceDate": "تاريخ الفاتورة",
+      "dueDate": "أجل الأداء",
+      "totalAmount": "المبلغ الإجمالي",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "status": {
+      "unpaid": "غير مؤداة",
+      "partial": "أداء جزئي",
+      "paid": "مؤداة"
+    },
+    "generate": {
+      "title": "توليد فاتورة من تسليم(ات)",
+      "confirm": "توليد الفاتورة",
+      "salesOrder": "الطلبية",
+      "selectOrder": "اختر طلبية",
+      "pickDeliveries": "اختر التسليمات المراد فوترتها",
+      "noInvoiceableDeliveries": "ماكاينش أي تسليم قابل للفوترة فهاد الطلبية",
+      "dueDate": "أجل الأداء (اختياري)"
+    },
+    "payments": {
+      "title": "دفعات الفاتورة",
+      "totalPaid": "تم أداء {{total}} من {{amount}}",
+      "addPayment": "إضافة دفعة",
+      "noPayments": "ماكاينش أي دفعة بعد",
+      "amount": "المبلغ",
+      "paidAt": "تاريخ الأداء"
     }
   }
 }

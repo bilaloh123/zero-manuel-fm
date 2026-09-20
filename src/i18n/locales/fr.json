@@ -113,7 +113,8 @@
       "importData": "Import Excel",
       "quotes": "Devis",
       "salesOrders": "Commandes clients",
-      "deliveries": "Livraisons (BL)"
+      "deliveries": "Livraisons (BL)",
+      "customerInvoices": "Factures clients"
     }
   },
   "farms": {
@@ -1732,6 +1733,45 @@
       "noLot": "Aucun lot",
       "product": "Produit",
       "quantity": "Quantité"
+    }
+  },
+  "customerInvoices": {
+    "title": "Factures clients",
+    "generateAction": "Générer une facture",
+    "managePayments": "Paiements",
+    "deleteConfirmTitle": "Supprimer la facture",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer cette facture ? Les articles redeviendront facturables.",
+    "columns": {
+      "invoiceNo": "N°",
+      "order": "Commande",
+      "customer": "Client",
+      "invoiceDate": "Date facture",
+      "dueDate": "Échéance",
+      "totalAmount": "Montant total",
+      "status": "Statut",
+      "actions": ""
+    },
+    "status": {
+      "unpaid": "Non payée",
+      "partial": "Partiellement payée",
+      "paid": "Payée"
+    },
+    "generate": {
+      "title": "Générer une facture depuis des livraisons",
+      "confirm": "Générer la facture",
+      "salesOrder": "Commande",
+      "selectOrder": "Choisir une commande",
+      "pickDeliveries": "Choisir les livraisons à facturer",
+      "noInvoiceableDeliveries": "Aucune livraison facturable pour cette commande",
+      "dueDate": "Échéance (optionnel)"
+    },
+    "payments": {
+      "title": "Paiements de la facture",
+      "totalPaid": "{{total}} payé sur {{amount}}",
+      "addPayment": "Ajouter un paiement",
+      "noPayments": "Aucun paiement pour l'instant",
+      "amount": "Montant",
+      "paidAt": "Date de paiement"
     }
   }
 }
