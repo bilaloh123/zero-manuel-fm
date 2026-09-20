@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
@@ -18,6 +18,7 @@ function toFormState(farm) {
     gps_lat: farm?.gps_lat ?? "",
     gps_lng: farm?.gps_lng ?? "",
     status: farm?.status ?? "active",
+    legal_company_id: farm?.legal_company_id ?? "",
   };
 }
 
@@ -32,6 +33,7 @@ function toPayload(form) {
     gps_lat: numOrNull(form.gps_lat),
     gps_lng: numOrNull(form.gps_lng),
     status: form.status,
+    legal_company_id: form.legal_company_id || null,
   };
 }
 
@@ -39,8 +41,17 @@ export default function FarmFormModal({ open, farm, onClose, onSaved }) {
   const { t } = useTranslation();
   const { user, refreshProfile } = useAuth();
   const [form, setForm] = useState(() => toFormState(farm));
+  const [legalCompanies, setLegalCompanies] = useState([]);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    supabase
+      .from("legal_companies")
+      .select("id, raison_sociale")
+      .order("raison_sociale", { ascending: true })
+      .then(({ data }) => setLegalCompanies(data || []));
+  }, []);
 
   const isEdit = !!farm;
 
@@ -139,6 +150,22 @@ export default function FarmFormModal({ open, farm, onClose, onSaved }) {
             </select>
           </FormField>
         </div>
+
+        <FormField label={t("farms.fields.legalCompany")} htmlFor="legal_company_id">
+          <select
+            id="legal_company_id"
+            value={form.legal_company_id}
+            onChange={handleChange("legal_company_id")}
+            className={inputClass}
+          >
+            <option value="">{t("farms.fields.noLegalCompany")}</option>
+            {legalCompanies.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.raison_sociale}
+              </option>
+            ))}
+          </select>
+        </FormField>
 
         <div className="grid grid-cols-2 gap-4">
           <FormField label={t("farms.fields.totalArea")} htmlFor="total_area_ha">

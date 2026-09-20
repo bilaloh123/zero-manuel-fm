@@ -97,6 +97,7 @@ export const navSections = [
     icon: "Settings",
     items: [
       { key: "groups", path: "/admin/groups" },
+      { key: "legalCompanies", path: "/admin/legal-companies" },
       { key: "roles", path: "/admin/roles" },
       { key: "users", path: "/admin/users" },
       { key: "auditLog", path: "/admin/audit-log" },

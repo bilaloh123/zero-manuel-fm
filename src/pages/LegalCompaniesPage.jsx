@@ -5,49 +5,42 @@ import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
-import FarmFormModal from "../components/farms/FarmFormModal";
+import LegalCompanyFormModal from "../components/legalcompanies/LegalCompanyFormModal";
 import { supabase } from "../lib/supabaseClient";
 
-const STATUS_BADGE = {
-  active: "bg-brand-100 text-brand-700",
-  maintenance: "bg-amber-100 text-amber-700",
-  alert: "bg-red-100 text-red-700",
-  inactive: "bg-gray-100 text-gray-600",
-};
-
-export default function FarmsPage() {
+export default function LegalCompaniesPage() {
   const { t } = useTranslation();
-  const [farms, setFarms] = useState(null);
+  const [companies, setCompanies] = useState(null);
   const [error, setError] = useState(null);
-  const [formState, setFormState] = useState(null); // { farm: null | farm }
+  const [formState, setFormState] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
-  const loadFarms = useCallback(async () => {
+  const loadCompanies = useCallback(async () => {
     setError(null);
     const { data, error: fetchError } = await supabase
-      .from("farms")
-      .select("id, code, name, phone, total_area_ha, cultivated_area_ha, gps_lat, gps_lng, status, legal_company_id")
-      .order("created_at", { ascending: false });
+      .from("legal_companies")
+      .select("id, raison_sociale, ice, rc, default_currency, groups:group_id(name)")
+      .order("raison_sociale", { ascending: true });
     if (fetchError) {
       setError(fetchError.message);
-      setFarms([]);
+      setCompanies([]);
       return;
     }
-    setFarms(data);
+    setCompanies(data);
   }, []);
 
   useEffect(() => {
-    loadFarms();
-  }, [loadFarms]);
+    loadCompanies();
+  }, [loadCompanies]);
 
   const handleDelete = async () => {
     setDeleting(true);
     try {
-      const { error: deleteError } = await supabase.from("farms").delete().eq("id", deleteTarget.id);
+      const { error: deleteError } = await supabase.from("legal_companies").delete().eq("id", deleteTarget.id);
       if (deleteError) throw deleteError;
       setDeleteTarget(null);
-      await loadFarms();
+      await loadCompanies();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -58,61 +51,53 @@ export default function FarmsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-ink">{t("farms.title")}</h1>
-        <Button onClick={() => setFormState({ farm: null })}>
+        <h1 className="text-2xl font-semibold text-ink">{t("legalCompanies.title")}</h1>
+        <Button onClick={() => setFormState({ company: null })}>
           <Plus className="h-4 w-4" />
-          {t("farms.add")}
+          {t("legalCompanies.add")}
         </Button>
       </div>
 
       <Card>
         {error && <p className="mb-4 text-sm text-red-600">{error}</p>}
 
-        {farms === null ? (
+        {companies === null ? (
           <p className="py-8 text-center text-sm text-ink-muted">{t("common.loading")}</p>
-        ) : farms.length === 0 ? (
+        ) : companies.length === 0 ? (
           <EmptyState message={t("common.noData")} />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-start text-sm">
               <thead>
                 <tr className="border-b border-border text-ink-muted">
-                  <th className="px-3 py-2 text-start font-medium">{t("farms.columns.code")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("farms.columns.name")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("farms.columns.area")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("farms.columns.status")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("farms.columns.phone")}</th>
-                  <th className="px-3 py-2 text-end font-medium">{t("farms.columns.actions")}</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("legalCompanies.columns.raisonSociale")}</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("legalCompanies.columns.group")}</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("legalCompanies.columns.ice")}</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("legalCompanies.columns.rc")}</th>
+                  <th className="px-3 py-2 text-start font-medium">{t("legalCompanies.columns.currency")}</th>
+                  <th className="px-3 py-2 text-end font-medium">{t("legalCompanies.columns.actions")}</th>
                 </tr>
               </thead>
               <tbody>
-                {farms.map((farm) => (
-                  <tr key={farm.id} className="border-b border-border last:border-0">
-                    <td className="px-3 py-3 font-medium text-ink">{farm.code}</td>
-                    <td className="px-3 py-3 text-ink">{farm.name}</td>
-                    <td className="px-3 py-3 text-ink-muted">
-                      {farm.cultivated_area_ha ?? "—"} / {farm.total_area_ha ?? "—"}
-                    </td>
-                    <td className="px-3 py-3">
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[farm.status] || STATUS_BADGE.inactive}`}
-                      >
-                        {t(`farms.status.${farm.status}`)}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 text-ink-muted">{farm.phone || "—"}</td>
+                {companies.map((company) => (
+                  <tr key={company.id} className="border-b border-border last:border-0">
+                    <td className="px-3 py-3 font-medium text-ink">{company.raison_sociale}</td>
+                    <td className="px-3 py-3 text-ink-muted">{company.groups?.name || "—"}</td>
+                    <td className="px-3 py-3 text-ink-muted">{company.ice || "—"}</td>
+                    <td className="px-3 py-3 text-ink-muted">{company.rc || "—"}</td>
+                    <td className="px-3 py-3 text-ink-muted">{company.default_currency}</td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           type="button"
-                          onClick={() => setFormState({ farm })}
+                          onClick={() => setFormState({ company })}
                           className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           type="button"
-                          onClick={() => setDeleteTarget(farm)}
+                          onClick={() => setDeleteTarget(company)}
                           className="flex h-8 w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
@@ -128,19 +113,19 @@ export default function FarmsPage() {
       </Card>
 
       {formState && (
-        <FarmFormModal
+        <LegalCompanyFormModal
           open
-          farm={formState.farm}
+          company={formState.company}
           onClose={() => setFormState(null)}
-          onSaved={loadFarms}
+          onSaved={loadCompanies}
         />
       )}
 
       {deleteTarget && (
         <ConfirmDialog
           open
-          title={t("farms.deleteConfirmTitle")}
-          message={t("farms.deleteConfirmMessage", { name: deleteTarget.name })}
+          title={t("legalCompanies.deleteConfirmTitle")}
+          message={t("legalCompanies.deleteConfirmMessage", { name: deleteTarget.raison_sociale })}
           confirming={deleting}
           onCancel={() => setDeleteTarget(null)}
           onConfirm={handleDelete}

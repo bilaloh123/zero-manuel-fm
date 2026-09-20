@@ -120,7 +120,8 @@
       "approvalRequests": "Demandes d'approbation",
       "packingRuns": "Lots de conditionnement",
       "coldStorageUnits": "Chambres froides",
-      "pallets": "Palettes"
+      "pallets": "Palettes",
+      "legalCompanies": "Sociétés juridiques"
     }
   },
   "farms": {
@@ -146,7 +147,9 @@
       "cultivatedArea": "Surface cultivée (ha)",
       "gpsLat": "Latitude (GPS)",
       "gpsLng": "Longitude (GPS)",
-      "status": "Statut"
+      "status": "Statut",
+      "legalCompany": "Société juridique",
+      "noLegalCompany": "Aucune société juridique (optionnel)"
     },
     "status": {
       "active": "Active",
@@ -2069,6 +2072,35 @@
     "blockDialog": {
       "title": "Bloquer la palette",
       "reason": "Motif"
+    }
+  },
+  "legalCompanies": {
+    "title": "Sociétés juridiques (Multi-Company)",
+    "add": "Ajouter une société",
+    "edit": "Modifier la société",
+    "addTitle": "Nouvelle société juridique",
+    "deleteConfirmTitle": "Supprimer la société juridique",
+    "deleteConfirmMessage": "Voulez-vous vraiment supprimer \"{{name}}\" ? Cette action est irréversible.",
+    "columns": {
+      "raisonSociale": "Raison sociale",
+      "group": "Groupe",
+      "ice": "ICE",
+      "rc": "RC",
+      "currency": "Devise",
+      "actions": ""
+    },
+    "fields": {
+      "group": "Groupe",
+      "raisonSociale": "Raison sociale",
+      "ice": "ICE",
+      "ifNo": "IF",
+      "rc": "RC",
+      "patenteNo": "Patente",
+      "address": "Adresse",
+      "bankName": "Nom de la banque",
+      "bankRib": "RIB",
+      "defaultCurrency": "Devise par défaut",
+      "defaultPaymentTerms": "Conditions de paiement par défaut"
     }
   }
 }

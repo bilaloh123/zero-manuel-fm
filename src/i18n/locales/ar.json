@@ -120,7 +120,8 @@
       "approvalRequests": "طلبات الموافقة",
       "packingRuns": "دفعات التعبئة (Packhouse)",
       "coldStorageUnits": "غرف التبريد",
-      "pallets": "الپاليتات (Palettes)"
+      "pallets": "الپاليتات (Palettes)",
+      "legalCompanies": "الشركات القانونية"
     }
   },
   "farms": {
@@ -146,7 +147,9 @@
       "cultivatedArea": "المساحة المزروعة (هكتار)",
       "gpsLat": "خط العرض (GPS)",
       "gpsLng": "خط الطول (GPS)",
-      "status": "الحالة"
+      "status": "الحالة",
+      "legalCompany": "الشركة القانونية",
+      "noLegalCompany": "بلا شركة قانونية (اختياري)"
     },
     "status": {
       "active": "نشطة",
@@ -2069,6 +2072,35 @@
     "blockDialog": {
       "title": "حجب Palette",
       "reason": "السبب"
+    }
+  },
+  "legalCompanies": {
+    "title": "الشركات القانونية (Multi-Company)",
+    "add": "إضافة شركة",
+    "edit": "تعديل الشركة",
+    "addTitle": "شركة قانونية جديدة",
+    "deleteConfirmTitle": "حذف الشركة القانونية",
+    "deleteConfirmMessage": "واش متأكد بغيتي تحذف \"{{name}}\"؟ هاد العملية ما ترجعش.",
+    "columns": {
+      "raisonSociale": "التسمية القانونية",
+      "group": "المجموعة",
+      "ice": "ICE",
+      "rc": "RC",
+      "currency": "العملة",
+      "actions": ""
+    },
+    "fields": {
+      "group": "المجموعة",
+      "raisonSociale": "التسمية القانونية (Raison Sociale)",
+      "ice": "ICE",
+      "ifNo": "IF",
+      "rc": "RC",
+      "patenteNo": "الباتنتة",
+      "address": "العنوان",
+      "bankName": "اسم البنك",
+      "bankRib": "RIB",
+      "defaultCurrency": "العملة الافتراضية",
+      "defaultPaymentTerms": "شروط الأداء الافتراضية"
     }
   }
 }
