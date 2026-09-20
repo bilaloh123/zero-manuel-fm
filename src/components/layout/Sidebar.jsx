@@ -2,7 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import * as Icons from "lucide-react";
-import { LayoutDashboard, ChevronDown, Leaf, Bell, FileBarChart, Inbox } from "lucide-react";
+import { LayoutDashboard, ChevronDown, Leaf, Bell, FileBarChart, Inbox, Gauge } from "lucide-react";
 import { navSections } from "../../routes/navConfig";
 import { useAlertsContext } from "../../context/AlertsContext";
 import { useNotificationsContext } from "../../context/NotificationsContext";
@@ -93,6 +93,18 @@ export default function Sidebar({ className = "" }) {
           >
             <LayoutDashboard className="h-4 w-4 shrink-0" />
             <span>{t("nav.dashboard")}</span>
+          </NavLink>
+
+          <NavLink
+            to="/command-center"
+            className={({ isActive }) =>
+              `mb-2 flex items-center gap-3 rounded-control px-3 py-2 text-sm font-medium transition-colors ${
+                isActive ? "bg-sidebar-active text-white" : "text-sidebar-text/90 hover:bg-sidebar-hover"
+              }`
+            }
+          >
+            <Gauge className="h-4 w-4 shrink-0" />
+            <span>{t("nav.commandCenter")}</span>
           </NavLink>
 
           <NavLink

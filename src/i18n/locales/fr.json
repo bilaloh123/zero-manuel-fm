@@ -123,7 +123,8 @@
       "pallets": "Palettes",
       "legalCompanies": "Sociétés juridiques",
       "integrations": "Intégrations (API)"
-    }
+    },
+    "commandCenter": "Centre de pilotage"
   },
   "farms": {
     "title": "Fermes",
@@ -2178,6 +2179,35 @@
       "transfers": "Transferts",
       "invoices": "Factures fournisseurs",
       "deliveries": "Livraisons"
+    }
+  },
+  "commandCenter": {
+    "title": "Centre de pilotage",
+    "subtitle": "Vue globale et en temps réel de toutes les fermes pour la direction.",
+    "noBudget": "Aucun budget pour cette période",
+    "sections": {
+      "terrainHr": "Terrain et RH",
+      "production": "Production",
+      "logistics": "Logistique",
+      "stockProcurement": "Stock et achats",
+      "finance": "Finance",
+      "qualityMaintenance": "Qualité et maintenance"
+    },
+    "tiles": {
+      "activeFarms": "Fermes actives",
+      "employeesPresent": "Employés présents aujourd'hui",
+      "harvestsInProgress": "Récoltes en cours",
+      "productionToday": "Production du jour",
+      "transfersInProgress": "Transferts en cours",
+      "vehiclesOnMission": "Véhicules en mission",
+      "shipments": "Expéditions confirmées",
+      "criticalStock": "Alertes de stock",
+      "purchasesPending": "Achats en attente",
+      "costs": "Coûts",
+      "budget": "Budget vs Réel",
+      "qualityIncidents": "Incidents qualité",
+      "maintenance": "Équipements en maintenance",
+      "criticalAlerts": "Alertes critiques"
     }
   }
 }

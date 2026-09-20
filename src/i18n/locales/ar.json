@@ -123,7 +123,8 @@
       "pallets": "الپاليتات (Palettes)",
       "legalCompanies": "الشركات القانونية",
       "integrations": "التكاملات (API)"
-    }
+    },
+    "commandCenter": "مركز القيادة"
   },
   "farms": {
     "title": "المزارع",
@@ -2178,6 +2179,35 @@
       "transfers": "التحويلات",
       "invoices": "فواتير الموردين",
       "deliveries": "التسليمات"
+    }
+  },
+  "commandCenter": {
+    "title": "مركز القيادة",
+    "subtitle": "نظرة شاملة وحية على كل المزارع للإدارة العليا.",
+    "noBudget": "لا توجد ميزانية لهذه الفترة",
+    "sections": {
+      "terrainHr": "الأراضي والموارد البشرية",
+      "production": "الإنتاج",
+      "logistics": "اللوجستيك",
+      "stockProcurement": "المخزون والمشتريات",
+      "finance": "المالية",
+      "qualityMaintenance": "الجودة والصيانة"
+    },
+    "tiles": {
+      "activeFarms": "المزارع النشطة",
+      "employeesPresent": "الموظفون الحاضرون اليوم",
+      "harvestsInProgress": "جلسات الحصاد الجارية",
+      "productionToday": "إنتاج اليوم",
+      "transfersInProgress": "التحويلات الجارية",
+      "vehiclesOnMission": "المركبات في مهمة",
+      "shipments": "الشحنات المؤكدة",
+      "criticalStock": "تنبيهات المخزون",
+      "purchasesPending": "المشتريات المعلقة",
+      "costs": "التكاليف",
+      "budget": "الميزانية مقابل الواقع",
+      "qualityIncidents": "حوادث الجودة",
+      "maintenance": "معدات في الصيانة",
+      "criticalAlerts": "التنبيهات الحرجة"
     }
   }
 }

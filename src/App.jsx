@@ -6,6 +6,7 @@ import AppShell from "./components/layout/AppShell";
 import LoginPage from "./pages/LoginPage";
 import AccessBlockedPage from "./pages/AccessBlockedPage";
 import DashboardPage from "./pages/DashboardPage";
+import CommandCenterPage from "./pages/CommandCenterPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import FarmsPage from "./pages/FarmsPage";
 import SitesPage from "./pages/SitesPage";
@@ -148,6 +149,7 @@ function Gate() {
       <Routes>
         <Route element={<AppShell />}>
           <Route index element={<DashboardPage />} />
+          <Route path="command-center" element={<CommandCenterPage />} />
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
