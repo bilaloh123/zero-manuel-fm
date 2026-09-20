@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, Wallet } from "lucide-react";
+import { Plus, Trash2, Wallet, ReceiptText } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import GenerateInvoiceModal from "../components/customerinvoices/GenerateInvoiceModal";
 import CustomerPaymentsModal from "../components/customerinvoices/CustomerPaymentsModal";
+import CreditNotesModal from "../components/customerinvoices/CreditNotesModal";
 import { supabase } from "../lib/supabaseClient";
 import { useFilters } from "../context/FiltersContext";
 
@@ -23,6 +24,7 @@ export default function CustomerInvoicesPage() {
   const [error, setError] = useState(null);
   const [generateOpen, setGenerateOpen] = useState(false);
   const [paymentsTarget, setPaymentsTarget] = useState(null);
+  const [creditNotesTarget, setCreditNotesTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
 
@@ -31,7 +33,7 @@ export default function CustomerInvoicesPage() {
     let query = supabase
       .from("customer_invoices")
       .select(
-        "id, invoice_no, invoice_date, due_date, total_amount, status, sales_orders:sales_order_id(order_no), customers:customer_id(name)"
+        "id, farm_id, customer_id, invoice_no, invoice_date, due_date, total_amount, status, sales_orders:sales_order_id(order_no), customers:customer_id(name)"
       )
       .order("invoice_date", { ascending: false });
     if (farmId !== "all") {
@@ -120,14 +122,24 @@ export default function CustomerInvoicesPage() {
                       </span>
                     </td>
                     <td className="px-3 py-3">
-                      <button
-                        type="button"
-                        onClick={() => setPaymentsTarget(invoice)}
-                        className="inline-flex items-center gap-1.5 rounded-control border border-border px-2.5 py-1 text-xs font-medium text-ink hover:bg-cream-soft"
-                      >
-                        <Wallet className="h-3.5 w-3.5" />
-                        {t("customerInvoices.managePayments")}
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setPaymentsTarget(invoice)}
+                          className="inline-flex items-center gap-1.5 rounded-control border border-border px-2.5 py-1 text-xs font-medium text-ink hover:bg-cream-soft"
+                        >
+                          <Wallet className="h-3.5 w-3.5" />
+                          {t("customerInvoices.managePayments")}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setCreditNotesTarget(invoice)}
+                          className="inline-flex items-center gap-1.5 rounded-control border border-border px-2.5 py-1 text-xs font-medium text-ink hover:bg-cream-soft"
+                        >
+                          <ReceiptText className="h-3.5 w-3.5" />
+                          {t("customerInvoices.creditNotes.manage")}
+                        </button>
+                      </div>
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-1">
@@ -160,6 +172,17 @@ export default function CustomerInvoicesPage() {
           invoice={paymentsTarget}
           onClose={() => {
             setPaymentsTarget(null);
+            loadInvoices();
+          }}
+        />
+      )}
+
+      {creditNotesTarget && (
+        <CreditNotesModal
+          open
+          invoice={creditNotesTarget}
+          onClose={() => {
+            setCreditNotesTarget(null);
             loadInvoices();
           }}
         />

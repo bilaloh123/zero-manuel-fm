@@ -1620,7 +1620,8 @@
       "discountTotal": "Total remise",
       "taxTotal": "Total taxe",
       "grandTotal": "Total général"
-    }
+    },
+    "cancelAction": "Annuler le devis"
   },
   "salesOrders": {
     "title": "Commandes clients",
@@ -1733,7 +1734,11 @@
       "noLot": "Aucun lot",
       "product": "Produit",
       "quantity": "Quantité"
-    }
+    },
+    "reverseAction": "Annuler la livraison",
+    "reverseDialogTitle": "Annuler la livraison",
+    "reverseDialogMessage": "La livraison {{no}} sera annulée : la réservation restaurée, la quantité livrée réduite, et un mouvement de stock compensatoire enregistré. Un motif est requis.",
+    "reverseReason": "Motif de l'annulation"
   },
   "customerInvoices": {
     "title": "Factures clients",
@@ -1772,6 +1777,29 @@
       "noPayments": "Aucun paiement pour l'instant",
       "amount": "Montant",
       "paidAt": "Date de paiement"
+    },
+    "creditNotes": {
+      "manage": "Avoirs",
+      "title": "Avoirs de la facture",
+      "addCreditNote": "Ajouter un avoir",
+      "noCreditNotes": "Aucun avoir pour l'instant",
+      "amount": "Montant",
+      "creditDate": "Date de l'avoir",
+      "reason": "Motif"
     }
+  },
+  "customerHistory": {
+    "title": "Historique client",
+    "summary": "Résumé",
+    "totalInvoiced": "Total facturé",
+    "totalPaid": "Total payé",
+    "totalCredited": "Total avoirs",
+    "balanceDue": "Solde dû",
+    "quotes": "Devis",
+    "orders": "Commandes",
+    "deliveries": "Livraisons",
+    "invoices": "Factures",
+    "ledger": "Paiements et avoirs",
+    "payment": "Paiement"
   }
 }

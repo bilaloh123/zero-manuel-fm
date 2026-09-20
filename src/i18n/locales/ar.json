@@ -1620,7 +1620,8 @@
       "discountTotal": "مجموع التخفيض",
       "taxTotal": "مجموع الضريبة",
       "grandTotal": "المجموع الإجمالي"
-    }
+    },
+    "cancelAction": "إلغاء عرض السعر"
   },
   "salesOrders": {
     "title": "طلبيات الزبناء (Commandes)",
@@ -1733,7 +1734,11 @@
       "noLot": "بلا دفعة",
       "product": "المنتج",
       "quantity": "الكمية"
-    }
+    },
+    "reverseAction": "عكس التسليم",
+    "reverseDialogTitle": "عكس التسليم",
+    "reverseDialogMessage": "غادي نعكس تسليم {{no}}: نرجع الحجز، ننقص الكمية المسلّمة، ونسجل حركة مخزون تعويضية. خاص سبب واضح.",
+    "reverseReason": "سبب العكس"
   },
   "customerInvoices": {
     "title": "فواتير الزبناء",
@@ -1772,6 +1777,29 @@
       "noPayments": "ماكاينش أي دفعة بعد",
       "amount": "المبلغ",
       "paidAt": "تاريخ الأداء"
+    },
+    "creditNotes": {
+      "manage": "أفوار",
+      "title": "أفوار الفاتورة (Avoir)",
+      "addCreditNote": "إضافة أفوار",
+      "noCreditNotes": "ماكاينش أي أفوار بعد",
+      "amount": "المبلغ",
+      "creditDate": "تاريخ الأفوار",
+      "reason": "السبب"
     }
+  },
+  "customerHistory": {
+    "title": "ملف الزبون",
+    "summary": "الملخص",
+    "totalInvoiced": "مجموع الفواتير",
+    "totalPaid": "مجموع المؤدى",
+    "totalCredited": "مجموع الأفوار",
+    "balanceDue": "الرصيد المستحق",
+    "quotes": "عروض الأسعار",
+    "orders": "الطلبيات",
+    "deliveries": "التسليمات",
+    "invoices": "الفواتير",
+    "ledger": "الدفعات والأفوار",
+    "payment": "دفعة"
   }
 }

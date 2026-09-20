@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, Trash2, ShoppingCart } from "lucide-react";
+import { Plus, Pencil, Trash2, ShoppingCart, Ban } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
@@ -66,6 +66,17 @@ export default function QuotesPage() {
     }
   };
 
+  const handleCancel = async (quote) => {
+    setError(null);
+    try {
+      const { error: updateError } = await supabase.from("quotes").update({ status: "rejected" }).eq("id", quote.id);
+      if (updateError) throw updateError;
+      await loadQuotes();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
@@ -121,6 +132,16 @@ export default function QuotesPage() {
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-1">
+                        {!["rejected", "expired", "converted"].includes(quote.status) && (
+                          <button
+                            type="button"
+                            onClick={() => handleCancel(quote)}
+                            className="flex h-8 w-8 items-center justify-center rounded-control text-amber-700 hover:bg-amber-100"
+                            title={t("quotes.cancelAction")}
+                          >
+                            <Ban className="h-4 w-4" />
+                          </button>
+                        )}
                         <button
                           type="button"
                           onClick={() => setFormState({ quote })}

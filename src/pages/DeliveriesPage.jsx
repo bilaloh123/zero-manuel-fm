@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2, ShoppingCart, CheckCircle2, Paperclip } from "lucide-react";
+import { Plus, Trash2, ShoppingCart, CheckCircle2, Paperclip, Undo2 } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
 import ConfirmDialog from "../components/ui/ConfirmDialog";
 import Modal from "../components/ui/Modal";
 import DocumentsModal from "../components/ui/DocumentsModal";
+import FormField, { inputClass } from "../components/ui/FormField";
 import DeliveryFormModal from "../components/deliveries/DeliveryFormModal";
 import DeliveryItemsModal from "../components/deliveries/DeliveryItemsModal";
 import { supabase } from "../lib/supabaseClient";
@@ -15,6 +16,7 @@ import { useFilters } from "../context/FiltersContext";
 const STATUS_BADGE = {
   draft: "bg-gray-100 text-gray-600",
   confirmed: "bg-brand-100 text-brand-700",
+  reversed: "bg-red-100 text-red-700",
 };
 
 export default function DeliveriesPage() {
@@ -30,6 +32,10 @@ export default function DeliveriesPage() {
   const [confirmTarget, setConfirmTarget] = useState(null);
   const [confirming, setConfirming] = useState(false);
   const [actionError, setActionError] = useState(null);
+  const [reverseTarget, setReverseTarget] = useState(null);
+  const [reverseReason, setReverseReason] = useState("");
+  const [reversing, setReversing] = useState(false);
+  const [reverseError, setReverseError] = useState(null);
 
   const loadDeliveries = useCallback(async () => {
     setError(null);
@@ -80,6 +86,25 @@ export default function DeliveriesPage() {
       setActionError(err.message);
     } finally {
       setConfirming(false);
+    }
+  };
+
+  const handleReverse = async () => {
+    setReversing(true);
+    setReverseError(null);
+    try {
+      const { error: rpcError } = await supabase.rpc("reverse_delivery", {
+        p_delivery_id: reverseTarget.id,
+        p_reason: reverseReason.trim(),
+      });
+      if (rpcError) throw rpcError;
+      setReverseTarget(null);
+      setReverseReason("");
+      await loadDeliveries();
+    } catch (err) {
+      setReverseError(err.message);
+    } finally {
+      setReversing(false);
     }
   };
 
@@ -158,6 +183,16 @@ export default function DeliveriesPage() {
                         >
                           <Paperclip className="h-4 w-4" />
                         </button>
+                        {delivery.status === "confirmed" && (
+                          <button
+                            type="button"
+                            onClick={() => setReverseTarget(delivery)}
+                            className="flex h-8 w-8 items-center justify-center rounded-control text-amber-700 hover:bg-amber-100"
+                            title={t("deliveries.reverseAction")}
+                          >
+                            <Undo2 className="h-4 w-4" />
+                          </button>
+                        )}
                         {delivery.status === "draft" && (
                           <button
                             type="button"
@@ -246,6 +281,52 @@ export default function DeliveriesPage() {
             {t("deliveries.confirmDialogMessage", { no: confirmTarget.delivery_no })}
           </p>
           {actionError && <p className="mt-3 text-sm text-red-600">{actionError}</p>}
+        </Modal>
+      )}
+
+      {reverseTarget && (
+        <Modal
+          open
+          onClose={() => {
+            setReverseTarget(null);
+            setReverseReason("");
+            setReverseError(null);
+          }}
+          title={t("deliveries.reverseDialogTitle")}
+          footer={
+            <>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setReverseTarget(null);
+                  setReverseReason("");
+                  setReverseError(null);
+                }}
+              >
+                {t("common.cancel")}
+              </Button>
+              <Button variant="danger" onClick={handleReverse} disabled={reversing || !reverseReason.trim()}>
+                {t("deliveries.reverseAction")}
+              </Button>
+            </>
+          }
+        >
+          <div className="flex flex-col gap-3">
+            <p className="text-sm text-ink-muted">
+              {t("deliveries.reverseDialogMessage", { no: reverseTarget.delivery_no })}
+            </p>
+            <FormField label={t("deliveries.reverseReason")} htmlFor="reverse_reason">
+              <textarea
+                id="reverse_reason"
+                required
+                rows={2}
+                value={reverseReason}
+                onChange={(e) => setReverseReason(e.target.value)}
+                className={inputClass}
+              />
+            </FormField>
+            {reverseError && <p className="text-sm text-red-600">{reverseError}</p>}
+          </div>
         </Modal>
       )}
     </div>

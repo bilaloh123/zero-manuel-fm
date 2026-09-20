@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, History } from "lucide-react";
 import Card from "../components/ui/Card";
 import EmptyState from "../components/ui/EmptyState";
 import Button from "../components/ui/Button";
@@ -16,6 +17,7 @@ const STATUS_BADGE = {
 
 export default function CustomersPage() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [customers, setCustomers] = useState(null);
   const [error, setError] = useState(null);
   const [formState, setFormState] = useState(null);
@@ -100,6 +102,14 @@ export default function CustomersPage() {
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex items-center justify-end gap-1">
+                        <button
+                          type="button"
+                          onClick={() => navigate(`/customers/${customer.id}/history`)}
+                          className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                          title={t("customerHistory.title")}
+                        >
+                          <History className="h-4 w-4" />
+                        </button>
                         <button
                           type="button"
                           onClick={() => setFormState({ customer })}

@@ -45,6 +45,7 @@ import SalesOrdersPage from "./pages/SalesOrdersPage";
 import DeliveriesPage from "./pages/DeliveriesPage";
 import SalesPage from "./pages/SalesPage";
 import CustomerInvoicesPage from "./pages/CustomerInvoicesPage";
+import CustomerHistoryPage from "./pages/CustomerHistoryPage";
 import ProfitabilityPage from "./pages/ProfitabilityPage";
 import AlertsPage from "./pages/AlertsPage";
 import ReportsPage from "./pages/ReportsPage";
@@ -134,6 +135,7 @@ function Gate() {
           <Route path="alerts" element={<AlertsPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="notifications" element={<NotificationsPage />} />
+          <Route path="customers/:customerId/history" element={<CustomerHistoryPage />} />
           {navSections.flatMap((section) =>
             section.items.map((item) => {
               const Override = PAGE_OVERRIDES[item.key];

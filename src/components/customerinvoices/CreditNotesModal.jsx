@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus } from "lucide-react";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import FormField, { inputClass } from "../ui/FormField";
@@ -13,62 +13,48 @@ function todayStr() {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-export default function CustomerPaymentsModal({ open, invoice, onClose }) {
+export default function CreditNotesModal({ open, invoice, onClose }) {
   const { t } = useTranslation();
-  const [payments, setPayments] = useState(null);
-  const [totalPaid, setTotalPaid] = useState(0);
+  const [creditNotes, setCreditNotes] = useState(null);
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  const loadPayments = useCallback(async () => {
+  const loadCreditNotes = useCallback(async () => {
     const { data, error: fetchError } = await supabase
-      .from("customer_payments")
-      .select("id, amount, paid_at")
+      .from("credit_notes")
+      .select("id, credit_no, amount, reason, credit_date")
       .eq("customer_invoice_id", invoice.id)
-      .order("paid_at", { ascending: false });
+      .order("credit_date", { ascending: false });
     if (fetchError) {
       setError(fetchError.message);
-      setPayments([]);
+      setCreditNotes([]);
       return;
     }
-    setPayments(data);
-    setTotalPaid((data || []).reduce((sum, p) => sum + Number(p.amount), 0));
+    setCreditNotes(data);
   }, [invoice.id]);
 
   useEffect(() => {
-    loadPayments();
-  }, [loadPayments]);
+    loadCreditNotes();
+  }, [loadCreditNotes]);
 
   const handleAdd = async (e) => {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
-      const { error: insertError } = await supabase.from("customer_payments").insert({
+      const { error: insertError } = await supabase.from("credit_notes").insert({
+        farm_id: invoice.farm_id,
+        customer_id: invoice.customer_id,
         customer_invoice_id: invoice.id,
         amount: Number(form.amount),
-        paid_at: form.paid_at,
+        reason: form.reason.trim(),
+        credit_date: form.credit_date,
       });
       if (insertError) throw insertError;
       await recomputeCustomerInvoiceStatus(invoice.id, invoice.total_amount);
       setForm(null);
-      await loadPayments();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleDelete = async (paymentId) => {
-    setSaving(true);
-    setError(null);
-    try {
-      const { error: deleteError } = await supabase.from("customer_payments").delete().eq("id", paymentId);
-      if (deleteError) throw deleteError;
-      await recomputeCustomerInvoiceStatus(invoice.id, invoice.total_amount);
-      await loadPayments();
+      await loadCreditNotes();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -80,7 +66,7 @@ export default function CustomerPaymentsModal({ open, invoice, onClose }) {
     <Modal
       open={open}
       onClose={onClose}
-      title={t("customerInvoices.payments.title")}
+      title={t("customerInvoices.creditNotes.title")}
       footer={
         <Button variant="secondary" onClick={onClose}>
           {t("common.cancel")}
@@ -88,25 +74,21 @@ export default function CustomerPaymentsModal({ open, invoice, onClose }) {
       }
     >
       <div className="flex flex-col gap-4">
-        <p className="text-sm font-medium text-ink">
-          {t("customerInvoices.payments.totalPaid", { total: totalPaid, amount: invoice.total_amount })}
-        </p>
-
         {error && <p className="text-sm text-red-600">{error}</p>}
 
         {!form && (
-          <Button onClick={() => setForm({ amount: "", paid_at: todayStr() })} className="self-start">
+          <Button onClick={() => setForm({ amount: "", reason: "", credit_date: todayStr() })} className="self-start">
             <Plus className="h-4 w-4" />
-            {t("customerInvoices.payments.addPayment")}
+            {t("customerInvoices.creditNotes.addCreditNote")}
           </Button>
         )}
 
         {form && (
           <form onSubmit={handleAdd} className="flex flex-col gap-3 rounded-control border border-border p-3">
             <div className="grid grid-cols-2 gap-3">
-              <FormField label={t("customerInvoices.payments.amount")} htmlFor="amount">
+              <FormField label={t("customerInvoices.creditNotes.amount")} htmlFor="cn_amount">
                 <input
-                  id="amount"
+                  id="cn_amount"
                   type="number"
                   required
                   step="0.01"
@@ -116,17 +98,27 @@ export default function CustomerPaymentsModal({ open, invoice, onClose }) {
                   className={inputClass}
                 />
               </FormField>
-              <FormField label={t("customerInvoices.payments.paidAt")} htmlFor="paid_at">
+              <FormField label={t("customerInvoices.creditNotes.creditDate")} htmlFor="cn_date">
                 <input
-                  id="paid_at"
+                  id="cn_date"
                   type="date"
                   required
-                  value={form.paid_at}
-                  onChange={(e) => setForm((f) => ({ ...f, paid_at: e.target.value }))}
+                  value={form.credit_date}
+                  onChange={(e) => setForm((f) => ({ ...f, credit_date: e.target.value }))}
                   className={inputClass}
                 />
               </FormField>
             </div>
+            <FormField label={t("customerInvoices.creditNotes.reason")} htmlFor="cn_reason">
+              <textarea
+                id="cn_reason"
+                required
+                rows={2}
+                value={form.reason}
+                onChange={(e) => setForm((f) => ({ ...f, reason: e.target.value }))}
+                className={inputClass}
+              />
+            </FormField>
             <div className="flex justify-end gap-2">
               <Button variant="secondary" onClick={() => setForm(null)}>
                 {t("common.cancel")}
@@ -138,29 +130,19 @@ export default function CustomerPaymentsModal({ open, invoice, onClose }) {
           </form>
         )}
 
-        {payments === null ? (
+        {creditNotes === null ? (
           <p className="py-4 text-center text-sm text-ink-muted">{t("common.loading")}</p>
-        ) : payments.length === 0 ? (
-          <p className="py-4 text-center text-sm text-ink-muted">{t("customerInvoices.payments.noPayments")}</p>
+        ) : creditNotes.length === 0 ? (
+          <p className="py-4 text-center text-sm text-ink-muted">{t("customerInvoices.creditNotes.noCreditNotes")}</p>
         ) : (
           <ul className="flex flex-col gap-1">
-            {payments.map((payment) => (
-              <li
-                key={payment.id}
-                className="flex items-center justify-between rounded-control border border-border px-3 py-2"
-              >
-                <div>
-                  <p className="text-sm font-medium text-ink">{payment.amount}</p>
-                  <p className="text-xs text-ink-muted">{payment.paid_at}</p>
+            {creditNotes.map((cn) => (
+              <li key={cn.id} className="rounded-control border border-border px-3 py-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-medium text-ink">{cn.credit_no}</span>
+                  <span className="text-sm font-medium text-ink">{cn.amount}</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(payment.id)}
-                  disabled={saving}
-                  className="flex h-7 w-7 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
-                >
-                  <Trash2 className="h-3.5 w-3.5" />
-                </button>
+                <p className="text-xs text-ink-muted">{cn.credit_date} — {cn.reason}</p>
               </li>
             ))}
           </ul>
