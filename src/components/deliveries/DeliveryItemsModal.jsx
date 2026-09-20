@@ -12,6 +12,7 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
   const [orderItems, setOrderItems] = useState([]);
   const { lots } = useLotOptions(delivery.farm_id);
   const [items, setItems] = useState(null);
+  const [reservedPallets, setReservedPallets] = useState([]);
   const [error, setError] = useState(null);
   const [form, setForm] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -30,7 +31,7 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
     const { data, error: fetchError } = await supabase
       .from("delivery_items")
       .select(
-        "id, sales_order_item_id, product_id, warehouse_id, lot_id, quantity_delivered, unit_price, products:product_id(name_ar, name_fr), lots:lot_id(lot_code)"
+        "id, sales_order_item_id, product_id, warehouse_id, lot_id, pallet_id, quantity_delivered, unit_price, products:product_id(name_ar, name_fr), lots:lot_id(lot_code), pallets:pallet_id(pallet_code)"
       )
       .eq("delivery_id", delivery.id)
       .order("id", { ascending: true });
@@ -42,10 +43,20 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
     setItems(data);
   }, [delivery.id]);
 
+  const loadReservedPallets = useCallback(async () => {
+    const { data } = await supabase
+      .from("pallets")
+      .select("id, pallet_code, product_id, net_weight_kg")
+      .eq("farm_id", delivery.farm_id)
+      .eq("status", "reserved");
+    setReservedPallets(data || []);
+  }, [delivery.farm_id]);
+
   useEffect(() => {
     loadOrderItems();
     loadItems();
-  }, [loadOrderItems, loadItems]);
+    loadReservedPallets();
+  }, [loadOrderItems, loadItems, loadReservedPallets]);
 
   const productLabel = (p) => (!p ? "—" : i18n.language === "ar" ? p.name_ar || p.name_fr : p.name_fr || p.name_ar);
 
@@ -60,7 +71,7 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
     [orderItems]
   );
 
-  const startAdd = () => setForm({ sales_order_item_id: "", lot_id: "", quantity_delivered: "" });
+  const startAdd = () => setForm({ sales_order_item_id: "", lot_id: "", pallet_id: "", quantity_delivered: "" });
 
   const handleOrderItemChange = (e) => {
     const sales_order_item_id = e.target.value;
@@ -68,7 +79,18 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
     setForm((f) => ({
       ...f,
       sales_order_item_id,
+      pallet_id: "",
       quantity_delivered: oi ? String(remainingFor(oi.id)) : "",
+    }));
+  };
+
+  const handlePalletChange = (e) => {
+    const pallet_id = e.target.value;
+    const pallet = reservedPallets.find((p) => p.id === pallet_id);
+    setForm((f) => ({
+      ...f,
+      pallet_id,
+      quantity_delivered: pallet?.net_weight_kg != null ? String(pallet.net_weight_kg) : f.quantity_delivered,
     }));
   };
 
@@ -85,13 +107,14 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
         product_id: oi.product_id,
         warehouse_id: oi.warehouse_id,
         lot_id: form.lot_id || null,
+        pallet_id: form.pallet_id || null,
         quantity_delivered: Number(form.quantity_delivered),
         unit_price: oi.unit_price,
       };
       const { error: insertError } = await supabase.from("delivery_items").insert(payload);
       if (insertError) throw insertError;
       setForm(null);
-      await Promise.all([loadOrderItems(), loadItems()]);
+      await Promise.all([loadOrderItems(), loadItems(), loadReservedPallets()]);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -105,7 +128,7 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
     try {
       const { error: deleteError } = await supabase.from("delivery_items").delete().eq("id", itemId);
       if (deleteError) throw deleteError;
-      await Promise.all([loadOrderItems(), loadItems()]);
+      await Promise.all([loadOrderItems(), loadItems(), loadReservedPallets()]);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -114,6 +137,11 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
   };
 
   const selectedRemaining = form?.sales_order_item_id ? remainingFor(form.sales_order_item_id) : null;
+  const selectedOrderItem = form?.sales_order_item_id ? orderItems.find((o) => o.id === form.sales_order_item_id) : null;
+  const usedPalletIds = new Set((items || []).map((i) => i.pallet_id).filter(Boolean));
+  const candidatePallets = selectedOrderItem
+    ? reservedPallets.filter((p) => p.product_id === selectedOrderItem.product_id && !usedPalletIds.has(p.id))
+    : [];
 
   return (
     <Modal
@@ -174,20 +202,37 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
                   ))}
                 </select>
               </FormField>
-              <FormField label={t("deliveries.items.quantity")} htmlFor="quantity_delivered">
-                <input
-                  id="quantity_delivered"
-                  type="number"
-                  step="0.01"
-                  min="0.01"
-                  max={selectedRemaining ?? undefined}
-                  required
-                  value={form.quantity_delivered}
-                  onChange={(e) => setForm((f) => ({ ...f, quantity_delivered: e.target.value }))}
+              <FormField label={t("deliveries.items.pallet")} htmlFor="pallet_id">
+                <select
+                  id="pallet_id"
+                  value={form.pallet_id}
+                  onChange={handlePalletChange}
+                  disabled={!selectedOrderItem}
                   className={inputClass}
-                />
+                >
+                  <option value="">{t("deliveries.items.noPallet")}</option>
+                  {candidatePallets.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.pallet_code}
+                    </option>
+                  ))}
+                </select>
               </FormField>
             </div>
+
+            <FormField label={t("deliveries.items.quantity")} htmlFor="quantity_delivered">
+              <input
+                id="quantity_delivered"
+                type="number"
+                step="0.01"
+                min="0.01"
+                max={selectedRemaining ?? undefined}
+                required
+                value={form.quantity_delivered}
+                onChange={(e) => setForm((f) => ({ ...f, quantity_delivered: e.target.value }))}
+                className={inputClass}
+              />
+            </FormField>
             {selectedRemaining != null && (
               <p className="text-xs text-ink-muted">{t("deliveries.items.remainingHint", { qty: selectedRemaining })}</p>
             )}
@@ -214,6 +259,7 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
                 <tr className="border-b border-border text-ink-muted">
                   <th className="px-2 py-1.5 text-start font-medium">{t("deliveries.items.product")}</th>
                   <th className="px-2 py-1.5 text-start font-medium">{t("deliveries.items.lot")}</th>
+                  <th className="px-2 py-1.5 text-start font-medium">{t("deliveries.items.pallet")}</th>
                   <th className="px-2 py-1.5 text-start font-medium">{t("deliveries.items.quantity")}</th>
                   {isDraft && <th className="px-2 py-1.5 text-end font-medium" />}
                 </tr>
@@ -223,6 +269,7 @@ export default function DeliveryItemsModal({ open, delivery, onClose }) {
                   <tr key={item.id} className="border-b border-border last:border-0">
                     <td className="px-2 py-2 text-ink">{productLabel(item.products)}</td>
                     <td className="px-2 py-2 font-mono text-xs text-ink-muted">{item.lots?.lot_code || "—"}</td>
+                    <td className="px-2 py-2 font-mono text-xs text-ink-muted">{item.pallets?.pallet_code || "—"}</td>
                     <td className="px-2 py-2 text-ink-muted">{item.quantity_delivered}</td>
                     {isDraft && (
                       <td className="px-2 py-2">

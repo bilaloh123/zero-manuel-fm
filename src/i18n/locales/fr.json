@@ -1745,7 +1745,9 @@
       "lot": "Lot",
       "noLot": "Aucun lot",
       "product": "Produit",
-      "quantity": "Quantité"
+      "quantity": "Quantité",
+      "pallet": "Palette",
+      "noPallet": "Aucune palette"
     },
     "reverseAction": "Annuler la livraison",
     "reverseDialogTitle": "Annuler la livraison",
