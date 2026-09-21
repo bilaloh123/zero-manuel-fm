@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WifiOff } from "lucide-react";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import FormField, { inputClass } from "../ui/FormField";
 import { supabase } from "../../lib/supabaseClient";
+import { enqueueMutation, createId } from "../../offline/queue";
 import { useFarmOptions } from "../../hooks/useFarmOptions";
 import { useCropCycleOptions } from "../../hooks/useCropCycleOptions";
 import { useTeamOptions } from "../../hooks/useTeamOptions";
@@ -44,12 +46,14 @@ export default function HarvestSessionFormModal({ open, session, defaultFarmId, 
   const { users } = useAppUserOptions();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [savedOffline, setSavedOffline] = useState(false);
 
   const isEdit = !!session;
 
   const resetAndClose = () => {
     setForm(toFormState(null, defaultFarmId));
     setError(null);
+    setSavedOffline(false);
     onClose();
   };
 
@@ -86,14 +90,25 @@ export default function HarvestSessionFormModal({ open, session, defaultFarmId, 
         quality_grade: form.quality_grade.trim() || null,
       };
       if (isEdit) {
+        // Editing an existing session is online-only for now — offline
+        // support covers logging a new session, the actual field workflow.
         const { error: updateError } = await supabase.from("harvest_sessions").update(payload).eq("id", session.id);
         if (updateError) throw updateError;
+        onSaved();
+        resetAndClose();
       } else {
-        const { error: insertError } = await supabase.from("harvest_sessions").insert(payload);
-        if (insertError) throw insertError;
+        const wasOffline = !navigator.onLine;
+        await enqueueMutation({ table: "harvest_sessions", payload: { id: createId(), ...payload } });
+        onSaved();
+        if (wasOffline) {
+          setSaving(false);
+          setSavedOffline(true);
+          setTimeout(resetAndClose, 1500);
+        } else {
+          resetAndClose();
+        }
       }
-      onSaved();
-      resetAndClose();
+      return;
     } catch (err) {
       setError(err.message);
     } finally {
@@ -118,6 +133,12 @@ export default function HarvestSessionFormModal({ open, session, defaultFarmId, 
       }
     >
       <form id="harvest-session-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {savedOffline && (
+          <div className="flex items-center gap-2 rounded-control bg-amber-100 px-3 py-2 text-sm font-medium text-amber-800">
+            <WifiOff className="h-4 w-4 shrink-0" />
+            {t("common.offlineSaved")}
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("harvestSessions.fields.farm")} htmlFor="farm_id">
             <select id="farm_id" required value={form.farm_id} onChange={handleFarmChange} className={inputClass}>
