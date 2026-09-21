@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { clearSupabaseApiCache } from "../lib/offlineCache";
 
 const AuthContext = createContext(null);
 
@@ -94,6 +95,10 @@ export function AuthProvider({ children }) {
   const signOut = useCallback(async () => {
     await supabase.auth.signOut();
     setProfile(null);
+    // Prevents a second user on a shared device from seeing the previous
+    // user's cached Supabase list data (the offline read cache is keyed by
+    // URL only, not by session) — see src/lib/offlineCache.js.
+    await clearSupabaseApiCache();
   }, []);
 
   const hasPermission = useCallback(

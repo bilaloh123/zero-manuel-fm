@@ -30,7 +30,8 @@
     },
     "yes": "Oui",
     "no": "Non",
-    "menu": "Menu"
+    "menu": "Menu",
+    "offlineBanner": "Hors ligne — les données affichées peuvent être obsolètes"
   },
   "auth": {
     "title": "Connexion",

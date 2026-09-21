@@ -1,6 +1,7 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { SUPABASE_API_CACHE } from "./src/pwa/cacheNames.js";
 
 export default defineConfig({
   plugins: [
@@ -54,6 +55,28 @@ export default defineConfig({
             options: {
               cacheName: "hashed-assets",
               expiration: { maxEntries: 80, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            // Read-only offline continuity: cache Supabase REST GETs so a
+            // list already viewed while online still renders when offline.
+            // GET-only by design — PostgREST mutations are POST/PATCH/
+            // DELETE, so they're never matched or cached here. NetworkFirst
+            // so an online user always gets live data; falls back to the
+            // cache only once the network genuinely fails/times out.
+            //
+            // Security note: this cache is keyed by URL only, not by which
+            // user is signed in — on a shared device, a second user signing
+            // in could otherwise see the first user's cached data. Cleared
+            // explicitly on sign-out in AuthContext to close that gap.
+            urlPattern: ({ url, request }) => url.hostname.endsWith(".supabase.co") && url.pathname.startsWith("/rest/v1/") && request.method === "GET",
+            handler: "NetworkFirst",
+            method: "GET",
+            options: {
+              cacheName: SUPABASE_API_CACHE,
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 },
+              cacheableResponse: { statuses: [0, 200] },
             },
           },
         ],

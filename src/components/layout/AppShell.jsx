@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import OfflineBanner from "./OfflineBanner";
 import { AlertsProvider } from "../../context/AlertsContext";
 import { NotificationsProvider } from "../../context/NotificationsContext";
 
@@ -21,6 +22,7 @@ export default function AppShell() {
         <div className="flex h-screen w-full overflow-hidden bg-cream">
           <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
           <div className="flex min-w-0 flex-1 flex-col">
+            <OfflineBanner />
             <Topbar onOpenSidebar={() => setSidebarOpen(true)} />
             <main className="flex-1 overflow-y-auto p-6">
               <Outlet />
