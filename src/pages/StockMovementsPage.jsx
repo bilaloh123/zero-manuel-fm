@@ -21,6 +21,28 @@ const TYPE_BADGE = (type) => {
   return "bg-amber-100 text-amber-700";
 };
 
+function RowActions({ mv, t, onDocuments, onDelete }) {
+  return (
+    <div className="flex items-center justify-end gap-2 sm:gap-1">
+      <button
+        type="button"
+        onClick={() => onDocuments(mv)}
+        className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+        title={t("documents.title")}
+      >
+        <Paperclip className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        onClick={() => onDelete(mv)}
+        className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
 export default function StockMovementsPage() {
   const { t, i18n } = useTranslation();
   const { farmId } = useFilters();
@@ -105,58 +127,85 @@ export default function StockMovementsPage() {
         ) : movements.length === 0 ? (
           <EmptyState message={t("common.noData")} />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-start text-sm">
-              <thead>
-                <tr className="border-b border-border text-ink-muted">
-                  <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.date")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.product")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.type")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.quantity")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.source")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.destination")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.reason")}</th>
-                  <th className="px-3 py-2 text-end font-medium">{t("stockMovements.columns.actions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {movements.map((mv) => (
-                  <tr key={mv.id} className="border-b border-border last:border-0">
-                    <td className="px-3 py-3 text-ink-muted">{new Date(mv.occurred_at).toLocaleString()}</td>
-                    <td className="px-3 py-3 font-medium text-ink">{productLabel(mv.products)}</td>
-                    <td className="px-3 py-3">
-                      <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${TYPE_BADGE(mv.movement_type)}`}>
-                        {t(`stockMovements.types.${mv.movement_type}`)}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 text-ink-muted">{mv.quantity}</td>
-                    <td className="px-3 py-3 text-ink-muted">{mv.source_warehouse?.name || "—"}</td>
-                    <td className="px-3 py-3 text-ink-muted">{mv.destination_warehouse?.name || "—"}</td>
-                    <td className="px-3 py-3 text-ink-muted">{mv.reason || "—"}</td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          onClick={() => setDocumentsTarget(mv)}
-                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
-                          title={t("documents.title")}
-                        >
-                          <Paperclip className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(mv)}
-                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="hidden overflow-x-auto sm:block">
+              <table className="w-full text-start text-sm">
+                <thead>
+                  <tr className="border-b border-border text-ink-muted">
+                    <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.date")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.product")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.type")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.quantity")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.source")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.destination")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("stockMovements.columns.reason")}</th>
+                    <th className="px-3 py-2 text-end font-medium">{t("stockMovements.columns.actions")}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {movements.map((mv) => (
+                    <tr key={mv.id} className="border-b border-border last:border-0">
+                      <td className="px-3 py-3 text-ink-muted">{new Date(mv.occurred_at).toLocaleString()}</td>
+                      <td className="px-3 py-3 font-medium text-ink">{productLabel(mv.products)}</td>
+                      <td className="px-3 py-3">
+                        <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${TYPE_BADGE(mv.movement_type)}`}>
+                          {t(`stockMovements.types.${mv.movement_type}`)}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-ink-muted">{mv.quantity}</td>
+                      <td className="px-3 py-3 text-ink-muted">{mv.source_warehouse?.name || "—"}</td>
+                      <td className="px-3 py-3 text-ink-muted">{mv.destination_warehouse?.name || "—"}</td>
+                      <td className="px-3 py-3 text-ink-muted">{mv.reason || "—"}</td>
+                      <td className="px-3 py-3">
+                        <RowActions mv={mv} t={t} onDocuments={setDocumentsTarget} onDelete={setDeleteTarget} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:hidden">
+              {movements.map((mv) => (
+                <div key={mv.id} className="flex flex-col gap-2 rounded-card border border-border p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-medium text-ink">{productLabel(mv.products)}</p>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${TYPE_BADGE(mv.movement_type)}`}
+                    >
+                      {t(`stockMovements.types.${mv.movement_type}`)}
+                    </span>
+                  </div>
+                  <p className="text-sm text-ink-muted">{new Date(mv.occurred_at).toLocaleString()}</p>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("stockMovements.columns.quantity")}</span>
+                    <span className="text-ink">{mv.quantity}</span>
+                  </div>
+                  {mv.source_warehouse?.name && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-ink-muted">{t("stockMovements.columns.source")}</span>
+                      <span className="text-ink">{mv.source_warehouse.name}</span>
+                    </div>
+                  )}
+                  {mv.destination_warehouse?.name && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-ink-muted">{t("stockMovements.columns.destination")}</span>
+                      <span className="text-ink">{mv.destination_warehouse.name}</span>
+                    </div>
+                  )}
+                  {mv.reason && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-ink-muted">{t("stockMovements.columns.reason")}</span>
+                      <span className="text-ink">{mv.reason}</span>
+                    </div>
+                  )}
+                  <div className="border-t border-border pt-2">
+                    <RowActions mv={mv} t={t} onDocuments={setDocumentsTarget} onDelete={setDeleteTarget} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
         {movements && movements.length > 0 && (
           <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
