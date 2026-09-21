@@ -43,7 +43,15 @@ export async function enqueueMutation({ table, op = "insert", payload, matchId =
     lastError: null,
   });
   notifyChange();
-  drainQueue(); // fire and forget — syncs immediately if already online
+  // Awaited, not fire-and-forget: when online this must behave like the
+  // direct insert it replaced — the caller's onSaved() (typically a list
+  // reload) expects the row to already be confirmed in Supabase, not just
+  // written to IndexedDB. A real E2E test (transfers.spec.js) caught this
+  // as a race: the list reloaded before the fire-and-forget drain had
+  // actually reached the server, so the just-created row wasn't there yet.
+  // When offline this still returns quickly — syncOne's network failure is
+  // detected immediately, not a hang — so awaiting it costs nothing here.
+  await drainQueue();
   return queueId;
 }
 

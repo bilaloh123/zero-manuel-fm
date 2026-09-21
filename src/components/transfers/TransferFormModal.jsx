@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WifiOff } from "lucide-react";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import FormField, { inputClass } from "../ui/FormField";
 import { supabase } from "../../lib/supabaseClient";
+import { enqueueMutation, createId } from "../../offline/queue";
 import { useAuth } from "../../context/AuthContext";
 import { useFarmOptions } from "../../hooks/useFarmOptions";
 import { useProductOptions } from "../../hooks/useProductOptions";
@@ -25,12 +27,14 @@ export default function TransferFormModal({ open, transfer, onClose, onSaved }) 
   const [form, setForm] = useState(() => toFormState(transfer));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [savedOffline, setSavedOffline] = useState(false);
 
   const isEdit = !!transfer;
 
   const resetAndClose = () => {
     setForm(toFormState(null));
     setError(null);
+    setSavedOffline(false);
     onClose();
   };
 
@@ -48,24 +52,43 @@ export default function TransferFormModal({ open, transfer, onClose, onSaved }) 
     setSaving(true);
     try {
       if (isEdit) {
+        // Only reachable while status is still "requested" (TransfersPage
+        // gates the edit button on that) — quantity-only correction stays
+        // online-only. Status transitions (dispatch/receive) are a
+        // separate modal (TransferActionModal) and are online-only too:
+        // they coordinate a physical handoff between two farms, which
+        // isn't meaningful to queue offline.
         const { error: updateError } = await supabase
           .from("transfers")
           .update({ quantity: Number(form.quantity) })
           .eq("id", transfer.id);
         if (updateError) throw updateError;
+        onSaved();
+        resetAndClose();
       } else {
-        const { error: insertError } = await supabase.from("transfers").insert({
-          product_id: form.product_id,
-          quantity: Number(form.quantity),
-          source_farm_id: form.source_farm_id,
-          destination_farm_id: form.destination_farm_id,
-          requested_by: user.id,
-          status: "requested",
+        const wasOffline = !navigator.onLine;
+        await enqueueMutation({
+          table: "transfers",
+          payload: {
+            id: createId(),
+            product_id: form.product_id,
+            quantity: Number(form.quantity),
+            source_farm_id: form.source_farm_id,
+            destination_farm_id: form.destination_farm_id,
+            requested_by: user.id,
+            status: "requested",
+          },
         });
-        if (insertError) throw insertError;
+        onSaved();
+        if (wasOffline) {
+          setSaving(false);
+          setSavedOffline(true);
+          setTimeout(resetAndClose, 1500);
+        } else {
+          resetAndClose();
+        }
       }
-      onSaved();
-      resetAndClose();
+      return;
     } catch (err) {
       setError(err.message);
     } finally {
@@ -90,6 +113,12 @@ export default function TransferFormModal({ open, transfer, onClose, onSaved }) 
       }
     >
       <form id="transfer-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {savedOffline && (
+          <div className="flex items-center gap-2 rounded-control bg-amber-100 px-3 py-2 text-sm font-medium text-amber-800">
+            <WifiOff className="h-4 w-4 shrink-0" />
+            {t("common.offlineSaved")}
+          </div>
+        )}
         <FormField label={t("transfers.fields.product")} htmlFor="product_id">
           <select
             id="product_id"
