@@ -13,6 +13,28 @@ import { useFilters } from "../context/FiltersContext";
 
 const PAGE_SIZE = 25;
 
+function RowActions({ record, t, onDocuments, onDelete }) {
+  return (
+    <div className="flex items-center justify-end gap-2 sm:gap-1">
+      <button
+        type="button"
+        onClick={() => onDocuments(record)}
+        className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+        title={t("documents.title")}
+      >
+        <Paperclip className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        onClick={() => onDelete(record)}
+        className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
 export default function MaintenanceRecordsPage() {
   const { t } = useTranslation();
   const { farmId } = useFilters();
@@ -112,55 +134,70 @@ export default function MaintenanceRecordsPage() {
         ) : records.length === 0 ? (
           <EmptyState message={t("common.noData")} />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-start text-sm">
-              <thead>
-                <tr className="border-b border-border text-ink-muted">
-                  <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.target")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.issue")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.technician")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.cost")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.nextDue")}</th>
-                  <th className="px-3 py-2 text-end font-medium">{t("maintenanceRecords.columns.actions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {records.map((record) => {
-                  const totalCost = (record.labor_cost || 0) + (record.parts_cost || 0);
-                  return (
-                    <tr key={record.id} className="border-b border-border last:border-0">
-                      <td className="px-3 py-3 font-medium text-ink">
-                        {record.equipment?.code || record.vehicles?.plate_no || "—"}
-                      </td>
-                      <td className="px-3 py-3 text-ink-muted">{record.issue || "—"}</td>
-                      <td className="px-3 py-3 text-ink-muted">{record.technician_name || "—"}</td>
-                      <td className="px-3 py-3 text-ink-muted">{totalCost || "—"}</td>
-                      <td className="px-3 py-3 text-ink-muted">{record.next_due_date || "—"}</td>
-                      <td className="px-3 py-3">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            type="button"
-                            onClick={() => setDocumentsTarget(record)}
-                            className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
-                            title={t("documents.title")}
-                          >
-                            <Paperclip className="h-4 w-4" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setDeleteTarget(record)}
-                            className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <>
+            <div className="hidden overflow-x-auto sm:block">
+              <table className="w-full text-start text-sm">
+                <thead>
+                  <tr className="border-b border-border text-ink-muted">
+                    <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.target")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.issue")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.technician")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.cost")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("maintenanceRecords.columns.nextDue")}</th>
+                    <th className="px-3 py-2 text-end font-medium">{t("maintenanceRecords.columns.actions")}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {records.map((record) => {
+                    const totalCost = (record.labor_cost || 0) + (record.parts_cost || 0);
+                    return (
+                      <tr key={record.id} className="border-b border-border last:border-0">
+                        <td className="px-3 py-3 font-medium text-ink">
+                          {record.equipment?.code || record.vehicles?.plate_no || "—"}
+                        </td>
+                        <td className="px-3 py-3 text-ink-muted">{record.issue || "—"}</td>
+                        <td className="px-3 py-3 text-ink-muted">{record.technician_name || "—"}</td>
+                        <td className="px-3 py-3 text-ink-muted">{totalCost || "—"}</td>
+                        <td className="px-3 py-3 text-ink-muted">{record.next_due_date || "—"}</td>
+                        <td className="px-3 py-3">
+                          <RowActions record={record} t={t} onDocuments={setDocumentsTarget} onDelete={setDeleteTarget} />
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:hidden">
+              {records.map((record) => {
+                const totalCost = (record.labor_cost || 0) + (record.parts_cost || 0);
+                return (
+                  <div key={record.id} className="flex flex-col gap-2 rounded-card border border-border p-4">
+                    <p className="font-medium text-ink">
+                      {record.equipment?.code || record.vehicles?.plate_no || "—"}
+                    </p>
+                    <p className="text-sm text-ink-muted">{record.issue || "—"}</p>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-ink-muted">{t("maintenanceRecords.columns.technician")}</span>
+                      <span className="text-ink">{record.technician_name || "—"}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-ink-muted">{t("maintenanceRecords.columns.cost")}</span>
+                      <span className="text-ink">{totalCost || "—"}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-ink-muted">{t("maintenanceRecords.columns.nextDue")}</span>
+                      <span className="text-ink">{record.next_due_date || "—"}</span>
+                    </div>
+                    <div className="border-t border-border pt-2">
+                      <RowActions record={record} t={t} onDocuments={setDocumentsTarget} onDelete={setDeleteTarget} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </>
         )}
         {records && records.length > 0 && (
           <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
