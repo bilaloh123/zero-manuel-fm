@@ -66,6 +66,7 @@ import AuditLogPage from "./pages/AuditLogPage";
 import PeriodLocksPage from "./pages/PeriodLocksPage";
 import ImportPage from "./pages/ImportPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
+import PwaUpdatePrompt from "./components/layout/PwaUpdatePrompt";
 import { navSections } from "./routes/navConfig";
 
 const PAGE_OVERRIDES = {
@@ -179,6 +180,7 @@ export default function App() {
       <AuthProvider>
         <Gate />
       </AuthProvider>
+      <PwaUpdatePrompt />
     </BrowserRouter>
   );
 }
