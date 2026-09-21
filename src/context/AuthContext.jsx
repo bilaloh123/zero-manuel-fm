@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { clearSupabaseApiCache } from "../lib/offlineCache";
+import { drainQueue } from "../offline/queue";
 
 const AuthContext = createContext(null);
 
@@ -85,6 +86,13 @@ export function AuthProvider({ children }) {
     refreshProfile(userId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId, refreshProfile]);
+
+  // Whoever's queued offline mutations belong to this userId can now sync —
+  // covers both a fresh sign-in and simply reopening the app while already
+  // signed in with items left over from a previous offline session.
+  useEffect(() => {
+    if (userId) drainQueue();
+  }, [userId]);
 
   const signIn = useCallback(async (email, password) => {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
