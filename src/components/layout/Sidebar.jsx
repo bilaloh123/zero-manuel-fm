@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import * as Icons from "lucide-react";
@@ -53,17 +53,39 @@ function NavSection({ section, defaultOpen }) {
   );
 }
 
-export default function Sidebar({ className = "" }) {
+export default function Sidebar({ className = "", open = false, onClose = () => {} }) {
   const { t, i18n } = useTranslation();
   const isLatinScript = i18n.language !== "ar";
   const { alerts } = useAlertsContext();
   const alertCount = alerts.length;
   const { unreadCount } = useNotificationsContext();
 
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  // Plain (non-`rtl:`-variant) class chosen at render time: an `rtl:` utility
+  // is an attribute-selector match ([dir=rtl] .rtl\:x), which outranks a
+  // plain `lg:` responsive utility on CSS specificity alone regardless of
+  // viewport width — so `lg:translate-x-0` would never win over
+  // `rtl:translate-x-full` in Arabic. Picking the closed-side class in JS
+  // keeps every rule here a same-specificity plain utility, letting Tailwind's
+  // normal mobile-first cascade order decide instead.
+  const closedTranslate = isLatinScript ? "-translate-x-full" : "translate-x-full";
+
   return (
-    <aside
-      className={`flex h-full w-72 shrink-0 flex-col bg-sidebar text-sidebar-text shadow-sidebar ${className}`}
-    >
+    <>
+      {open && <div className="fixed inset-0 z-30 bg-black/30 lg:hidden" onClick={onClose} />}
+      <aside
+        className={`fixed inset-y-0 start-0 z-40 flex h-full w-72 shrink-0 flex-col bg-sidebar text-sidebar-text shadow-sidebar transition-transform duration-200 ease-in-out lg:static lg:z-auto lg:translate-x-0 ${
+          open ? "translate-x-0" : closedTranslate
+        } ${className}`}
+      >
       <div className="flex items-center gap-3 px-5 py-5">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control bg-sidebar-active">
           <Leaf className="h-5 w-5 text-white" />
@@ -160,6 +182,7 @@ export default function Sidebar({ className = "" }) {
           ))}
         </div>
       </nav>
-    </aside>
+      </aside>
+    </>
   );
 }

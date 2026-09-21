@@ -29,7 +29,8 @@
       "pageOf": "Page {{page}} sur {{totalPages}}"
     },
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "menu": "Menu"
   },
   "auth": {
     "title": "Connexion",

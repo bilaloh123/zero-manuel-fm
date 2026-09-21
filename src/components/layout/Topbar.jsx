@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { LogOut, Globe, Bell } from "lucide-react";
+import { LogOut, Globe, Bell, Menu } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useFilters, PERIOD_OPTIONS } from "../../context/FiltersContext";
 import GlobalSearch from "./GlobalSearch";
 
-export default function Topbar() {
+export default function Topbar({ onOpenSidebar = () => {} }) {
   const { t, i18n } = useTranslation();
   const { appUser, signOut } = useAuth();
   const { farms, farmId, setFarmId, period, setPeriod } = useFilters();
@@ -16,6 +16,14 @@ export default function Topbar() {
 
   return (
     <header className="flex h-16 items-center gap-3 border-b border-border bg-cream/80 px-6 backdrop-blur">
+      <button
+        type="button"
+        onClick={onOpenSidebar}
+        title={t("common.menu")}
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-control border border-border bg-white text-ink shadow-sm hover:bg-cream-soft lg:hidden"
+      >
+        <Menu className="h-4 w-4" />
+      </button>
       <GlobalSearch />
 
       <div className="flex items-center gap-3">
