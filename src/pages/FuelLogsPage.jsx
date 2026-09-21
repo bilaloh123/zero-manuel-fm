@@ -112,44 +112,78 @@ export default function FuelLogsPage() {
         ) : logs.length === 0 ? (
           <EmptyState message={t("common.noData")} />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-start text-sm">
-              <thead>
-                <tr className="border-b border-border text-ink-muted">
-                  <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.target")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.tank")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.quantity")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.consumptionRate")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.occurredAt")}</th>
-                  <th className="px-3 py-2 text-end font-medium">{t("fuelLogs.columns.actions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {logs.map((log) => (
-                  <tr key={log.id} className="border-b border-border last:border-0">
-                    <td className="px-3 py-3 font-medium text-ink">{log.targetLabel || "—"}</td>
-                    <td className="px-3 py-3 text-ink-muted">{log.warehouses?.name || "—"}</td>
-                    <td className="px-3 py-3 text-ink-muted">{log.quantity_liters}</td>
-                    <td className="px-3 py-3 text-ink-muted">
-                      {log.consumption_rate != null ? log.consumption_rate.toFixed(3) : "—"}
-                    </td>
-                    <td className="px-3 py-3 text-ink-muted">{new Date(log.occurred_at).toLocaleString()}</td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(log)}
-                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="hidden overflow-x-auto sm:block">
+              <table className="w-full text-start text-sm">
+                <thead>
+                  <tr className="border-b border-border text-ink-muted">
+                    <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.target")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.tank")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.quantity")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.consumptionRate")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("fuelLogs.columns.occurredAt")}</th>
+                    <th className="px-3 py-2 text-end font-medium">{t("fuelLogs.columns.actions")}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {logs.map((log) => (
+                    <tr key={log.id} className="border-b border-border last:border-0">
+                      <td className="px-3 py-3 font-medium text-ink">{log.targetLabel || "—"}</td>
+                      <td className="px-3 py-3 text-ink-muted">{log.warehouses?.name || "—"}</td>
+                      <td className="px-3 py-3 text-ink-muted">{log.quantity_liters}</td>
+                      <td className="px-3 py-3 text-ink-muted">
+                        {log.consumption_rate != null ? log.consumption_rate.toFixed(3) : "—"}
+                      </td>
+                      <td className="px-3 py-3 text-ink-muted">{new Date(log.occurred_at).toLocaleString()}</td>
+                      <td className="px-3 py-3">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setDeleteTarget(log)}
+                            className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:hidden">
+              {logs.map((log) => (
+                <div key={log.id} className="flex flex-col gap-2 rounded-card border border-border p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-medium text-ink">{log.targetLabel || "—"}</p>
+                    <button
+                      type="button"
+                      onClick={() => setDeleteTarget(log)}
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <p className="text-sm text-ink-muted">{new Date(log.occurred_at).toLocaleString()}</p>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("fuelLogs.columns.tank")}</span>
+                    <span className="text-ink">{log.warehouses?.name || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("fuelLogs.columns.quantity")}</span>
+                    <span className="text-ink">{log.quantity_liters}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("fuelLogs.columns.consumptionRate")}</span>
+                    <span className="text-ink">
+                      {log.consumption_rate != null ? log.consumption_rate.toFixed(3) : "—"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
         {logs && logs.length > 0 && <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />}
       </Card>
