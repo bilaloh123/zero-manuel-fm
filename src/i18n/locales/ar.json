@@ -562,6 +562,7 @@
       "TRANSFER_IN": "تحويل وارد",
       "CONSUMPTION": "استهلاك",
       "HARVEST_ENTRY": "دخول من الحصاد",
+      "PACKING_OUTPUT": "خرج تعبئة",
       "RETURN": "إرجاع",
       "LOSS": "فقدان",
       "DAMAGE": "تلف",

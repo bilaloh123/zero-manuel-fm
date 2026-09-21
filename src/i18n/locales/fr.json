@@ -562,6 +562,7 @@
       "TRANSFER_IN": "Transfert entrant",
       "CONSUMPTION": "Consommation",
       "HARVEST_ENTRY": "Entrée récolte",
+      "PACKING_OUTPUT": "Sortie conditionnement",
       "RETURN": "Retour",
       "LOSS": "Perte",
       "DAMAGE": "Dommage",
