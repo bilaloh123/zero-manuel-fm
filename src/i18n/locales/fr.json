@@ -31,7 +31,8 @@
     "yes": "Oui",
     "no": "Non",
     "menu": "Menu",
-    "offlineBanner": "Hors ligne — les données affichées peuvent être obsolètes"
+    "offlineBanner": "Hors ligne — les données affichées peuvent être obsolètes",
+    "offlineSaved": "Enregistré localement, sera synchronisé au retour de la connexion"
   },
   "auth": {
     "title": "Connexion",
