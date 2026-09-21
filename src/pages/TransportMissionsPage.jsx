@@ -16,6 +16,35 @@ const STATUS_BADGE = {
   completed: "bg-brand-100 text-brand-700",
 };
 
+function RowActions({ mission, t, onDocuments, onEdit, onDelete }) {
+  return (
+    <div className="flex items-center justify-end gap-2 sm:gap-1">
+      <button
+        type="button"
+        onClick={() => onDocuments(mission)}
+        className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+        title={t("documents.title")}
+      >
+        <Paperclip className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        onClick={() => onEdit(mission)}
+        className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+      >
+        <Pencil className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        onClick={() => onDelete(mission)}
+        className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
 export default function TransportMissionsPage() {
   const { t } = useTranslation();
   const { farmId } = useFilters();
@@ -83,71 +112,99 @@ export default function TransportMissionsPage() {
         ) : missions.length === 0 ? (
           <EmptyState message={t("common.noData")} />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-start text-sm">
-              <thead>
-                <tr className="border-b border-border text-ink-muted">
-                  <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.vehicle")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.driver")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.sourceFarm")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.destinationFarm")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.status")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.departure")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.arrival")}</th>
-                  <th className="px-3 py-2 text-end font-medium">{t("transportMissions.columns.actions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {missions.map((mission) => (
-                  <tr key={mission.id} className="border-b border-border last:border-0">
-                    <td className="px-3 py-3 font-medium text-ink">{mission.vehicles?.plate_no || "—"}</td>
-                    <td className="px-3 py-3 text-ink-muted">{mission.drivers?.full_name || "—"}</td>
-                    <td className="px-3 py-3 text-ink-muted">{mission.source_farm?.name || "—"}</td>
-                    <td className="px-3 py-3 text-ink-muted">{mission.destination_farm?.name || "—"}</td>
-                    <td className="px-3 py-3">
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[mission.status] || STATUS_BADGE.planned}`}
-                      >
-                        {t(`transportMissions.status.${mission.status}`)}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 text-ink-muted">
-                      {mission.departure_time ? new Date(mission.departure_time).toLocaleString() : "—"}
-                    </td>
-                    <td className="px-3 py-3 text-ink-muted">
-                      {mission.actual_arrival ? new Date(mission.actual_arrival).toLocaleString() : "—"}
-                    </td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          onClick={() => setDocumentsTarget(mission)}
-                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
-                          title={t("documents.title")}
-                        >
-                          <Paperclip className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setFormState({ mission })}
-                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(mission)}
-                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="hidden overflow-x-auto sm:block">
+              <table className="w-full text-start text-sm">
+                <thead>
+                  <tr className="border-b border-border text-ink-muted">
+                    <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.vehicle")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.driver")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.sourceFarm")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.destinationFarm")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.status")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.departure")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("transportMissions.columns.arrival")}</th>
+                    <th className="px-3 py-2 text-end font-medium">{t("transportMissions.columns.actions")}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {missions.map((mission) => (
+                    <tr key={mission.id} className="border-b border-border last:border-0">
+                      <td className="px-3 py-3 font-medium text-ink">{mission.vehicles?.plate_no || "—"}</td>
+                      <td className="px-3 py-3 text-ink-muted">{mission.drivers?.full_name || "—"}</td>
+                      <td className="px-3 py-3 text-ink-muted">{mission.source_farm?.name || "—"}</td>
+                      <td className="px-3 py-3 text-ink-muted">{mission.destination_farm?.name || "—"}</td>
+                      <td className="px-3 py-3">
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[mission.status] || STATUS_BADGE.planned}`}
+                        >
+                          {t(`transportMissions.status.${mission.status}`)}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-ink-muted">
+                        {mission.departure_time ? new Date(mission.departure_time).toLocaleString() : "—"}
+                      </td>
+                      <td className="px-3 py-3 text-ink-muted">
+                        {mission.actual_arrival ? new Date(mission.actual_arrival).toLocaleString() : "—"}
+                      </td>
+                      <td className="px-3 py-3">
+                        <RowActions
+                          mission={mission}
+                          t={t}
+                          onDocuments={setDocumentsTarget}
+                          onEdit={(m) => setFormState({ mission: m })}
+                          onDelete={setDeleteTarget}
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:hidden">
+              {missions.map((mission) => (
+                <div key={mission.id} className="flex flex-col gap-2 rounded-card border border-border p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-medium text-ink">{mission.vehicles?.plate_no || "—"}</p>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_BADGE[mission.status] || STATUS_BADGE.planned}`}
+                    >
+                      {t(`transportMissions.status.${mission.status}`)}
+                    </span>
+                  </div>
+                  <p className="text-sm text-ink-muted">
+                    {mission.source_farm?.name || "—"} → {mission.destination_farm?.name || "—"}
+                  </p>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("transportMissions.columns.driver")}</span>
+                    <span className="text-ink">{mission.drivers?.full_name || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("transportMissions.columns.departure")}</span>
+                    <span className="text-ink">
+                      {mission.departure_time ? new Date(mission.departure_time).toLocaleString() : "—"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("transportMissions.columns.arrival")}</span>
+                    <span className="text-ink">
+                      {mission.actual_arrival ? new Date(mission.actual_arrival).toLocaleString() : "—"}
+                    </span>
+                  </div>
+                  <div className="border-t border-border pt-2">
+                    <RowActions
+                      mission={mission}
+                      t={t}
+                      onDocuments={setDocumentsTarget}
+                      onEdit={(m) => setFormState({ mission: m })}
+                      onDelete={setDeleteTarget}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </Card>
 
