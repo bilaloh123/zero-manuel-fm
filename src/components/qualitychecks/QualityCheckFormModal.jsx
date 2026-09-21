@@ -90,7 +90,7 @@ export default function QualityCheckFormModal({ open, defaultFarmId, onClose, on
       }
     >
       <form id="quality-check-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("qualityChecks.fields.farm")} htmlFor="farm_id">
             <select id="farm_id" required value={form.farm_id} onChange={handleFarmChange} className={inputClass}>
               <option value="" disabled>
@@ -139,7 +139,7 @@ export default function QualityCheckFormModal({ open, defaultFarmId, onClose, on
           />
         </FormField>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("qualityChecks.fields.result")} htmlFor="result">
             <select id="result" value={form.result} onChange={handleChange("result")} className={inputClass}>
               <option value="pass">{t("qualityChecks.result.pass")}</option>

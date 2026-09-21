@@ -118,7 +118,7 @@ export default function HarvestSessionFormModal({ open, session, defaultFarmId, 
       }
     >
       <form id="harvest-session-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("harvestSessions.fields.farm")} htmlFor="farm_id">
             <select id="farm_id" required value={form.farm_id} onChange={handleFarmChange} className={inputClass}>
               <option value="" disabled>
@@ -153,7 +153,7 @@ export default function HarvestSessionFormModal({ open, session, defaultFarmId, 
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("harvestSessions.fields.team")} htmlFor="team_id">
             <select
               id="team_id"
@@ -188,7 +188,7 @@ export default function HarvestSessionFormModal({ open, session, defaultFarmId, 
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("harvestSessions.fields.startTime")} htmlFor="start_time">
             <input
               id="start_time"
@@ -209,7 +209,7 @@ export default function HarvestSessionFormModal({ open, session, defaultFarmId, 
           </FormField>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FormField label={t("harvestSessions.fields.boxesCount")} htmlFor="boxes_count">
             <input
               id="boxes_count"

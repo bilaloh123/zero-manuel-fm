@@ -110,7 +110,7 @@ export default function MaintenanceRecordFormModal({ open, defaultFarmId, onClos
       }
     >
       <form id="maintenance-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("maintenanceRecords.fields.farm")} htmlFor="farm_id">
             <select id="farm_id" required value={form.farm_id} onChange={handleFarmChange} className={inputClass}>
               <option value="" disabled>
@@ -161,7 +161,7 @@ export default function MaintenanceRecordFormModal({ open, defaultFarmId, onClos
           <input id="issue" required value={form.issue} onChange={handleChange("issue")} className={inputClass} />
         </FormField>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("maintenanceRecords.fields.technicianName")} htmlFor="technician_name">
             <input
               id="technician_name"
@@ -180,7 +180,7 @@ export default function MaintenanceRecordFormModal({ open, defaultFarmId, onClos
           </FormField>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FormField label={t("maintenanceRecords.fields.laborCost")} htmlFor="labor_cost">
             <input
               id="labor_cost"

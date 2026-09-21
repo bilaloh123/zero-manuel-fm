@@ -121,7 +121,7 @@ export default function AttendanceFormModal({ open, record, defaultFarmId, onClo
       }
     >
       <form id="attendance-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("attendance.fields.farm")} htmlFor="farm_id">
             <select id="farm_id" required value={form.farm_id} onChange={handleFarmChange} className={inputClass}>
               <option value="" disabled>
@@ -156,7 +156,7 @@ export default function AttendanceFormModal({ open, record, defaultFarmId, onClo
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("attendance.fields.checkIn")} htmlFor="check_in">
             <input
               id="check_in"
@@ -177,7 +177,7 @@ export default function AttendanceFormModal({ open, record, defaultFarmId, onClo
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("attendance.fields.hoursWorked")} htmlFor="hours_worked">
             <input
               id="hours_worked"

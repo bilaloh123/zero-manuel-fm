@@ -142,7 +142,7 @@ export default function StockMovementFormModal({ open, defaultFarmId, onClose, o
       </p>
 
       <form id="stock-movement-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("stockMovements.fields.farm")} htmlFor="farm_id">
             <select id="farm_id" required value={form.farm_id} onChange={handleFarmChange} className={inputClass}>
               <option value="" disabled>
@@ -173,7 +173,7 @@ export default function StockMovementFormModal({ open, defaultFarmId, onClose, o
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("stockMovements.fields.product")} htmlFor="product_id">
             <select
               id="product_id"
@@ -208,7 +208,7 @@ export default function StockMovementFormModal({ open, defaultFarmId, onClose, o
         </div>
 
         {(req.showSource || req.showDestination) && (
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {req.showSource && (
               <FormField label={t("stockMovements.fields.sourceWarehouse")} htmlFor="source_warehouse_id">
                 <select
@@ -250,7 +250,7 @@ export default function StockMovementFormModal({ open, defaultFarmId, onClose, o
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("stockMovements.fields.occurredAt")} htmlFor="occurred_at">
             <input
               id="occurred_at"

@@ -162,7 +162,7 @@ export default function TransportMissionFormModal({ open, mission, defaultFarmId
       }
     >
       <form id="transport-mission-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("transportMissions.fields.sourceFarm")} htmlFor="source_farm_id">
             <select
               id="source_farm_id"
@@ -202,7 +202,7 @@ export default function TransportMissionFormModal({ open, mission, defaultFarmId
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("transportMissions.fields.vehicle")} htmlFor="vehicle_id">
             <select
               id="vehicle_id"
@@ -237,7 +237,7 @@ export default function TransportMissionFormModal({ open, mission, defaultFarmId
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("transportMissions.fields.product")} htmlFor="product_id">
             <select
               id="product_id"
@@ -274,7 +274,7 @@ export default function TransportMissionFormModal({ open, mission, defaultFarmId
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("transportMissions.fields.quantity")} htmlFor="quantity">
             <input
               id="quantity"
@@ -297,7 +297,7 @@ export default function TransportMissionFormModal({ open, mission, defaultFarmId
           </FormField>
         </div>
 
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <FormField label={t("transportMissions.fields.departureTime")} htmlFor="departure_time">
             <input
               id="departure_time"
@@ -327,7 +327,7 @@ export default function TransportMissionFormModal({ open, mission, defaultFarmId
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("transportMissions.fields.distanceKm")} htmlFor="distance_km">
             <input
               id="distance_km"

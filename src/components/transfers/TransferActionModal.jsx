@@ -106,7 +106,7 @@ export default function TransferActionModal({ open, transfer, nextStatus, onClos
 
         {isDispatch && (
           <>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField label={t("transfers.fields.vehicle")} htmlFor="vehicle_id">
                 <select id="vehicle_id" value={vehicleId} onChange={(e) => setVehicleId(e.target.value)} className={inputClass}>
                   <option value="">—</option>
@@ -142,7 +142,7 @@ export default function TransferActionModal({ open, transfer, nextStatus, onClos
 
         {isReceive && (
           <>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField label={t("transfers.fields.sourceWarehouse")} htmlFor="source_warehouse_id">
                 <select
                   id="source_warehouse_id"
@@ -180,7 +180,7 @@ export default function TransferActionModal({ open, transfer, nextStatus, onClos
                 </select>
               </FormField>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <FormField label={t("transfers.fields.sentQuantity")} htmlFor="sent_quantity">
                 <input
                   id="sent_quantity"
