@@ -18,6 +18,28 @@ const RESULT_BADGE = {
   fail: "bg-red-100 text-red-700",
 };
 
+function RowActions({ check, t, onDocuments, onDelete }) {
+  return (
+    <div className="flex items-center justify-end gap-2 sm:gap-1">
+      <button
+        type="button"
+        onClick={() => onDocuments(check)}
+        className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+        title={t("documents.title")}
+      >
+        <Paperclip className="h-4 w-4" />
+      </button>
+      <button
+        type="button"
+        onClick={() => onDelete(check)}
+        className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
+      >
+        <Trash2 className="h-4 w-4" />
+      </button>
+    </div>
+  );
+}
+
 export default function QualityChecksPage() {
   const { t } = useTranslation();
   const { farmId } = useFilters();
@@ -105,56 +127,72 @@ export default function QualityChecksPage() {
         ) : checks.length === 0 ? (
           <EmptyState message={t("common.noData")} />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-start text-sm">
-              <thead>
-                <tr className="border-b border-border text-ink-muted">
-                  <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.lot")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.stage")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.inspector")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.result")}</th>
-                  <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.checkedAt")}</th>
-                  <th className="px-3 py-2 text-end font-medium">{t("qualityChecks.columns.actions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {checks.map((check) => (
-                  <tr key={check.id} className="border-b border-border last:border-0">
-                    <td className="px-3 py-3 font-mono text-xs font-medium text-ink">{check.lots?.lot_code || "—"}</td>
-                    <td className="px-3 py-3 text-ink-muted">{check.stage || "—"}</td>
-                    <td className="px-3 py-3 text-ink-muted">{check.app_users?.full_name || "—"}</td>
-                    <td className="px-3 py-3">
-                      <span
-                        className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${RESULT_BADGE[check.result] || RESULT_BADGE.pass}`}
-                      >
-                        {t(`qualityChecks.result.${check.result}`)}
-                      </span>
-                    </td>
-                    <td className="px-3 py-3 text-ink-muted">{new Date(check.checked_at).toLocaleString()}</td>
-                    <td className="px-3 py-3">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          type="button"
-                          onClick={() => setDocumentsTarget(check)}
-                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
-                          title={t("documents.title")}
-                        >
-                          <Paperclip className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget(check)}
-                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </td>
+          <>
+            <div className="hidden overflow-x-auto sm:block">
+              <table className="w-full text-start text-sm">
+                <thead>
+                  <tr className="border-b border-border text-ink-muted">
+                    <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.lot")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.stage")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.inspector")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.result")}</th>
+                    <th className="px-3 py-2 text-start font-medium">{t("qualityChecks.columns.checkedAt")}</th>
+                    <th className="px-3 py-2 text-end font-medium">{t("qualityChecks.columns.actions")}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {checks.map((check) => (
+                    <tr key={check.id} className="border-b border-border last:border-0">
+                      <td className="px-3 py-3 font-mono text-xs font-medium text-ink">{check.lots?.lot_code || "—"}</td>
+                      <td className="px-3 py-3 text-ink-muted">{check.stage || "—"}</td>
+                      <td className="px-3 py-3 text-ink-muted">{check.app_users?.full_name || "—"}</td>
+                      <td className="px-3 py-3">
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${RESULT_BADGE[check.result] || RESULT_BADGE.pass}`}
+                        >
+                          {t(`qualityChecks.result.${check.result}`)}
+                        </span>
+                      </td>
+                      <td className="px-3 py-3 text-ink-muted">{new Date(check.checked_at).toLocaleString()}</td>
+                      <td className="px-3 py-3">
+                        <RowActions check={check} t={t} onDocuments={setDocumentsTarget} onDelete={setDeleteTarget} />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="flex flex-col gap-3 sm:hidden">
+              {checks.map((check) => (
+                <div key={check.id} className="flex flex-col gap-2 rounded-card border border-border p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="font-mono text-xs font-medium text-ink">{check.lots?.lot_code || "—"}</p>
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium ${RESULT_BADGE[check.result] || RESULT_BADGE.pass}`}
+                    >
+                      {t(`qualityChecks.result.${check.result}`)}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("qualityChecks.columns.stage")}</span>
+                    <span className="text-ink">{check.stage || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("qualityChecks.columns.inspector")}</span>
+                    <span className="text-ink">{check.app_users?.full_name || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-ink-muted">{t("qualityChecks.columns.checkedAt")}</span>
+                    <span className="text-ink">{new Date(check.checked_at).toLocaleString()}</span>
+                  </div>
+                  <div className="border-t border-border pt-2">
+                    <RowActions check={check} t={t} onDocuments={setDocumentsTarget} onDelete={setDeleteTarget} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
         {checks && checks.length > 0 && (
           <Pagination page={page} pageSize={PAGE_SIZE} total={total} onPageChange={setPage} />
