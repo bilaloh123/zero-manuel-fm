@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WifiOff } from "lucide-react";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import FormField, { inputClass } from "../ui/FormField";
-import { supabase } from "../../lib/supabaseClient";
+import { enqueueMutation, createId } from "../../offline/queue";
 import { useAuth } from "../../context/AuthContext";
 import { useFarmOptions } from "../../hooks/useFarmOptions";
 import { useWarehouseOptions } from "../../hooks/useWarehouseOptions";
@@ -65,12 +66,14 @@ export default function StockMovementFormModal({ open, defaultFarmId, onClose, o
   const { warehouses } = useWarehouseOptions(form.farm_id);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [savedOffline, setSavedOffline] = useState(false);
 
   const req = fieldRequirements(form.movement_type);
 
   const resetAndClose = () => {
     setForm(emptyForm(defaultFarmId));
     setError(null);
+    setSavedOffline(false);
     onClose();
   };
 
@@ -110,10 +113,17 @@ export default function StockMovementFormModal({ open, defaultFarmId, onClose, o
         reason: form.reason.trim() || null,
         user_id: user.id,
       };
-      const { error: insertError } = await supabase.from("stock_movements").insert(payload);
-      if (insertError) throw insertError;
+      const wasOffline = !navigator.onLine;
+      await enqueueMutation({ table: "stock_movements", payload: { id: createId(), ...payload } });
       onSaved();
-      resetAndClose();
+      if (wasOffline) {
+        setSaving(false);
+        setSavedOffline(true);
+        setTimeout(resetAndClose, 1500);
+      } else {
+        resetAndClose();
+      }
+      return;
     } catch (err) {
       setError(err.message);
     } finally {
@@ -142,6 +152,12 @@ export default function StockMovementFormModal({ open, defaultFarmId, onClose, o
       </p>
 
       <form id="stock-movement-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {savedOffline && (
+          <div className="flex items-center gap-2 rounded-control bg-amber-100 px-3 py-2 text-sm font-medium text-amber-800">
+            <WifiOff className="h-4 w-4 shrink-0" />
+            {t("common.offlineSaved")}
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("stockMovements.fields.farm")} htmlFor="farm_id">
             <select id="farm_id" required value={form.farm_id} onChange={handleFarmChange} className={inputClass}>
