@@ -129,11 +129,11 @@ export default function TransfersPage() {
                         )}
                       </td>
                       <td className="px-3 py-3">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-2 sm:gap-1">
                           <button
                             type="button"
                             onClick={() => setDocumentsTarget(tr)}
-                            className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                            className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
                             title={t("documents.title")}
                           >
                             <Paperclip className="h-4 w-4" />
@@ -142,7 +142,7 @@ export default function TransfersPage() {
                             <button
                               type="button"
                               onClick={() => setFormState({ transfer: tr })}
-                              className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                              className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
                             >
                               <Pencil className="h-4 w-4" />
                             </button>
@@ -151,7 +151,7 @@ export default function TransfersPage() {
                             <button
                               type="button"
                               onClick={() => setActionState({ transfer: tr, nextStatus: next })}
-                              className="flex h-8 w-8 items-center justify-center rounded-control text-brand-600 hover:bg-brand-50"
+                              className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-brand-600 hover:bg-brand-50"
                               title={t(`transfers.actions.${next}`)}
                             >
                               <ArrowRight className="h-4 w-4" />
@@ -161,7 +161,7 @@ export default function TransfersPage() {
                             <button
                               type="button"
                               onClick={() => setActionState({ transfer: tr, nextStatus: "cancelled" })}
-                              className="flex h-8 w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
+                              className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
                               title={t("transfers.actions.cancelled")}
                             >
                               <XCircle className="h-4 w-4" />

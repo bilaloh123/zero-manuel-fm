@@ -41,7 +41,7 @@ function DocumentThumbnail({ path, onRemove, removing }) {
   );
 }
 
-export default function DocumentsModal({ open, onClose, table, record, column, mode, accept, title }) {
+export default function DocumentsModal({ open, onClose, table, record, column, mode, accept, title, capture }) {
   const { t } = useTranslation();
   const fileInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
@@ -122,6 +122,7 @@ export default function DocumentsModal({ open, onClose, table, record, column, m
               ref={fileInputRef}
               type="file"
               accept={accept}
+              capture={capture}
               onChange={handleFileChange}
               disabled={uploading}
               className="hidden"

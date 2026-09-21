@@ -136,7 +136,7 @@ export default function QualityChecksPage() {
                         <button
                           type="button"
                           onClick={() => setDocumentsTarget(check)}
-                          className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
                           title={t("documents.title")}
                         >
                           <Paperclip className="h-4 w-4" />
@@ -144,7 +144,7 @@ export default function QualityChecksPage() {
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(check)}
-                          className="flex h-8 w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
+                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -178,6 +178,7 @@ export default function QualityChecksPage() {
           column="photos"
           mode="gallery"
           accept="image/jpeg,image/png,image/webp"
+          capture="environment"
           title={t("documents.title")}
           onClose={() => {
             setDocumentsTarget(null);

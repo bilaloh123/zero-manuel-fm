@@ -162,14 +162,14 @@ export default function AttendancePage() {
                         <button
                           type="button"
                           onClick={() => setFormState({ record })}
-                          className="flex h-8 w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
+                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-ink-muted hover:bg-cream-soft"
                         >
                           <Pencil className="h-4 w-4" />
                         </button>
                         <button
                           type="button"
                           onClick={() => setDeleteTarget(record)}
-                          className="flex h-8 w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
+                          className="flex h-11 w-11 sm:h-8 sm:w-8 items-center justify-center rounded-control text-red-600 hover:bg-red-50"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
