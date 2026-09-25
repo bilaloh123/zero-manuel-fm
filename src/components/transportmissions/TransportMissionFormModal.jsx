@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WifiOff } from "lucide-react";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import FormField, { inputClass } from "../ui/FormField";
-import { supabase } from "../../lib/supabaseClient";
+import { enqueueMutation, createId } from "../../offline/queue";
 import { useAuth } from "../../context/AuthContext";
 import { useFarmOptions } from "../../hooks/useFarmOptions";
 import { useVehicleOptions } from "../../hooks/useVehicleOptions";
@@ -54,12 +55,14 @@ export default function TransportMissionFormModal({ open, mission, defaultFarmId
   const { lots } = useLotOptions(form.source_farm_id);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [savedOffline, setSavedOffline] = useState(false);
 
   const isEdit = !!mission;
 
   const resetAndClose = () => {
     setForm(toFormState(null, defaultFarmId));
     setError(null);
+    setSavedOffline(false);
     onClose();
   };
 
@@ -93,51 +96,79 @@ export default function TransportMissionFormModal({ open, mission, defaultFarmId
         status: form.status,
       };
 
+      const wasOffline = !navigator.onLine;
       let missionId = mission?.id;
+      let missionQueueId = null;
+
       if (isEdit) {
-        const { error: updateError } = await supabase.from("transport_missions").update(payload).eq("id", mission.id);
-        if (updateError) throw updateError;
+        missionQueueId = await enqueueMutation({
+          table: "transport_missions",
+          op: "update",
+          matchId: mission.id,
+          payload,
+        });
       } else {
-        const { data: created, error: insertError } = await supabase
-          .from("transport_missions")
-          .insert(payload)
-          .select()
-          .single();
-        if (insertError) throw insertError;
-        missionId = created.id;
+        missionId = createId();
+        missionQueueId = await enqueueMutation({
+          table: "transport_missions",
+          payload: { id: missionId, ...payload },
+        });
       }
 
       // Traceability: only fire on the null -> set transition, and only when a lot is linked.
+      // On create, the mission's own queue entry is a hard dependency — the
+      // event must never reach the server before the mission row it points
+      // to exists there. On edit, the mission already exists (it came from a
+      // loaded list), so no dependency is needed even if the edit itself is
+      // still queued.
       if (payload.lot_id) {
+        const dependsOn = isEdit ? [] : [missionQueueId];
+
         const wasDepartureSet = !!mission?.departure_time;
         const isDepartureSetNow = !!payload.departure_time;
         if (!wasDepartureSet && isDepartureSetNow) {
-          await supabase.from("traceability_events").insert({
-            lot_id: payload.lot_id,
-            event_type: "transport_departure",
-            occurred_at: payload.departure_time,
-            actor_id: user.id,
-            farm_id: form.source_farm_id,
-            related_id: missionId,
+          await enqueueMutation({
+            table: "traceability_events",
+            payload: {
+              id: createId(),
+              lot_id: payload.lot_id,
+              event_type: "transport_departure",
+              occurred_at: payload.departure_time,
+              actor_id: user.id,
+              farm_id: form.source_farm_id,
+              related_id: missionId,
+            },
+            dependsOn,
           });
         }
 
         const wasArrivalSet = !!mission?.actual_arrival;
         const isArrivalSetNow = !!payload.actual_arrival;
         if (!wasArrivalSet && isArrivalSetNow) {
-          await supabase.from("traceability_events").insert({
-            lot_id: payload.lot_id,
-            event_type: "transport_arrival",
-            occurred_at: payload.actual_arrival,
-            actor_id: user.id,
-            farm_id: form.destination_farm_id,
-            related_id: missionId,
+          await enqueueMutation({
+            table: "traceability_events",
+            payload: {
+              id: createId(),
+              lot_id: payload.lot_id,
+              event_type: "transport_arrival",
+              occurred_at: payload.actual_arrival,
+              actor_id: user.id,
+              farm_id: form.destination_farm_id,
+              related_id: missionId,
+            },
+            dependsOn,
           });
         }
       }
 
       onSaved();
-      resetAndClose();
+      if (wasOffline) {
+        setSaving(false);
+        setSavedOffline(true);
+        setTimeout(resetAndClose, 1500);
+      } else {
+        resetAndClose();
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -162,6 +193,12 @@ export default function TransportMissionFormModal({ open, mission, defaultFarmId
       }
     >
       <form id="transport-mission-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {savedOffline && (
+          <div className="flex items-center gap-2 rounded-control bg-amber-100 px-3 py-2 text-sm font-medium text-amber-800">
+            <WifiOff className="h-4 w-4 shrink-0" />
+            {t("common.offlineSaved")}
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("transportMissions.fields.sourceFarm")} htmlFor="source_farm_id">
             <select
