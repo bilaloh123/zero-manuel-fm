@@ -102,6 +102,7 @@ export const navSections = [
       { key: "roles", path: "/admin/roles" },
       { key: "users", path: "/admin/users" },
       { key: "auditLog", path: "/admin/audit-log" },
+      { key: "offlineFailures", path: "/admin/offline-failures" },
       { key: "periodLocks", path: "/admin/period-locks" },
       { key: "importData", path: "/admin/import" },
       { key: "approvalRules", path: "/admin/approval-rules" },

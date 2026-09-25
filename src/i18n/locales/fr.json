@@ -112,6 +112,7 @@
       "roles": "Rôles et permissions",
       "users": "Utilisateurs",
       "auditLog": "Journal d'audit",
+      "offlineFailures": "Échecs de synchro",
       "periodLocks": "Verrouillage des périodes",
       "importData": "Import Excel",
       "quotes": "Devis",
@@ -1480,6 +1481,42 @@
       "oldValue": "Avant",
       "newValue": "Après"
     }
+  },
+  "offlineFailures": {
+    "title": "Échecs de synchronisation (Offline)",
+    "filters": {
+      "all": "Tous",
+      "unresolved": "Non résolus",
+      "resolved": "Résolus"
+    },
+    "columns": {
+      "failedAt": "Date d'échec",
+      "table": "Table",
+      "op": "Opération",
+      "user": "Utilisateur",
+      "error": "Erreur",
+      "status": "Statut",
+      "actions": ""
+    },
+    "status": {
+      "resolved": "Résolu",
+      "unresolved": "Non résolu"
+    },
+    "op": {
+      "insert": "Ajout",
+      "update": "Modification"
+    },
+    "markResolved": "Marquer comme résolu",
+    "detailModal": {
+      "title": "Détails de l'échec",
+      "payload": "Données envoyées",
+      "dependsOn": "Dépend de",
+      "queueId": "ID de file",
+      "matchId": "ID de l'enregistrement",
+      "resolvedBy": "Résolu par",
+      "resolvedAt": "Date de résolution"
+    },
+    "empty": "Aucune opération en échec"
   },
   "documents": {
     "title": "Pièces jointes",

@@ -63,6 +63,7 @@ import TransfersPage from "./pages/TransfersPage";
 import RolesPage from "./pages/RolesPage";
 import UsersPage from "./pages/UsersPage";
 import AuditLogPage from "./pages/AuditLogPage";
+import OfflineFailuresPage from "./pages/OfflineFailuresPage";
 import PeriodLocksPage from "./pages/PeriodLocksPage";
 import ImportPage from "./pages/ImportPage";
 import IntegrationsPage from "./pages/IntegrationsPage";
@@ -121,6 +122,7 @@ const PAGE_OVERRIDES = {
   roles: RolesPage,
   users: UsersPage,
   auditLog: AuditLogPage,
+  offlineFailures: OfflineFailuresPage,
   periodLocks: PeriodLocksPage,
   importData: ImportPage,
   integrations: IntegrationsPage,

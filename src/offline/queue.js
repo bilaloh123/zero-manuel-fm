@@ -85,6 +85,27 @@ async function syncOne(entry) {
   return { status: "failed", error };
 }
 
+// Phase E: best-effort mirror of a permanently-failed entry into
+// offline_sync_failures so a super_admin can see it centrally -- the local
+// entry stays in IndexedDB regardless (this is a visibility copy, not the
+// source of truth), so a failure here never loses anything.
+async function reportFailure(entry) {
+  try {
+    await supabase.from("offline_sync_failures").insert({
+      queue_id: entry.queueId,
+      table_name: entry.table,
+      op: entry.op,
+      payload: entry.payload,
+      match_id: entry.matchId,
+      depends_on: entry.dependsOn,
+      error_message: entry.lastError,
+      user_id: entry.userId,
+    });
+  } catch (err) {
+    console.error("offline_sync_failures mirror insert failed:", err);
+  }
+}
+
 let draining = false;
 
 export async function drainQueue() {
@@ -118,6 +139,7 @@ export async function drainQueue() {
             entry.attempts += 1;
             entry.lastError = `Blocked: dependency ${failedBlocker} failed`;
             await db.put(MUTATION_STORE, entry);
+            await reportFailure(entry);
             progressed = true;
           }
           // Otherwise the dependency is still genuinely pending — it either
@@ -136,6 +158,7 @@ export async function drainQueue() {
           entry.attempts += 1;
           entry.lastError = result.error?.message || String(result.error);
           await db.put(MUTATION_STORE, entry);
+          await reportFailure(entry);
           progressed = true;
         } else {
           // Network failure — stop draining entirely rather than hammering

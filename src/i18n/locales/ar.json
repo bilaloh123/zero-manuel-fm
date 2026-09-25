@@ -112,6 +112,7 @@
       "roles": "الأدوار والصلاحيات",
       "users": "المستخدمون",
       "auditLog": "سجل التدقيق",
+      "offlineFailures": "فشل المزامنة",
       "periodLocks": "قفل الفترات المحاسبية",
       "importData": "استيراد Excel",
       "quotes": "عروض الأسعار",
@@ -1480,6 +1481,42 @@
       "oldValue": "قبل",
       "newValue": "بعد"
     }
+  },
+  "offlineFailures": {
+    "title": "فشل المزامنة (Offline)",
+    "filters": {
+      "all": "الكل",
+      "unresolved": "غير محلولة",
+      "resolved": "محلولة"
+    },
+    "columns": {
+      "failedAt": "تاريخ الفشل",
+      "table": "الجدول",
+      "op": "العملية",
+      "user": "المستخدم",
+      "error": "الخطأ",
+      "status": "الحالة",
+      "actions": ""
+    },
+    "status": {
+      "resolved": "محلولة",
+      "unresolved": "غير محلولة"
+    },
+    "op": {
+      "insert": "إضافة",
+      "update": "تعديل"
+    },
+    "markResolved": "تعليم كمحلول",
+    "detailModal": {
+      "title": "تفاصيل الفشل",
+      "payload": "البيانات المرسلة",
+      "dependsOn": "معتمدة على",
+      "queueId": "معرف الطابور",
+      "matchId": "معرف السجل المستهدف",
+      "resolvedBy": "تم الحل بواسطة",
+      "resolvedAt": "تاريخ الحل"
+    },
+    "empty": "لا توجد عمليات فاشلة"
   },
   "documents": {
     "title": "المرفقات",
