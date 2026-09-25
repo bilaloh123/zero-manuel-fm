@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WifiOff } from "lucide-react";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import FormField, { inputClass } from "../ui/FormField";
 import { supabase } from "../../lib/supabaseClient";
+import { enqueueMutation, createId } from "../../offline/queue";
 import { useAuth } from "../../context/AuthContext";
 import { useFarmOptions } from "../../hooks/useFarmOptions";
 import { useFuelTankOptions } from "../../hooks/useFuelTankOptions";
@@ -37,6 +39,7 @@ export default function FuelLogFormModal({ open, defaultFarmId, onClose, onSaved
   const { employees } = useEmployeeOptions(form.farm_id);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [savedOffline, setSavedOffline] = useState(false);
 
   const fuelProducts = products.filter((p) => p.category === "fuel");
   const productList = fuelProducts.length > 0 ? fuelProducts : products;
@@ -46,6 +49,7 @@ export default function FuelLogFormModal({ open, defaultFarmId, onClose, onSaved
   const resetAndClose = () => {
     setForm(emptyForm(defaultFarmId));
     setError(null);
+    setSavedOffline(false);
     onClose();
   };
 
@@ -66,50 +70,78 @@ export default function FuelLogFormModal({ open, defaultFarmId, onClose, onSaved
     setSaving(true);
     setError(null);
     try {
+      const wasOffline = !navigator.onLine;
       const quantity = Number(form.quantity_liters);
       const odometer = form.odometer_or_hours === "" ? null : Number(form.odometer_or_hours);
+      // Captured once, up front, so a fill-up logged offline keeps its real
+      // moment instead of picking up the DB's now() at whatever later time
+      // it actually syncs.
+      const occurredAt = new Date().toISOString();
 
       // Nice-to-have: derive a consumption rate from the previous reading
-      // for this same target, when one exists.
+      // for this same target, when one exists. Network-dependent (it reads
+      // before writing), so it's skipped outright while offline rather than
+      // failing the whole submit on the fetch error.
       let consumptionRate = null;
-      const { data: previousLogs } = await supabase
-        .from("fuel_logs")
-        .select("odometer_or_hours, occurred_at")
-        .eq("target_type", form.target_type)
-        .eq("target_id", form.target_id)
-        .order("occurred_at", { ascending: false })
-        .limit(1);
-      const previous = previousLogs?.[0];
-      if (previous?.odometer_or_hours != null && odometer != null) {
-        const delta = odometer - Number(previous.odometer_or_hours);
-        if (delta > 0) consumptionRate = quantity / delta;
+      if (!wasOffline) {
+        const { data: previousLogs } = await supabase
+          .from("fuel_logs")
+          .select("odometer_or_hours, occurred_at")
+          .eq("target_type", form.target_type)
+          .eq("target_id", form.target_id)
+          .order("occurred_at", { ascending: false })
+          .limit(1);
+        const previous = previousLogs?.[0];
+        if (previous?.odometer_or_hours != null && odometer != null) {
+          const delta = odometer - Number(previous.odometer_or_hours);
+          if (delta > 0) consumptionRate = quantity / delta;
+        }
       }
 
-      const { error: insertError } = await supabase.from("fuel_logs").insert({
-        farm_id: form.farm_id,
-        tank_warehouse_id: form.tank_warehouse_id,
-        target_type: form.target_type,
-        target_id: form.target_id,
-        operator_id: form.operator_id || null,
-        quantity_liters: quantity,
-        odometer_or_hours: odometer,
-        consumption_rate: consumptionRate,
+      // The fuel log and its auto-generated stock consumption movement are
+      // two linked queue entries (same dependsOn pattern as TransportMissions/
+      // QualityChecks): the movement must never land without the log entry
+      // it accounts for actually existing.
+      const fuelLogQueueId = await enqueueMutation({
+        table: "fuel_logs",
+        payload: {
+          id: createId(),
+          farm_id: form.farm_id,
+          tank_warehouse_id: form.tank_warehouse_id,
+          target_type: form.target_type,
+          target_id: form.target_id,
+          operator_id: form.operator_id || null,
+          quantity_liters: quantity,
+          odometer_or_hours: odometer,
+          consumption_rate: consumptionRate,
+          occurred_at: occurredAt,
+        },
       });
-      if (insertError) throw insertError;
 
-      const { error: movementError } = await supabase.from("stock_movements").insert({
-        farm_id: form.farm_id,
-        movement_type: "CONSUMPTION",
-        product_id: form.product_id,
-        quantity,
-        source_warehouse_id: form.tank_warehouse_id,
-        reason: "Plein carburant",
-        user_id: user.id,
+      await enqueueMutation({
+        table: "stock_movements",
+        payload: {
+          id: createId(),
+          farm_id: form.farm_id,
+          movement_type: "CONSUMPTION",
+          product_id: form.product_id,
+          quantity,
+          source_warehouse_id: form.tank_warehouse_id,
+          reason: "Plein carburant",
+          user_id: user.id,
+          occurred_at: occurredAt,
+        },
+        dependsOn: [fuelLogQueueId],
       });
-      if (movementError) throw movementError;
 
       onSaved();
-      resetAndClose();
+      if (wasOffline) {
+        setSaving(false);
+        setSavedOffline(true);
+        setTimeout(resetAndClose, 1500);
+      } else {
+        resetAndClose();
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -138,6 +170,12 @@ export default function FuelLogFormModal({ open, defaultFarmId, onClose, onSaved
       </p>
 
       <form id="fuel-log-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {savedOffline && (
+          <div className="flex items-center gap-2 rounded-control bg-amber-100 px-3 py-2 text-sm font-medium text-amber-800">
+            <WifiOff className="h-4 w-4 shrink-0" />
+            {t("common.offlineSaved")}
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("fuelLogs.fields.farm")} htmlFor="farm_id">
             <select id="farm_id" required value={form.farm_id} onChange={handleFarmChange} className={inputClass}>
