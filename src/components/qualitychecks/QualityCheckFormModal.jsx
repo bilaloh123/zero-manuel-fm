@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { WifiOff } from "lucide-react";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
 import FormField, { inputClass } from "../ui/FormField";
-import { supabase } from "../../lib/supabaseClient";
+import { enqueueMutation, createId } from "../../offline/queue";
 import { useAuth } from "../../context/AuthContext";
 import { useFarmOptions } from "../../hooks/useFarmOptions";
 import { useLotOptions } from "../../hooks/useLotOptions";
@@ -27,10 +28,12 @@ export default function QualityCheckFormModal({ open, defaultFarmId, onClose, on
   const { lots } = useLotOptions(form.farm_id);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [savedOffline, setSavedOffline] = useState(false);
 
   const resetAndClose = () => {
     setForm(emptyForm(defaultFarmId));
     setError(null);
+    setSavedOffline(false);
     onClose();
   };
 
@@ -45,27 +48,47 @@ export default function QualityCheckFormModal({ open, defaultFarmId, onClose, on
     setSaving(true);
     setError(null);
     try {
-      const { error: insertError } = await supabase.from("quality_checks").insert({
-        lot_id: form.lot_id,
-        stage: form.stage.trim() || null,
-        inspector_id: user.id,
-        criteria: form.notes.trim() ? { notes: form.notes.trim() } : null,
-        result: form.result,
-        reject_reason: form.result === "fail" ? form.reject_reason.trim() || null : null,
-      });
-      if (insertError) throw insertError;
+      const wasOffline = !navigator.onLine;
 
-      const { error: eventError } = await supabase.from("traceability_events").insert({
-        lot_id: form.lot_id,
-        event_type: "quality_check",
-        occurred_at: new Date().toISOString(),
-        actor_id: user.id,
-        farm_id: form.farm_id,
+      // The check and its traceability event are two linked queue entries
+      // (Phase C's canonical example for dependsOn) rather than a
+      // client-side transaction: the event carries a hard dependency on the
+      // check's own queue entry so it can never reach the server recording
+      // a quality check that doesn't actually exist there.
+      const checkQueueId = await enqueueMutation({
+        table: "quality_checks",
+        payload: {
+          id: createId(),
+          lot_id: form.lot_id,
+          stage: form.stage.trim() || null,
+          inspector_id: user.id,
+          criteria: form.notes.trim() ? { notes: form.notes.trim() } : null,
+          result: form.result,
+          reject_reason: form.result === "fail" ? form.reject_reason.trim() || null : null,
+        },
       });
-      if (eventError) throw eventError;
+
+      await enqueueMutation({
+        table: "traceability_events",
+        payload: {
+          id: createId(),
+          lot_id: form.lot_id,
+          event_type: "quality_check",
+          occurred_at: new Date().toISOString(),
+          actor_id: user.id,
+          farm_id: form.farm_id,
+        },
+        dependsOn: [checkQueueId],
+      });
 
       onSaved();
-      resetAndClose();
+      if (wasOffline) {
+        setSaving(false);
+        setSavedOffline(true);
+        setTimeout(resetAndClose, 1500);
+      } else {
+        resetAndClose();
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -90,6 +113,12 @@ export default function QualityCheckFormModal({ open, defaultFarmId, onClose, on
       }
     >
       <form id="quality-check-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {savedOffline && (
+          <div className="flex items-center gap-2 rounded-control bg-amber-100 px-3 py-2 text-sm font-medium text-amber-800">
+            <WifiOff className="h-4 w-4 shrink-0" />
+            {t("common.offlineSaved")}
+          </div>
+        )}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField label={t("qualityChecks.fields.farm")} htmlFor="farm_id">
             <select id="farm_id" required value={form.farm_id} onChange={handleFarmChange} className={inputClass}>
